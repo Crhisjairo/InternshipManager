@@ -27,5 +27,6 @@
     <string name="postal_code_text">Postal code:</string>
     <string name="province_text">Province:</string>
     <string name="add_internship_text">ADD INTERNSHIP</string>
+    <string name="nom_app">Internship Management</string>
 
 </resources>

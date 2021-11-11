@@ -3,14 +3,110 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.InfoFragment"
-    android:background="@color/purple_700">
+    android:background="@color/underline">
 
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Info"
-        android:gravity="center"
-        android:textSize="30dp"/>
+        android:layout_height="match_parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivPhoto"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/profile"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/nom_app"
+            android:textSize="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivPhoto" />
+
+        <TextView
+            android:id="@+id/app_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Version 2.0"
+            android:textSize="18dp"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/app_name" />
+
+        <TextView
+            android:id="@+id/name_adriana"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Adriana Galperin"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/app_version" />
+        <TextView
+            android:id="@+id/da_adriana"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#DA : 1906042"
+            android:textSize="20dp"
+            android:textColor="@color/green"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name_adriana" />
+        <TextView
+            android:id="@+id/git_adriana"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GitHub : @aagalperin"
+            android:textSize="20dp"
+            android:textColor="@color/green"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/da_adriana"/>
+
+        <TextView
+            android:id="@+id/name_christian"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Christian Castenada"
+            android:layout_marginTop="32dp"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/git_adriana" />
+        <TextView
+            android:id="@+id/da_christian"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#DA : 1929402"
+            android:textSize="20dp"
+            android:textColor="@color/green"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name_christian" />
+        <TextView
+            android:id="@+id/git_christian"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GitHub : @chrisjairo"
+            android:textSize="20dp"
+            android:textColor="@color/green"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/da_christian" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
