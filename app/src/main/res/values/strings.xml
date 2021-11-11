@@ -1,3 +1,31 @@
 <resources>
-    <string name="app_name">InternshipManager</string>
+    <string name="app_name">ProjetGestionStages</string>
+    <string name="title_page_accueil">Internship Manager</string>
+    <string name="title_activity_maps">Maps Activity</string>
+    <string name="title_add_internship">Add internship</string>
+    <string name="title_modify_internship">Modify an internship</string>
+    <string name="modify_internship_text">Modify internship</string>
+    <string name="default_name_string">STUDENT NAME</string>
+    <string name="title_activity_page_maps">pageMaps</string>
+    <string name="confirm_delete_title">Delete internship</string>
+    <string name="confirm_delete_message">Do you want to delete this internship?</string>
+    <string name="yes_button">Yes</string>
+    <string name="no_button">No</string>
+    <string name="high_priority_text">High</string>
+    <string name="medium_priority_text">Medium</string>
+    <string name="low_priority_text">Low</string>
+    <string name="student_text">Student</string>
+    <string name="student_name_text">Student name:</string>
+    <string name="visit_priority_text">Visit priority:</string>
+    <string name="school_year_text">School year:</string>
+    <string name="year_text">Year</string>
+    <string name="stage_enterprise_text">Internship enterprise</string>
+    <string name="name_text">Nom:</string>
+    <string name="enterprise_name_text">Enterprise name</string>
+    <string name="address_text">Address:</string>
+    <string name="city_text">City:</string>
+    <string name="postal_code_text">Postal code:</string>
+    <string name="province_text">Province:</string>
+    <string name="add_internship_text">ADD INTERNSHIP</string>
+
 </resources>

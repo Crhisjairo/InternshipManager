@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/green">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profilPic"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/profile"/>
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ada Lovelace"
+        android:layout_below="@+id/profilPic"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:textStyle="bold"
+        android:textSize="16dp"
+        android:textColor="@color/underline"
+        />
+
+    <TextView
+        android:id="@+id/string_students"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:text="Students : "
+        android:textSize="12dp"
+        android:textColor="@color/underline"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        />
+
+    <TextView
+        android:id="@+id/amount_students"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:layout_toRightOf="@id/string_students"
+        android:text="1234"
+        android:layout_marginTop="8dp"
+        android:textSize="12dp"
+        android:textColor="@color/underline"
+        />
+
+    <TextView
+        android:id="@+id/string_teacher_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/string_students"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="0dp"
+        android:layout_toStartOf="@+id/teacher_id"
+        android:text="Id : "
+        android:textSize="12dp"
+        android:textStyle="bold"
+        android:textColor="@color/underline"
+        />
+
+    <TextView
+        android:id="@+id/teacher_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/amount_students"
+        android:layout_toRightOf="@id/string_students"
+        android:text="1234"
+        android:layout_marginTop="8dp"
+        android:textSize="12dp"
+        android:textColor="@color/underline"
+        />
+    <View
+        android:layout_below="@id/teacher_id"
+        android:layout_width="match_parent"
+        style="@style/line"
+        />
+
+</RelativeLayout>

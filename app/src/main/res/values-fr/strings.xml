@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ProjetGestionStages</string>
+    <string name="title_page_accueil">Gestion de Stages</string>
+    <string name="title_activity_maps">Maps Activity</string>
+    <string name="title_add_internship">Ajout d\'un stage</string>
+    <string name="title_modify_internship">Modification d\'un stage</string>
+    <string name="modify_internship_text">Modifier stage</string>
+    <string name="default_name_string">Nom Étudiant</string>
+    <string name="title_activity_page_maps">Page Maps</string>
+    <string name="confirm_delete_title">Effacer stage</string>
+    <string name="confirm_delete_message">Êtes-vous sur de vouloir effacer ce stage?</string>
+    <string name="yes_button">Oui</string>
+    <string name="no_button">Non</string>
+    <string name="high_priority_text">Élevé</string>
+    <string name="medium_priority_text">Moyen</string>
+    <string name="low_priority_text">Bas</string>
+    <string name="student_text">Élève</string>
+    <string name="student_name_text">Nom de l\'étudiant:</string>
+    <string name="visit_priority_text">Priorité de visite:</string>
+    <string name="school_year_text">Année scolaire:</string>
+    <string name="year_text">Année</string>
+    <string name="stage_enterprise_text">Entreprise de stage</string>
+    <string name="name_text">Nom:</string>
+    <string name="enterprise_name_text">Nom de l\'entreprise</string>
+    <string name="address_text">Adresse:</string>
+    <string name="city_text">Ville:</string>
+    <string name="postal_code_text">Code postal:</string>
+    <string name="province_text">Province:</string>
+    <string name="add_internship_text">AJOUTER STAGE</string>
+</resources>
