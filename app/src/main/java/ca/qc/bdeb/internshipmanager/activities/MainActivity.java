@@ -1,4 +1,4 @@
-package ca.qc.bdeb.internshipmanager;
+package ca.qc.bdeb.internshipmanager.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 
+import ca.qc.bdeb.internshipmanager.R;
 import ca.qc.bdeb.internshipmanager.fragments.CalendarFragment;
 import ca.qc.bdeb.internshipmanager.fragments.InfoFragment;
 import ca.qc.bdeb.internshipmanager.fragments.ListInternshipFragment;
@@ -34,12 +35,15 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.navigation_view);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
-
             @Override
             public void onClick(View view) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
+
+        //On set le ListInternshipFragment comme défaut et on séléctionne le premier élément du drawer
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ListInternshipFragment()).commit();
+        navigationView.getMenu().getItem(0).setChecked(true);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override

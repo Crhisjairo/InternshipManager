@@ -40,16 +40,15 @@
                 app:layout_constraintStart_toEndOf="@+id/ivPhoto"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- TODO ajouter FlagHandler-->
-<!--            <com.example.projetgestionstages.customviews.FlagSelector-->
-<!--                android:id="@+id/ivItemFlagSelector"-->
-<!--                android:layout_width="63dp"-->
-<!--                android:layout_height="49dp"-->
-<!--                android:layout_marginEnd="40dp"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintEnd_toStartOf="@+id/ibDelete"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:layout_constraintVertical_bias="0.545" />-->
+            <ca.qc.bdeb.internshipmanager.customviews.FlagSelector
+                android:id="@+id/ivItemFlagSelector"
+                android:layout_width="63dp"
+                android:layout_height="49dp"
+                android:layout_marginEnd="40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ibDelete"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.545" />
 
             <ImageButton
                 android:id="@+id/ibDelete"
