@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import ca.qc.bdeb.internshipmanager.R;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
-import ca.qc.bdeb.internshipmanager.systems.DatabaseProject;
+import ca.qc.bdeb.internshipmanager.systems.Database;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -149,7 +149,7 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
                     intership.setPriority(ivItemFlagSelector.getPriority());
 
                     //On modifie le internship dans la bd.
-                    DatabaseProject.getInstance().updateInternship(intership);
+                    Database.getInstance(itemView.getContext()).updateInternship(intership);
 
                     //Log.d("Icitte", "dans le flagSelector: " + ivItemFlagSelector.getPriority().toString());
                     //Log.d("Icitte", "dans le stage: " + stage.getPriority().toString());
@@ -193,7 +193,7 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
                     int index = internshipList.indexOf(intership);
 
                     internshipList.remove(intership);
-                   DatabaseProject.getInstance().deleteInternship(intership.getIdInternship());
+                   Database.getInstance(itemView.getContext()).deleteInternship(intership.getIdInternship());
 
                     notifyItemRemoved(index);
                 }

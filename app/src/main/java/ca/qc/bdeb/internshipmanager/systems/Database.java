@@ -26,15 +26,14 @@ import java.util.UUID;
  * Classe qui va permettre d'implémenter toutes les tables utiles au projet.
  * Elle permet de faire les différentes requêtes à la BD.
  */
-public class DatabaseProject extends SQLiteOpenHelper {
+public class Database extends SQLiteOpenHelper {
 
     public static final int DB_VERSION = 1;
     public static final String DB_NAME = "InternshipSystem.db";
-    private Context context;
+    private final Context context;
     private SQLiteDatabase db;
 
-    private static DatabaseProject instance = null;
-    private static Context sysContext;
+    private static Database instance = null;
 
     private static Account currentTeacherAccount;
 
@@ -95,9 +94,9 @@ public class DatabaseProject extends SQLiteOpenHelper {
     /**
      * Créer l\ instance de SQLlite
      */
-    private DatabaseProject() {
-        super(sysContext, DB_NAME, null, DB_VERSION);
-
+    private Database(Context context) {
+        super(context, DB_NAME, null, DB_VERSION);
+        this.context = context;
         this.db = this.getWritableDatabase();
 
         logInTeacher();
@@ -108,24 +107,11 @@ public class DatabaseProject extends SQLiteOpenHelper {
      *
      * @return
      */
-    public static DatabaseProject getInstance() {
-        if(sysContext == null){
-            return null;
-        }
-
+    public static Database getInstance(Context context) {
         if (instance == null) {
-            instance = new DatabaseProject();
+            instance = new Database(context);
         }
-
         return instance;
-    }
-
-    /**
-     * Définit le context du système. Il faut définir le contexte avant de getInstance().
-     * @param context Context de l'application.
-     */
-    public static void setSysContext(Context context){
-        sysContext = context;
     }
 
 
