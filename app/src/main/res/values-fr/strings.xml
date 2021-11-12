@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ProjetGestionStages</string>
+    <string name="app_name">Gestionaire de Stages</string>
     <string name="title_page_accueil">Gestion de Stages</string>
     <string name="title_activity_maps">Maps Activity</string>
     <string name="title_add_internship">Ajout d\'un stage</string>
@@ -28,4 +28,5 @@
     <string name="postal_code_text">Code postal:</string>
     <string name="province_text">Province:</string>
     <string name="add_internship_text">AJOUTER STAGE</string>
+    <string name="profil_photo_text">Photo de profil</string>
 </resources>
