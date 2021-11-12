@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -44,53 +43,53 @@ public class DatabaseProject extends SQLiteOpenHelper {
      * Requête pour crée la table de comptes.
      */
     private static final String CREATION_TABLE_ACCOUNTS = "CREATE TABLE "
-            + Accounts.TABLE_NAME
-            + " (" + Accounts._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + Accounts.FIRST_NAME + " VARCHAR2(255),"
-            + Accounts.LAST_NAME + " VARCHAR2(255),"
-            + Accounts.EMAIL + " VARCHAR2(255),"
-            + Accounts.PASSWORD + " VARCHAR2(255),"
-            + Accounts.PROFILE + " BLOB,"
-            + Accounts.CREATED_AT + " BLOB,"
-            + Accounts.DELETED_AT + " BLOB,"
-            + Accounts.UPDATED_AT + " BLOB,"
-            + Accounts.IS_ACTIVE + " INT(1),"
-            + Accounts.ACCOUNT_TYPE + " INT(11))";
+            + AccountTable.TABLE_NAME
+            + " (" + AccountTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + AccountTable.FIRST_NAME + " VARCHAR2(255),"
+            + AccountTable.LAST_NAME + " VARCHAR2(255),"
+            + AccountTable.EMAIL + " VARCHAR2(255),"
+            + AccountTable.PASSWORD + " VARCHAR2(255),"
+            + AccountTable.PROFILE + " BLOB,"
+            + AccountTable.CREATED_AT + " BLOB,"
+            + AccountTable.DELETED_AT + " BLOB,"
+            + AccountTable.UPDATED_AT + " BLOB,"
+            + AccountTable.IS_ACTIVE + " INT(1),"
+            + AccountTable.ACCOUNT_TYPE + " INT(11))";
 
     /**
      * Requête pour crée la table des enterprises.
      */
     private static final String CREATION_TABLE_ENTERPRISE = "CREATE TABLE "
-            + Enterprises.TABLE_NAME
-            + " (" + Enterprises._ID + " VARCHAR2(255) PRIMARY KEY,"
-            + Enterprises.ENTERPRISE_NAME + " VARCHAR2(255),"
-            + Enterprises.ENTERPRISE_ADDRESS + " VARCHAR2(255),"
-            + Enterprises.TOWN + " VARCHAR2(255),"
-            + Enterprises.PROVINCE + " VARCHAR2(255),"
-            + Enterprises.POSTAL_CODE + " VARCHAR2(7))";
+            + EnterpriseTable.TABLE_NAME
+            + " (" + EnterpriseTable._ID + " VARCHAR2(255) PRIMARY KEY,"
+            + EnterpriseTable.ENTERPRISE_NAME + " VARCHAR2(255),"
+            + EnterpriseTable.ENTERPRISE_ADDRESS + " VARCHAR2(255),"
+            + EnterpriseTable.TOWN + " VARCHAR2(255),"
+            + EnterpriseTable.PROVINCE + " VARCHAR2(255),"
+            + EnterpriseTable.POSTAL_CODE + " VARCHAR2(7))";
 
     /**
      * Requête pour crée la table de visits.
      */
     private static final String CREATION_TABLE_VISIT = "CREATE TABLE "
-            + Visits.TABLE_NAME
-            + " (" + Visits._ID + " VARCHAR2(255) PRIMARY KEY,"
-            + Visits.CREATED_DATE + " BLOB,"
-            + Visits.START_HOUR + " BLOB,"
-            + Visits.DURING + " INT(20))";
+            + VisitTable.TABLE_NAME
+            + " (" + VisitTable._ID + " VARCHAR2(255) PRIMARY KEY,"
+            + VisitTable.CREATED_DATE + " BLOB,"
+            + VisitTable.START_HOUR + " BLOB,"
+            + VisitTable.DURING + " INT(20))";
 
 
     /**
      * Requête pour crée la table des stages.
      */
     private static final String CREATION_TABLE_INTERNSHIP = "CREATE TABLE "
-            + Internships.TABLE_NAME
-            + " (" + Internships._ID + " VARCHAR2(255) PRIMARY KEY,"
-            + Internships.SCHOOL_YEAR + " VARCHAR2(255),"
-            + Internships.ENTERPRISE_ID + " VARCHAR2(255),"
-            + Internships.STUDENT_ID + " INT(20),"
-            + Internships.PROFESSOR_ID + " INT(20)," +
-            Internships.PRIORITY + " VARCHAR2(255))";
+            + InternshipTable.TABLE_NAME
+            + " (" + InternshipTable._ID + " VARCHAR2(255) PRIMARY KEY,"
+            + InternshipTable.SCHOOL_YEAR + " VARCHAR2(255),"
+            + InternshipTable.ENTERPRISE_ID + " VARCHAR2(255),"
+            + InternshipTable.STUDENT_ID + " INT(20),"
+            + InternshipTable.PROFESSOR_ID + " INT(20)," +
+            InternshipTable.PRIORITY + " VARCHAR2(255))";
 
 
     /**
@@ -161,7 +160,7 @@ public class DatabaseProject extends SQLiteOpenHelper {
     /**
      * Classe qui permet de définir la table entreprise
      */
-    public static class Enterprises implements BaseColumns {
+    public static class EnterpriseTable implements BaseColumns {
         public static final String TABLE_NAME = "enterprises";
         public static final String ENTERPRISE_NAME = "enterprise_name";
         public static final String ENTERPRISE_ADDRESS = "address";
@@ -173,7 +172,7 @@ public class DatabaseProject extends SQLiteOpenHelper {
     /**
      * Classe qui permet de définir la table etudiant
      */
-    public static class Accounts implements BaseColumns {
+    public static class AccountTable implements BaseColumns {
         public static final String TABLE_NAME = "accounts";
         public static final String CREATED_AT = "creation_date";
         public static final String DELETED_AT = "delete_date";
@@ -190,7 +189,7 @@ public class DatabaseProject extends SQLiteOpenHelper {
     /**
      * Classe qui va permettre d'implémenter la table visite
      */
-    public static class Internships implements BaseColumns {
+    public static class InternshipTable implements BaseColumns {
         public static final String TABLE_NAME = "internship";
         public static final String SCHOOL_YEAR = "year_school";
         public static final String ENTERPRISE_ID = "enterprise_id";
@@ -202,7 +201,7 @@ public class DatabaseProject extends SQLiteOpenHelper {
     /**
      * Classe qui va permettre d'implémenter la table stage
      */
-    public static class Visits implements BaseColumns {
+    public static class VisitTable implements BaseColumns {
         public static final String TABLE_NAME = "visits";
         public static final String CREATED_DATE = "date";
         public static final String START_HOUR = "start_hour";
@@ -219,12 +218,12 @@ public class DatabaseProject extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
 
-        values.put(Accounts.CREATED_AT, createdAt);
-        values.put(Accounts.DELETED_AT, deletedAt);
-        values.put(Accounts.EMAIL, email);
-        values.put(Accounts.PASSWORD, password);
-        values.put(Accounts.LAST_NAME, lastName);
-        values.put(Accounts.FIRST_NAME, firstName);
+        values.put(AccountTable.CREATED_AT, createdAt);
+        values.put(AccountTable.DELETED_AT, deletedAt);
+        values.put(AccountTable.EMAIL, email);
+        values.put(AccountTable.PASSWORD, password);
+        values.put(AccountTable.LAST_NAME, lastName);
+        values.put(AccountTable.FIRST_NAME, firstName);
 
         //Pour la photo
         byte[] img;
@@ -243,18 +242,18 @@ public class DatabaseProject extends SQLiteOpenHelper {
             img = photoInBytes.toByteArray();
         }
         //On l'ajoute
-        values.put(Accounts.PROFILE, img);
+        values.put(AccountTable.PROFILE, img);
 
 
-        values.put(Accounts.UPDATED_AT, updatedAt);
-        values.put(Accounts.ACCOUNT_TYPE, accountType);
+        values.put(AccountTable.UPDATED_AT, updatedAt);
+        values.put(AccountTable.ACCOUNT_TYPE, accountType);
 
         int active = 0;
         if (isActive)
             active = 1;
-        values.put(Accounts.IS_ACTIVE, active);
+        values.put(AccountTable.IS_ACTIVE, active);
 
-        db.insert(Accounts.TABLE_NAME, null, values);
+        db.insert(AccountTable.TABLE_NAME, null, values);
 
     }
 
@@ -266,14 +265,14 @@ public class DatabaseProject extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         String idEntreprise = UUID.randomUUID().toString();
-        values.put(Enterprises._ID, idEntreprise);
-        values.put(Enterprises.ENTERPRISE_NAME, name);
-        values.put(Enterprises.ENTERPRISE_ADDRESS, address);
-        values.put(Enterprises.PROVINCE, province);
-        values.put(Enterprises.POSTAL_CODE, postalCode);
-        values.put(Enterprises.TOWN, town);
+        values.put(EnterpriseTable._ID, idEntreprise);
+        values.put(EnterpriseTable.ENTERPRISE_NAME, name);
+        values.put(EnterpriseTable.ENTERPRISE_ADDRESS, address);
+        values.put(EnterpriseTable.PROVINCE, province);
+        values.put(EnterpriseTable.POSTAL_CODE, postalCode);
+        values.put(EnterpriseTable.TOWN, town);
 
-        long id = db.insert(Enterprises.TABLE_NAME, null, values);
+        long id = db.insert(EnterpriseTable.TABLE_NAME, null, values);
 
         if (id != 0) {
             return idEntreprise;
@@ -288,12 +287,12 @@ public class DatabaseProject extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Visits._ID, idStage);
-        values.put(Visits.CREATED_DATE, visiteDate);
-        values.put(Visits.START_HOUR, startTime);
-        values.put(Visits.DURING, during);
+        values.put(VisitTable._ID, idStage);
+        values.put(VisitTable.CREATED_DATE, visiteDate);
+        values.put(VisitTable.START_HOUR, startTime);
+        values.put(VisitTable.DURING, during);
 
-        long id = db.insert(Visits.TABLE_NAME, null, values);
+        long id = db.insert(VisitTable.TABLE_NAME, null, values);
     }
 
     /**
@@ -308,14 +307,14 @@ public class DatabaseProject extends SQLiteOpenHelper {
                                 int idStudentAccount, int idTeacherAccount, Internship.Priority priority) {
 
         ContentValues values = new ContentValues();
-        values.put(Internships._ID, UUID.randomUUID().toString());
-        values.put(Internships.SCHOOL_YEAR, schoolYear);
-        values.put(Internships.ENTERPRISE_ID, idEntreprise);
-        values.put(Internships.STUDENT_ID, idStudentAccount);
-        values.put(Internships.PROFESSOR_ID, idTeacherAccount);
-        values.put(Internships.PRIORITY, priority.toString());
+        values.put(InternshipTable._ID, UUID.randomUUID().toString());
+        values.put(InternshipTable.SCHOOL_YEAR, schoolYear);
+        values.put(InternshipTable.ENTERPRISE_ID, idEntreprise);
+        values.put(InternshipTable.STUDENT_ID, idStudentAccount);
+        values.put(InternshipTable.PROFESSOR_ID, idTeacherAccount);
+        values.put(InternshipTable.PRIORITY, priority.toString());
 
-        long id = db.insert(Internships.TABLE_NAME, null, values);
+        long id = db.insert(InternshipTable.TABLE_NAME, null, values);
     }
 
     /**
@@ -328,18 +327,18 @@ public class DatabaseProject extends SQLiteOpenHelper {
 
         // les colonnes à retourner par la requete:
         String[] columns = {
-                Internships._ID,
-                Internships.SCHOOL_YEAR,
-                Internships.ENTERPRISE_ID,
-                Internships.STUDENT_ID,
-                Internships.PROFESSOR_ID,
-                Internships.PRIORITY
+                InternshipTable._ID,
+                InternshipTable.SCHOOL_YEAR,
+                InternshipTable.ENTERPRISE_ID,
+                InternshipTable.STUDENT_ID,
+                InternshipTable.PROFESSOR_ID,
+                InternshipTable.PRIORITY
         };
 
         String selection = null;
         String[] selectionArgs = null;
 
-        Cursor cursor = db.query(Internships.TABLE_NAME, columns, selection, selectionArgs,
+        Cursor cursor = db.query(InternshipTable.TABLE_NAME, columns, selection, selectionArgs,
                 null, null, null, null);
 
         ArrayList<Internship> internships = new ArrayList<>(cursor.getCount());
@@ -400,7 +399,7 @@ public class DatabaseProject extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Account> studentAccounts = new ArrayList<>();
 
-        String query = "SELECT * FROM " + Accounts.TABLE_NAME + " WHERE " + Accounts.ACCOUNT_TYPE + " = ?";
+        String query = "SELECT * FROM " + AccountTable.TABLE_NAME + " WHERE " + AccountTable.ACCOUNT_TYPE + " = ?";
         String[] args = new String[]{Integer.toString(type)};
 
         Cursor cursor = db.rawQuery(query, args);
@@ -440,7 +439,7 @@ public class DatabaseProject extends SQLiteOpenHelper {
     private Account getAccountById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "SELECT * FROM " + Accounts.TABLE_NAME + " WHERE _id = ?";
+        String query = "SELECT * FROM " + AccountTable.TABLE_NAME + " WHERE _id = ?";
         String[] args = new String[]{Integer.toString(id)};
 
         Cursor cursor = db.rawQuery(query, args);
@@ -477,7 +476,7 @@ public class DatabaseProject extends SQLiteOpenHelper {
      */
     public Internship getInternshipById(String id){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + Internships.TABLE_NAME + " WHERE _id = ?";
+        String query = "SELECT * FROM " + InternshipTable.TABLE_NAME + " WHERE _id = ?";
         String[] args = new String[]{id};
 
         Cursor cursor = db.rawQuery(query, args);
@@ -535,7 +534,7 @@ public class DatabaseProject extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Enterprise> enterprises = new ArrayList<>();
 
-        String query = "SELECT * FROM " + Enterprises.TABLE_NAME;
+        String query = "SELECT * FROM " + EnterpriseTable.TABLE_NAME;
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -576,7 +575,7 @@ public class DatabaseProject extends SQLiteOpenHelper {
     public Enterprise getEntrepriseById(String id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "SELECT * FROM " + Enterprises.TABLE_NAME + " WHERE _id = ?";
+        String query = "SELECT * FROM " + EnterpriseTable.TABLE_NAME + " WHERE _id = ?";
         String[] args = new String[]{id};
 
         Cursor cursor = db.rawQuery(query, args);
@@ -606,7 +605,7 @@ public class DatabaseProject extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Visit> visitsList = new ArrayList<>();
 
-        String query = "SELECT * FROM " + Visits.TABLE_NAME + " WHERE _id = ?";
+        String query = "SELECT * FROM " + VisitTable.TABLE_NAME + " WHERE _id = ?";
         String[] args = new String[]{id};
 
         Cursor cursorVisit = db.rawQuery(query, args);
@@ -643,15 +642,15 @@ public class DatabaseProject extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         //Le id reste le même
-        values.put(Internships.SCHOOL_YEAR, internship.getSchoolYear());
-        values.put(Internships.ENTERPRISE_ID, internship.getEnterprise().getEnterpriseId());
-        values.put(Internships.STUDENT_ID, internship.getStudentAccount().getAccountId());
-        values.put(Internships.PROFESSOR_ID, internship.getTeacherAccount().getAccountId());
-        values.put(Internships.PRIORITY, internship.getPriority().toString());
+        values.put(InternshipTable.SCHOOL_YEAR, internship.getSchoolYear());
+        values.put(InternshipTable.ENTERPRISE_ID, internship.getEnterprise().getEnterpriseId());
+        values.put(InternshipTable.STUDENT_ID, internship.getStudentAccount().getAccountId());
+        values.put(InternshipTable.PROFESSOR_ID, internship.getTeacherAccount().getAccountId());
+        values.put(InternshipTable.PRIORITY, internship.getPriority().toString());
 
-        String whereClause = Internships._ID + " = " + "\"" + internship.getIdInternship() + "\"";
+        String whereClause = InternshipTable._ID + " = " + "\"" + internship.getIdInternship() + "\"";
 
-        db.update(Internships.TABLE_NAME, values, whereClause, null);
+        db.update(InternshipTable.TABLE_NAME, values, whereClause, null);
     }
 
     public void updateAccount(int accountIdToModify, String createdAt, String deletedAt, String email,
@@ -659,42 +658,29 @@ public class DatabaseProject extends SQLiteOpenHelper {
                               Bitmap photo, String updatedAt, int accountType) {
         ContentValues values = new ContentValues();
         //Le id reste le même
-        values.put(Accounts.CREATED_AT, createdAt);
-        values.put(Accounts.DELETED_AT, deletedAt);
-        values.put(Accounts.EMAIL, email);
-        values.put(Accounts.IS_ACTIVE, active);
-        values.put(Accounts.PASSWORD, password);
-        values.put(Accounts.FIRST_NAME, firstName);
-        values.put(Accounts.LAST_NAME, lastName);
+        values.put(AccountTable.CREATED_AT, createdAt);
+        values.put(AccountTable.DELETED_AT, deletedAt);
+        values.put(AccountTable.EMAIL, email);
+        values.put(AccountTable.IS_ACTIVE, active);
+        values.put(AccountTable.PASSWORD, password);
+        values.put(AccountTable.FIRST_NAME, firstName);
+        values.put(AccountTable.LAST_NAME, lastName);
 
         //On définit la photo
         ByteArrayOutputStream photoInBytes = new ByteArrayOutputStream();
         photo.compress(Bitmap.CompressFormat.JPEG, 100, photoInBytes);
         byte[] img = photoInBytes.toByteArray();
 
-        values.put(Accounts.PROFILE, img);
+        values.put(AccountTable.PROFILE, img);
 
-        values.put(Accounts.UPDATED_AT, updatedAt);
-        values.put(Accounts.ACCOUNT_TYPE, accountType);
+        values.put(AccountTable.UPDATED_AT, updatedAt);
+        values.put(AccountTable.ACCOUNT_TYPE, accountType);
 
-        String whereClause = Accounts._ID + " = " + "\"" + accountIdToModify + "\"";
+        String whereClause = AccountTable._ID + " = " + "\"" + accountIdToModify + "\"";
 
 
-        db.update(Accounts.TABLE_NAME, values, whereClause, null);
+        db.update(AccountTable.TABLE_NAME, values, whereClause, null);
     }
-
-    /**
-     * Supprime toute la BD.
-     */
-    /*public void deleteAllDatabase() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String whereClause = "";
-        String[] whereArgs = {String.valueOf("")};
-        db.delete(Accounts.TABLE_NAME, whereClause, whereArgs);
-        db.delete(Internships.TABLE_NAME, whereClause, whereArgs);
-        db.delete(Enterprises.TABLE_NAME, whereClause, whereArgs);
-        db.delete(Visits.TABLE_NAME, whereClause, whereArgs);
-    }*/
 
     /**
      * Supprime le stage selon id donnée.
@@ -702,9 +688,9 @@ public class DatabaseProject extends SQLiteOpenHelper {
      * @param id Id du stage à supprimer.
      */
     public void deleteInternship(String id) {
-        String whereClause = Internships._ID + " = " + "\"" + id + "\"";
+        String whereClause = InternshipTable._ID + " = " + "\"" + id + "\"";
 
-        db.delete(Internships.TABLE_NAME, whereClause, null);
+        db.delete(InternshipTable.TABLE_NAME, whereClause, null);
     }
 
     /**
