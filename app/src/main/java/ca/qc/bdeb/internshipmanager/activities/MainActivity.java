@@ -18,6 +18,8 @@ import android.widget.Toast;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
+
 import ca.qc.bdeb.internshipmanager.R;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.fragments.CalendarFragment;
@@ -30,6 +32,8 @@ import ca.qc.bdeb.internshipmanager.systems.Database;
 public class MainActivity extends AppCompatActivity {
 
     private Database db;
+    private ArrayList<Internship> internships;
+
     public static final int ACTIVITY_MODIFIER_RESULT = 1;
     public static final String INTERNSHIP_ID_TO_MODIFY_KEY = "TO_MODIFY";
 
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = Database.getInstance(getApplicationContext());
+        internships = db.getAllInternships();
 
         MaterialToolbar toolbar = findViewById(R.id.topAppbar);
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
@@ -52,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //On set le ListInternshipFragment comme défaut et on séléctionne le premier élément du drawer
-        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ListInternshipFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ListInternshipFragment(internships)).commit();
         navigationView.getMenu().getItem(0).setChecked(true);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -63,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.closeDrawer(GravityCompat.START);
                 switch (id){
                     case R.id.nav_internship_list:
-                        replaceFragment(new ListInternshipFragment());
+                        replaceFragment(new ListInternshipFragment(internships));
                         break;
                     case R.id.nav_map:
                         Toast.makeText(MainActivity.this, "Maps is currently clicked", Toast.LENGTH_SHORT).show();
@@ -113,16 +118,7 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, ACTIVITY_MODIFIER_RESULT);
     }
 
-    /**
-     *
-     * @param internshipToModify
-     */
-    private void onClickModifyStage(Internship internshipToModify){
-        Intent intent = new Intent(getApplicationContext(), InternshipManagementActivity.class);
-        intent.putExtra(INTERNSHIP_ID_TO_MODIFY_KEY, internshipToModify.getIdInternship());
 
-        startActivityForResult(intent, ACTIVITY_MODIFIER_RESULT);
-    }
 
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();

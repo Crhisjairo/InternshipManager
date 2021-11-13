@@ -30,10 +30,10 @@ public class Database extends SQLiteOpenHelper {
 
     public static final int DB_VERSION = 1;
     public static final String DB_NAME = "InternshipSystem.db";
-    private final Context context;
     private SQLiteDatabase db;
 
     private static Database instance = null;
+    private final Context context;
 
     private static Account currentTeacherAccount;
 
@@ -364,6 +364,7 @@ public class Database extends SQLiteOpenHelper {
                         entreprise, studentAccount, teacherAccount, visitList, priority);
 
                 internships.add(internship);
+
             } while (cursor.moveToNext());
             cursor.close();
         }
@@ -385,13 +386,16 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Account> studentAccounts = new ArrayList<>();
 
+
         String query = "SELECT * FROM " + AccountTable.TABLE_NAME + " WHERE " + AccountTable.ACCOUNT_TYPE + " = ?";
         String[] args = new String[]{Integer.toString(type)};
 
         Cursor cursor = db.rawQuery(query, args);
 
-        if (cursor != null) {
+        if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
+        } else{
+            return null;
         }
 
         do {
@@ -408,6 +412,7 @@ public class Database extends SQLiteOpenHelper {
                     cursor.getInt(10));
 
             studentAccounts.add(account);
+
 
         } while (cursor.moveToNext());
 
@@ -535,6 +540,7 @@ public class Database extends SQLiteOpenHelper {
                     cursor.getString(4), cursor.getString(5));
 
             enterprises.add(enterprise);
+
 
         } while (cursor.moveToNext());
 
@@ -707,6 +713,8 @@ public class Database extends SQLiteOpenHelper {
             insertAccount(db, date, null, courriel, true,
                     "mdp123", lastName[inserts], firstName[inserts], null,
                     date, 2);
+
+
         }
 
         //TODO

@@ -164,6 +164,7 @@ public class InternshipManagementActivity extends AppCompatActivity {
 
         for (Account account : db.getStudentsAccounts()) {
             list_etudiants.add(account);
+
         }
 
         arrayAdapter_etudiants = new DropdownStudentsAdapter(getApplicationContext(), list_etudiants);
@@ -174,6 +175,7 @@ public class InternshipManagementActivity extends AppCompatActivity {
 
         for (Enterprise enterprise : db.getEntreprises()) {
             list_enterprises.add(enterprise);
+
         }
 
         arrayAdapter_enterprises = new DropdownEnterprisesAdapter(getApplicationContext(), list_enterprises);
