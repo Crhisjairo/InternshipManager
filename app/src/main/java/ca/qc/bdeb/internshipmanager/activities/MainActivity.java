@@ -24,6 +24,7 @@ import ca.qc.bdeb.internshipmanager.fragments.CalendarFragment;
 import ca.qc.bdeb.internshipmanager.fragments.InfoFragment;
 import ca.qc.bdeb.internshipmanager.fragments.ListInternshipFragment;
 import ca.qc.bdeb.internshipmanager.fragments.LogoutFragment;
+import ca.qc.bdeb.internshipmanager.fragments.MapsFragment;
 import ca.qc.bdeb.internshipmanager.fragments.SettingsFragment;
 import ca.qc.bdeb.internshipmanager.systems.Database;
 
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.navigation_view);
 
+        // On permet que le click ouvre et ferme le menu a cote
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ListInternshipFragment()).commit();
         navigationView.getMenu().getItem(0).setChecked(true);
 
+        // On set le comportment des clicks sur le menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -66,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                         replaceFragment(new ListInternshipFragment());
                         break;
                     case R.id.nav_map:
-                        Toast.makeText(MainActivity.this, "Maps is currently clicked", Toast.LENGTH_SHORT).show();
+                        replaceFragment(new MapsFragment());
                         break;
                     case R.id.nav_calendar:
                         replaceFragment(new CalendarFragment());
@@ -124,6 +127,10 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, ACTIVITY_MODIFIER_RESULT);
     }
 
+    /**
+     * Initialise un nouveau fragment sur l'activity
+     * @param fragment c'est le contenu que doit être affiché
+     */
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
