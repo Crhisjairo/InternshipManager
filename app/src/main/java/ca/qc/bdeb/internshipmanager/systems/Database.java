@@ -289,8 +289,8 @@ public class Database extends SQLiteOpenHelper {
      * @param idTeacherAccount id du compte du professeur lié au stage.
      * @param priority Priorité du nouveau stage.
      */
-    public void insertIntership(String schoolYear, String idEntreprise,
-                                int idStudentAccount, int idTeacherAccount, Internship.Priority priority) {
+    public void insertInternship(String schoolYear, String idEntreprise,
+                                 int idStudentAccount, int idTeacherAccount, Internship.Priority priority) {
 
         ContentValues values = new ContentValues();
         values.put(InternshipTable._ID, UUID.randomUUID().toString());
@@ -639,30 +639,30 @@ public class Database extends SQLiteOpenHelper {
         db.update(InternshipTable.TABLE_NAME, values, whereClause, null);
     }
 
-    public void updateAccount(int accountIdToModify, String createdAt, String deletedAt, String email,
-                              boolean active, String password, String lastName, String firstName,
-                              Bitmap photo, String updatedAt, int accountType) {
+    public void updateAccount(Account account) {
+
+
         ContentValues values = new ContentValues();
         //Le id reste le même
-        values.put(AccountTable.CREATED_AT, createdAt);
-        values.put(AccountTable.DELETED_AT, deletedAt);
-        values.put(AccountTable.EMAIL, email);
-        values.put(AccountTable.IS_ACTIVE, active);
-        values.put(AccountTable.PASSWORD, password);
-        values.put(AccountTable.FIRST_NAME, firstName);
-        values.put(AccountTable.LAST_NAME, lastName);
+        values.put(AccountTable.CREATED_AT, account.getCreationDate());
+        values.put(AccountTable.DELETED_AT, account.getDeletionDate());
+        values.put(AccountTable.EMAIL, account.getEmail());
+        values.put(AccountTable.IS_ACTIVE, account.getActive());
+        values.put(AccountTable.PASSWORD, account.getPassword());
+        values.put(AccountTable.FIRST_NAME, account.getFirstName());
+        values.put(AccountTable.LAST_NAME, account.getLastName());
 
         //On définit la photo
         ByteArrayOutputStream photoInBytes = new ByteArrayOutputStream();
-        photo.compress(Bitmap.CompressFormat.JPEG, 100, photoInBytes);
+        account.getPhoto().compress(Bitmap.CompressFormat.JPEG, 100, photoInBytes);
         byte[] img = photoInBytes.toByteArray();
 
         values.put(AccountTable.PROFILE, img);
 
-        values.put(AccountTable.UPDATED_AT, updatedAt);
-        values.put(AccountTable.ACCOUNT_TYPE, accountType);
+        values.put(AccountTable.UPDATED_AT, account.getUpdatedDate());
+        values.put(AccountTable.ACCOUNT_TYPE, account.getAccountType());
 
-        String whereClause = AccountTable._ID + " = " + "\"" + accountIdToModify + "\"";
+        String whereClause = AccountTable._ID + " = " + "\"" + account.getAccountId() + "\"";
 
 
         db.update(AccountTable.TABLE_NAME, values, whereClause, null);
@@ -745,34 +745,34 @@ public class Database extends SQLiteOpenHelper {
         //String[] firstName = {"Mikaël", "Thomas", "Simon", "Kevin", "Cédric", "Vanessa", "Vincent", "Mélissa", "Diego", "Geneviève"};
         //String[] lastName = {"Boucher", "Caron", "Gingras", "Leblanc", "Masson", "Monette", "Picard", "Poulain", "Vargas", "Tremblay"};
 
-        insertIntership("2021", jeanCoutu, 2,
+        insertInternship("2021", jeanCoutu, 2,
                 1, Internship.Priority.LOW);
 
-        insertIntership("2021", garageTremblay, 3,
+        insertInternship("2021", garageTremblay, 3,
                 1, Internship.Priority.LOW);
 
-        insertIntership("2021", pharmaprix, 4,
+        insertInternship("2021", pharmaprix, 4,
                 1, Internship.Priority.LOW);
 
-        insertIntership("2021", alimentationGenerale, 5,
+        insertInternship("2021", alimentationGenerale, 5,
                 1, Internship.Priority.LOW);
 
-        insertIntership("2021", autoRepair, 6,
+        insertInternship("2021", autoRepair, 6,
                 1, Internship.Priority.LOW);
 
-        insertIntership("2021", subway, 7,
+        insertInternship("2021", subway, 7,
                 1, Internship.Priority.LOW);
 
-        insertIntership("2021", metro, 8,
+        insertInternship("2021", metro, 8,
                 1, Internship.Priority.LOW);
 
-        insertIntership("2021", epicerieLesJardinieres, 9,
+        insertInternship("2021", epicerieLesJardinieres, 9,
                 1, Internship.Priority.LOW);
 
-        insertIntership("2021", boucherieMarien, 10,
+        insertInternship("2021", boucherieMarien, 10,
                 1, Internship.Priority.LOW);
 
-        insertIntership("2021", iga, 11,
+        insertInternship("2021", iga, 11,
                 1, Internship.Priority.LOW);
 
     }
