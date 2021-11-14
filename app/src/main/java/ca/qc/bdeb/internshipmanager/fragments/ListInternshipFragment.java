@@ -1,5 +1,9 @@
 package ca.qc.bdeb.internshipmanager.fragments;
 
+import static android.app.Activity.RESULT_OK;
+
+import static ca.qc.bdeb.internshipmanager.activities.MainActivity.INTERNSHIP_ID_TO_MODIFY_KEY;
+
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -15,6 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -38,14 +44,9 @@ public class ListInternshipFragment extends Fragment {
     private StagesListAdapter stagesListAdapter;
     private ArrayList<Internship> internships = new ArrayList<>();
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private FloatingActionButton fabAddInternship;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private Database db;
 
     public ListInternshipFragment(ArrayList<Internship> internships) {
         // Required empty public constructor
@@ -56,17 +57,11 @@ public class ListInternshipFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment ListInternshipFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ListInternshipFragment newInstance(ArrayList<Internship> internships, String param1, String param2) {
+    public static ListInternshipFragment newInstance(ArrayList<Internship> internships) {
         ListInternshipFragment fragment = new ListInternshipFragment(internships);
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
 
 
         return fragment;
@@ -76,11 +71,10 @@ public class ListInternshipFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
 
-
+        db = Database.getInstance(getContext());
     }
 
     @Override
@@ -94,20 +88,35 @@ public class ListInternshipFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        fabAddInternship = view.findViewById(R.id.fabAddInternship);
+        fabAddInternship.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickAddInternship();
+            }
+        });
+
         //RecyclerView avec adapter
         rvListeStages = view.findViewById(R.id.rvListeStage); //Initialise le recyclerView
-        /*
-        ArrayList<Internship> inter = new ArrayList<>();
-        inter.add(internships.get(0));
-        inter.add(internships.get(1));
-        inter.add(internships.get(2));
-        inter.add(internships.get(3));
-        */
 
         stagesListAdapter = createRecyclerViewAdapter(internships);
 
-        //rvListeStages.setAdapter(stagesListAdapter);
-        //rvListeStages.setLayoutManager(new LinearLayoutManager(getContext())); //On donne au RecyclerView un layout par défaut
+        rvListeStages.setAdapter(stagesListAdapter);
+        rvListeStages.setLayoutManager(new LinearLayoutManager(getContext())); //On donne au RecyclerView un layout par défaut
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("Icitte", "dans le if");
+        if(requestCode == ACTIVITY_MODIFIER_RESULT){
+
+            if((resultCode == RESULT_OK) && (data != null)){
+                //On met à jour la liste
+                Log.d("Info", "Actualiser");
+                filterListByCheckboxes();
+            }
+        }
     }
 
     /**
@@ -121,11 +130,7 @@ public class ListInternshipFragment extends Fragment {
             @Override
             public void onEditClick(Internship internship) {
                 Toast.makeText(getContext(), "Modifier stage", Toast.LENGTH_SHORT).show();
-                //On démarre l'activité pour modifier l'internship
-                Intent intent = new Intent(getContext(), InternshipManagementActivity.class);
-                intent.putExtra(ID_INTERNSHIP_MODIFY_KEY, internship.getIdInternship()); //on passe l'id de l'internship à modifier
-
-                startActivityForResult(intent, ACTIVITY_MODIFIER_RESULT);
+                onClickModifyStage(internship);
             }
         };
 
@@ -133,14 +138,59 @@ public class ListInternshipFragment extends Fragment {
     }
 
     /**
+     * Initialise l'activité qui permet d'ajouter un nouveau stage.
+     */
+    private void onClickAddInternship(){
+        Intent intent = new Intent(getContext(), InternshipManagementActivity.class);
+        intent.putExtra(INTERNSHIP_ID_TO_MODIFY_KEY, "");
+
+        startActivityForResult(intent, ACTIVITY_MODIFIER_RESULT);
+    }
+
+    /**
      *
      * @param internshipToModify
      */
     private void onClickModifyStage(Internship internshipToModify){
+        //On démarre l'activité pour modifier l'internship
         Intent intent = new Intent(getContext(), InternshipManagementActivity.class);
-        intent.putExtra(ID_INTERNSHIP_MODIFY_KEY, internshipToModify.getIdInternship());
+        intent.putExtra(ID_INTERNSHIP_MODIFY_KEY, internshipToModify.getIdInternship()); //on passe l'id de l'internship à modifier
 
         startActivityForResult(intent, ACTIVITY_MODIFIER_RESULT);
+    }
+
+    /**
+     * Recrée un adaptateur pour le recycler view en fontion des stages qui peuvent être affichés.
+     * On ajoute dans une liste les stages qui peuvent être affichés et on crée un adaptateur avec
+     * celle-ci.
+     */
+    public void filterListByCheckboxes(){
+        ArrayList<Internship> filterInternships = new ArrayList<>();
+        filterInternships.clear();
+
+        internships = db.getAllInternships();
+
+        for (Internship intership : internships) {
+            /*
+            if(!icon_check_green_flag.isChecked() && intership.getPriority() == Internship.Priority.LOW){
+                filterInternships.add(intership);
+            }
+
+            if(!icon_check_yellow_flag.isChecked() && intership.getPriority() == Internship.Priority.MEDIUM){
+                filterInternships.add(intership);
+            }
+
+            if(!icon_check_red_flag.isChecked() && intership.getPriority() == Internship.Priority.HIGH){
+                filterInternships.add(intership);
+            }
+            */
+
+        }
+
+        //TODO faire avec filterInternships
+        stagesListAdapter = createRecyclerViewAdapter(internships);
+
+        rvListeStages.setAdapter(stagesListAdapter);
     }
 
 }

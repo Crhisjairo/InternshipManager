@@ -30,14 +30,18 @@ public class Database extends SQLiteOpenHelper {
 
     public static final int DB_VERSION = 1;
     public static final String DB_NAME = "InternshipSystem.db";
-    private SQLiteDatabase db;
 
     private static Database instance = null;
     private final Context context;
 
-    private static Account currentTeacherAccount;
+    private SQLiteDatabase db;
 
+    private Account currentTeacherAccount;
+    private ArrayList<Internship> internshipList;
+    private ArrayList<Account> studentsAccountList;
+    private ArrayList<Enterprise> enterprisesList;
 
+    //region SQL Queries for firstInsert
     /**
      * Requête pour crée la table de comptes.
      */
@@ -90,15 +94,19 @@ public class Database extends SQLiteOpenHelper {
             + InternshipTable.PROFESSOR_ID + " INT(20)," +
             InternshipTable.PRIORITY + " VARCHAR2(255))";
 
+    //endregion
 
     /**
-     * Créer l\ instance de SQLlite
+     * Créer l'instance de SQLlite
      */
     private Database(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
         this.db = this.getWritableDatabase();
 
+        internshipList = queryForAllInternships();
+        enterprisesList = queryForAllEnterprises();
+        studentsAccountList = queryForAllStudentsAccount();
         logInTeacher();
     }
 
@@ -125,6 +133,11 @@ public class Database extends SQLiteOpenHelper {
         this.db = sqLiteDatabase;
 
         firstInsert(sqLiteDatabase);
+        /*
+        internshipList = queryForAllInternships();
+        enterprisesList = queryForAllEnterprises();
+        studentsAccountList = queryForAllStudentsAccount();
+        logInTeacher();*/
     }
 
     @Override
@@ -140,9 +153,10 @@ public class Database extends SQLiteOpenHelper {
         /*TODO il faut get le account du teacher en fonction de la page de Login.
           Pour le moment, on get le seul teacher qui doit exister.
          */
-        currentTeacherAccount = getAccounts(1).get(0);
+        currentTeacherAccount = queryForAllAccountsByType(1).get(0);
     }
 
+    //region SQL Tables names
     /**
      * Classe qui permet de définir la table entreprise
      */
@@ -193,7 +207,7 @@ public class Database extends SQLiteOpenHelper {
         public static final String START_HOUR = "start_hour";
         public static final String DURING = "during";
     }
-
+    //endregion
 
     /**
      * Methode qui va permettre d'insérer un nouvel étudiant
@@ -301,14 +315,10 @@ public class Database extends SQLiteOpenHelper {
         values.put(InternshipTable.PRIORITY, priority.toString());
 
         long id = db.insert(InternshipTable.TABLE_NAME, null, values);
+        internshipList = queryForAllInternships();
     }
 
-    /**
-     * Fait une requête pour recupérer touts les stages disponibles dans la BD.
-     *
-     * @return Un ArrayList avec des Internships.
-     */
-    public ArrayList<Internship> getAllInternships() {
+    private ArrayList<Internship> queryForAllInternships(){
         SQLiteDatabase db = this.getReadableDatabase();
 
         // les colonnes à retourner par la requete:
@@ -351,11 +361,11 @@ public class Database extends SQLiteOpenHelper {
 
 
                 //On demande à la BD l'account du prof
-                Account studentAccount = getAccountById(idStudentAccount);
-                Account teacherAccount = getAccountById(idTeacherAccount);
+                Account studentAccount = queryForAccountById(idStudentAccount);
+                Account teacherAccount = queryForAccountById(idTeacherAccount);
 
                 //On demande à la BD l'entreprise
-                Enterprise entreprise = getEntrepriseById(idEntreprise);
+                Enterprise entreprise = queryForEntrepriseById(idEntreprise);
 
                 //On demande la liste de visit
                 ArrayList<Visit> visitList = getVisitListOneStudent(idInternship);
@@ -372,8 +382,13 @@ public class Database extends SQLiteOpenHelper {
         return internships;
     }
 
-    public ArrayList<Account> getStudentsAccounts(){
-        return getAccounts(2);
+    /**
+     * Fait une requête pour recupérer touts les stages disponibles dans la BD.
+     *
+     * @return Un ArrayList avec des Internships.
+     */
+    public ArrayList<Internship> getAllInternships() {
+        return internshipList;
     }
 
     /**
@@ -382,7 +397,7 @@ public class Database extends SQLiteOpenHelper {
      * @param type Type du compte qu'on veut récupèrer. 0 admin  1 prof  2 étudiants.
      * @return Un ArrayList avec tous les comptes du type spécifié.
      */
-    private ArrayList<Account> getAccounts(int type) {
+    private ArrayList<Account> queryForAllAccountsByType(int type) {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Account> studentAccounts = new ArrayList<>();
 
@@ -421,13 +436,22 @@ public class Database extends SQLiteOpenHelper {
         return studentAccounts;
     }
 
+    public ArrayList<Account> getStudentsAccount(){
+        return studentsAccountList;
+    }
+
+    private ArrayList<Account> queryForAllStudentsAccount(){
+        return queryForAllAccountsByType(2);
+    }
+
+
     /**
      * Fait une requête pour recupérer un compte selon son ID.
      *
      * @param id id du compte à recupérer.
      * @return Le compte si elle existe, sinon il return null.
      */
-    private Account getAccountById(int id) {
+    private Account queryForAccountById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT * FROM " + AccountTable.TABLE_NAME + " WHERE _id = ?";
@@ -460,12 +484,7 @@ public class Database extends SQLiteOpenHelper {
         return account;
     }
 
-    /**
-     * Récupère un stage selon son id.
-     * @param id Id du stage à chercher.
-     * @return Stage trouvé.
-     */
-    public Internship getInternshipById(String id){
+    private Internship queryForInternshipById(String id){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + InternshipTable.TABLE_NAME + " WHERE _id = ?";
         String[] args = new String[]{id};
@@ -499,8 +518,8 @@ public class Database extends SQLiteOpenHelper {
         }
 
         //On demande à la BD l'account du prof
-        Account studentAccount = getAccountById(idStudentAccount);
-        Account teacherAccount = getAccountById(idTeacherAccount);
+        Account studentAccount = queryForAccountById(idStudentAccount);
+        Account teacherAccount = queryForAccountById(idTeacherAccount);
 
         //On demande à la BD l'entreprise
         Enterprise entreprise = getEntrepriseById(idEntreprise);
@@ -517,11 +536,21 @@ public class Database extends SQLiteOpenHelper {
     }
 
     /**
-     * Fait une requête pour recupérer touts les enterprises disponibles dans la BD.
-     *
-     * @return Un ArrayList avec tous les enterprises.
+     * Récupère un stage selon son id.
+     * @param id Id du stage à chercher.
+     * @return Stage trouvé.
      */
-    public ArrayList<Enterprise> getEntreprises() {
+    public Internship getInternshipById(String id){
+        for (Internship internship : internshipList) {
+            if (internship.getIdInternship().equals(id)) {
+                return internship;
+            }
+        }
+
+        return null;
+    }
+
+    private ArrayList<Enterprise> queryForAllEnterprises(){
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Enterprise> enterprises = new ArrayList<>();
 
@@ -549,22 +578,7 @@ public class Database extends SQLiteOpenHelper {
         return enterprises;
     }
 
-    /**
-     * Récupère le compte actuelle de type professeur.
-     * Le compte du professeur a été chargé lors du initialisation du système (pas de requête à BD).
-     * @return Un compte de type professeur
-     */
-    public Account getCurrentTeacherAccount(){
-        return currentTeacherAccount;
-    }
-
-    /**
-     * Fait une requête pour recupérer une enterprise selon son ID.
-     *
-     * @param id id de l'entreprise désirée.
-     * @return L'enterprise si elle existe, sinon il return null.
-     */
-    public Enterprise getEntrepriseById(String id) {
+    private Enterprise queryForEntrepriseById(String id){
         SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT * FROM " + EnterpriseTable.TABLE_NAME + " WHERE _id = ?";
@@ -587,6 +601,40 @@ public class Database extends SQLiteOpenHelper {
         cursor.close();
 
         return enterprise;
+    }
+
+    /**
+     * Fait une requête pour recupérer une enterprise selon son ID.
+     *
+     * @param id id de l'entreprise désirée.
+     * @return L'enterprise si elle existe, sinon il return null.
+     */
+    public Enterprise getEntrepriseById(String id) {
+        for (Enterprise enterprise : enterprisesList) {
+            if (enterprise.getEnterpriseId().equals(id)) {
+                return enterprise;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Fait une requête pour recupérer touts les enterprises disponibles dans la BD.
+     *
+     * @return Un ArrayList avec tous les enterprises.
+     */
+    public ArrayList<Enterprise> getEntreprises() {
+        return enterprisesList;
+    }
+
+    /**
+     * Récupère le compte actuelle de type professeur.
+     * Le compte du professeur a été chargé lors du initialisation du système (pas de requête à BD).
+     * @return Un compte de type professeur
+     */
+    public Account getCurrentTeacherAccount(){
+        return currentTeacherAccount;
     }
 
     /**
@@ -643,11 +691,10 @@ public class Database extends SQLiteOpenHelper {
         String whereClause = InternshipTable._ID + " = " + "\"" + internship.getIdInternship() + "\"";
 
         db.update(InternshipTable.TABLE_NAME, values, whereClause, null);
+        internshipList = queryForAllInternships();
     }
 
     public void updateAccount(Account account) {
-
-
         ContentValues values = new ContentValues();
         //Le id reste le même
         values.put(AccountTable.CREATED_AT, account.getCreationDate());
@@ -672,6 +719,9 @@ public class Database extends SQLiteOpenHelper {
 
 
         db.update(AccountTable.TABLE_NAME, values, whereClause, null);
+        studentsAccountList = queryForAllStudentsAccount();
+        //TODO il faut mettre à jour aussi le compte du teacher dans le cas où on update ses données à lui. Ça c'est juste pour faire fonctionner xd.
+        logInTeacher();
     }
 
     /**
@@ -683,6 +733,7 @@ public class Database extends SQLiteOpenHelper {
         String whereClause = InternshipTable._ID + " = " + "\"" + id + "\"";
 
         db.delete(InternshipTable.TABLE_NAME, whereClause, null);
+        internshipList = queryForAllInternships();
     }
 
     /**

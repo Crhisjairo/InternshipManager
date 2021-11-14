@@ -93,33 +93,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == ACTIVITY_MODIFIER_RESULT){
-            if((resultCode == RESULT_OK) && (data != null)){
-                //On met à jour la liste
-
-                //filterListByCheckboxes();
-            }
-        }
-
-    }
-
-    /**
-     * Initialise l'activité qui permet d'ajouter un nouveau stage.
-     * @param view View qui fait appelle à la méthode.
-     */
-    public void onClickAjouterStage(View view){
-        Intent intent = new Intent(getApplicationContext(), InternshipManagementActivity.class);
-        intent.putExtra(INTERNSHIP_ID_TO_MODIFY_KEY, "");
-
-        startActivityForResult(intent, ACTIVITY_MODIFIER_RESULT);
-    }
-
-
-
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

@@ -87,6 +87,7 @@ public class InternshipManagementActivity extends AppCompatActivity {
         if(internshipIdToModify != null && !internshipIdToModify.equals("")){
             setInternshipToModifyData(internshipIdToModify);
         }
+
     }
 
     private void initViews() {
@@ -162,7 +163,7 @@ public class InternshipManagementActivity extends AppCompatActivity {
         //On set la liste des étudiants
         list_etudiants = new ArrayList<>();
 
-        for (Account account : db.getStudentsAccounts()) {
+        for (Account account : db.getStudentsAccount()) {
             list_etudiants.add(account);
 
         }
