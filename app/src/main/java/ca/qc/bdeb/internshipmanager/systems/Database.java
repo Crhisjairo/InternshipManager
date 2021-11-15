@@ -319,7 +319,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private ArrayList<Internship> queryForAllInternships(){
-        SQLiteDatabase db = this.getReadableDatabase();
+        //SQLiteDatabase db = this.getReadableDatabase();
 
         // les colonnes à retourner par la requete:
         String[] columns = {
@@ -452,7 +452,7 @@ public class Database extends SQLiteOpenHelper {
      * @return Le compte si elle existe, sinon il return null.
      */
     private Account queryForAccountById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        //SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT * FROM " + AccountTable.TABLE_NAME + " WHERE _id = ?";
         String[] args = new String[]{Integer.toString(id)};
@@ -579,7 +579,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private Enterprise queryForEntrepriseById(String id){
-        SQLiteDatabase db = this.getReadableDatabase();
+        //SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT * FROM " + EnterpriseTable.TABLE_NAME + " WHERE _id = ?";
         String[] args = new String[]{id};
@@ -642,7 +642,7 @@ public class Database extends SQLiteOpenHelper {
      * @return
      */
     public ArrayList<Visit> getVisitListOneStudent(String id) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        //SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Visit> visitsList = new ArrayList<>();
 
         String query = "SELECT * FROM " + VisitTable.TABLE_NAME + " WHERE _id = ?";
