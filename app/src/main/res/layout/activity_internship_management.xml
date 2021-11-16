@@ -36,297 +36,308 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp">
 
-                <TextView
-                    android:id="@+id/tvSectionEleve"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/student_text"
-                    android:textColor="@color/material_on_surface_emphasis_medium"
-                    android:textSize="25sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/tvPhotoProfil"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/profil_photo_text"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvSectionEleve" />
-
-                <ca.qc.bdeb.internshipmanager.customviews.FlagSelector
-                    android:id="@+id/ib_new_flagSelector"
-                    android:layout_width="63dp"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="24dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/til_list_etudiants" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/btnEditPhoto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="88dp"
-                    android:clickable="true"
-                    android:onClick="onClickModifyPhoto"
-                    app:layout_constraintStart_toEndOf="@+id/ivImageEtudiant"
-                    app:layout_constraintTop_toTopOf="@+id/ivImageEtudiant"
-                    app:srcCompat="@drawable/ic_edit_pen" />
-
-                <EditText
-                    android:id="@+id/et_annee_scolaire"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="24dp"
-                    android:editable="false"
-                    android:hint="@string/year_text"
-                    android:text="@string/school_year_text"
-                    android:textColor="@color/black"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ib_new_flagSelector" />
-
-                <TextView
-                    android:id="@+id/tvNomEtudiant"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/student_name_text"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ivImageEtudiant" />
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="76dp"
-                    android:text="@string/school_year_text"
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvPriorite" />
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/ivImageEtudiant"
-                    android:layout_width="146dp"
-                    android:layout_height="144dp"
-                    android:layout_marginStart="82dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="4dp"
-                    android:src="@drawable/profile"
-                    app:layout_constraintEnd_toStartOf="@+id/btnEditPhoto"
-                    app:layout_constraintStart_toEndOf="@+id/tvPhotoProfil"
-                    app:layout_constraintTop_toBottomOf="@+id/tvSectionEleve" />
-
-                <TextView
-                    android:id="@+id/tvPriorite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="32dp"
-                    android:text="@string/visit_priority_text"
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/til_list_etudiants" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_list_etudiants"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                    android:layout_width="230dp"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="24dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btnEditPhoto">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/actv_list_etudiants"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:background="@null"
-                        android:hint="@string/student_text"
-                        android:inputType="none"
-                        android:textSize="15sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!--Separateur-->
-            <View
-                style="@style/line"
-                android:layout_width="match_parent"
-                android:layout_height="1.5dp"
-                android:layout_below="@id/teacher_id" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <!--SECTION ENTREPRISE DE STAGE-->
-                <TextView
-                    android:id="@+id/tvSectionStage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/stage_enterprise_text"
-                    android:textColor="@color/material_on_background_emphasis_medium"
-                    android:textSize="25sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-                <!--Nom de l'entreprise-->
-                <TextView
-                    android:id="@+id/tvNomStage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/name_text"
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvSectionStage" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_list_nom_enterprises"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                    android:layout_width="230dp"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginEnd="24dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvSectionStage">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/actv_list_nom_enterprises"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/tvSectionEleve"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:hint="@string/enterprise_name_text"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="@string/student_text"
+                        android:textColor="@color/material_on_surface_emphasis_medium"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvPhotoProfil"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="@string/profil_photo_text"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvSectionEleve" />
+
+                    <ca.qc.bdeb.internshipmanager.customviews.FlagSelector
+                        android:id="@+id/ib_new_flagSelector"
+                        android:layout_width="63dp"
+                        android:layout_height="60dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="24dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/til_list_etudiants" />
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/btnEditPhoto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="88dp"
+                        android:layout_marginEnd="50dp"
+                        android:clickable="true"
+                        android:onClick="onClickModifyPhoto"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/ivImageEtudiant"
+                        app:layout_constraintTop_toTopOf="@+id/ivImageEtudiant"
+                        app:srcCompat="@drawable/ic_edit_pen" />
+
+                    <EditText
+                        android:id="@+id/et_annee_scolaire"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="24dp"
+                        android:editable="false"
+                        android:hint="@string/year_text"
+                        android:text="@string/school_year_text"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/ib_new_flagSelector" />
+
+                    <TextView
+                        android:id="@+id/tvNomEtudiant"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="@string/student_name_text"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/ivImageEtudiant" />
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="76dp"
+                        android:text="@string/school_year_text"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvPriorite" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/ivImageEtudiant"
+                        android:layout_width="146dp"
+                        android:layout_height="144dp"
+                        android:layout_marginStart="82dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="4dp"
+                        android:src="@drawable/profile"
+                        app:layout_constraintEnd_toStartOf="@+id/btnEditPhoto"
+                        app:layout_constraintStart_toEndOf="@+id/tvPhotoProfil"
+                        app:layout_constraintTop_toBottomOf="@+id/tvSectionEleve" />
+
+                    <TextView
+                        android:id="@+id/tvPriorite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="32dp"
+                        android:text="@string/visit_priority_text"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/til_list_etudiants" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_list_etudiants"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                        android:layout_width="210dp"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="24dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnEditPhoto">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/actv_list_etudiants"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:background="@null"
+                            android:hint="@string/student_text"
+                            android:inputType="none"
+                            android:textSize="15sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!--SECTION ENTREPRISE DE STAGE-->
+                    <TextView
+                        android:id="@+id/tvSectionStage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="@string/stage_enterprise_text"
+                        android:textColor="@color/material_on_background_emphasis_medium"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                    <!--Nom de l'entreprise-->
+                    <TextView
+                        android:id="@+id/tvNomStage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/name_text"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvSectionStage" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_list_nom_enterprises"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                        android:layout_width="210dp"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="24dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvSectionStage">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/actv_list_nom_enterprises"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="@string/enterprise_name_text"
+                            android:inputType="none"
+                            android:textSize="15sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <!--Adresse de l'entreprise-->
+                    <TextView
+                        android:id="@+id/tvAdresseStage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="64dp"
+                        android:text="@string/address_text"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvNomStage" />
+
+                    <!--Ville de l'entreprise-->
+
+                    <EditText
+                        android:id="@+id/et_adresse_stage"
+                        android:layout_width="210dp"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="24dp"
+                        android:editable="false"
+                        android:hint="@string/address_text"
                         android:inputType="none"
-                        android:textSize="15sp" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/til_list_nom_enterprises" />
 
-                </com.google.android.material.textfield.TextInputLayout>
-                <!--Adresse de l'entreprise-->
-                <TextView
-                    android:id="@+id/tvAdresseStage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="64dp"
-                    android:text="@string/address_text"
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvNomStage" />
+                    <!--Code postal de l'entreprise-->
 
-                <!--Ville de l'entreprise-->
+                    <TextView
+                        android:id="@+id/tvVilleStage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="104dp"
+                        android:text="@string/city_text"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvAdresseStage" />
 
-                <EditText
-                    android:id="@+id/et_adresse_stage"
-                    android:layout_width="232dp"
-                    android:layout_height="84dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="24dp"
-                    android:editable="false"
-                    android:hint="@string/address_text"
-                    android:inputType="none"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/til_list_nom_enterprises" />
-
-                <!--Code postal de l'entreprise-->
-
-                <TextView
-                    android:id="@+id/tvVilleStage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="104dp"
-                    android:text="@string/city_text"
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAdresseStage" />
-
-                <EditText
-                    android:id="@+id/et_ville_stage"
-                    android:layout_width="230dp"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="36dp"
-                    android:layout_marginEnd="24dp"
-                    android:editable="false"
-                    android:hint="@string/city_text"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/et_adresse_stage" />
+                    <EditText
+                        android:id="@+id/et_ville_stage"
+                        android:layout_width="210dp"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="36dp"
+                        android:layout_marginEnd="24dp"
+                        android:editable="false"
+                        android:hint="@string/city_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_adresse_stage" />
 
 
-                <!--Province de l'entreprise-->
-                <TextView
-                    android:id="@+id/tvCodePostalStage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="56dp"
-                    android:text="@string/postal_code_text"
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvVilleStage" />
+                    <!--Province de l'entreprise-->
+                    <TextView
+                        android:id="@+id/tvCodePostalStage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="56dp"
+                        android:text="@string/postal_code_text"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvVilleStage" />
 
-                <EditText
-                    android:id="@+id/et_code_postal_stage"
-                    android:layout_width="230dp"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="24dp"
-                    android:editable="false"
-                    android:hint="@string/postal_code_text"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/et_ville_stage" />
-
-
-                <TextView
-                    android:id="@+id/tvProvinceStage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="72dp"
-                    android:text="@string/province_text"
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvCodePostalStage" />
-
-                <EditText
-                    android:id="@+id/et_province_stage"
-                    android:layout_width="230dp"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="28dp"
-                    android:layout_marginEnd="24dp"
-                    android:editable="false"
-                    android:hint="@string/province_text"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/et_code_postal_stage" />
+                    <EditText
+                        android:id="@+id/et_code_postal_stage"
+                        android:layout_width="210dp"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="24dp"
+                        android:editable="false"
+                        android:hint="@string/postal_code_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_ville_stage" />
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/tvProvinceStage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="72dp"
+                        android:text="@string/province_text"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvCodePostalStage" />
+
+                    <EditText
+                        android:id="@+id/et_province_stage"
+                        android:layout_width="210dp"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="28dp"
+                        android:layout_marginEnd="24dp"
+                        android:editable="false"
+                        android:hint="@string/province_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_code_postal_stage" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -340,6 +351,7 @@
                     android:layout_marginTop="32dp"
                     android:onClick="onClickAjouterStage"
                     android:text="@string/add_internship_text"
+                    android:textColor="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

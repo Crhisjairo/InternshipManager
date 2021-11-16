@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -44,6 +45,7 @@ public class ListInternshipFragment extends Fragment {
     private StagesListAdapter stagesListAdapter;
     private ArrayList<Internship> internships = new ArrayList<>();
 
+    private CheckBox cbLowPriority, cbMediumPriority, cbHighPriority;
     private FloatingActionButton fabAddInternship;
 
     private Database db;
@@ -88,6 +90,14 @@ public class ListInternshipFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //Checkboxes pour faire le filtrage des stages
+        cbLowPriority = view.findViewById(R.id.cbLowPriority);
+        cbMediumPriority = view.findViewById(R.id.cbMediumPriority);
+        cbHighPriority = view.findViewById(R.id.cbHighPriority);
+
+        setCheckboxesListener();
+
+        //Action button pour ajouter un stage
         fabAddInternship = view.findViewById(R.id.fabAddInternship);
         fabAddInternship.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,11 +108,11 @@ public class ListInternshipFragment extends Fragment {
 
         //RecyclerView avec adapter
         rvListeStages = view.findViewById(R.id.rvListeStage); //Initialise le recyclerView
-
         stagesListAdapter = createRecyclerViewAdapter(internships);
 
         rvListeStages.setAdapter(stagesListAdapter);
         rvListeStages.setLayoutManager(new LinearLayoutManager(getContext())); //On donne au RecyclerView un layout par défaut
+
     }
 
     @Override
@@ -160,37 +170,81 @@ public class ListInternshipFragment extends Fragment {
     }
 
     /**
+     * Comportement du filtre des stages par rapport aux drapeaux de priorité.
+     * Les stages vont se cacher en fonction des drapeaux cochées.
+     * @param view View qui fait appelle à la méthode.
+     */
+    public void onCheckboxClicked(View view) {
+        boolean checked = ((CheckBox) view).isChecked();
+        CheckBox flag = view.findViewById(view.getId());
+        //On définit le drawable en fonction s'il est clické ou pas
+        if(checked) {
+            flag.setButtonDrawable(R.drawable.ic_flag_unclick);
+        }
+        else{
+            flag.setButtonDrawable(R.drawable.ic_flag);
+        }
+
+        filterListByCheckboxes();
+    }
+
+    /**
      * Recrée un adaptateur pour le recycler view en fontion des stages qui peuvent être affichés.
      * On ajoute dans une liste les stages qui peuvent être affichés et on crée un adaptateur avec
      * celle-ci.
      */
     public void filterListByCheckboxes(){
-        ArrayList<Internship> filterInternships = new ArrayList<>();
-        filterInternships.clear();
+        ArrayList<Internship> filteredInternships = new ArrayList<>();
+        filteredInternships.clear();
 
         internships = db.getAllInternships();
 
         for (Internship intership : internships) {
-            /*
-            if(!icon_check_green_flag.isChecked() && intership.getPriority() == Internship.Priority.LOW){
-                filterInternships.add(intership);
+
+            if(!cbLowPriority.isChecked() && intership.getPriority() == Internship.Priority.LOW){
+                filteredInternships.add(intership);
             }
 
-            if(!icon_check_yellow_flag.isChecked() && intership.getPriority() == Internship.Priority.MEDIUM){
-                filterInternships.add(intership);
+            if(!cbMediumPriority.isChecked() && intership.getPriority() == Internship.Priority.MEDIUM){
+                filteredInternships.add(intership);
             }
 
-            if(!icon_check_red_flag.isChecked() && intership.getPriority() == Internship.Priority.HIGH){
-                filterInternships.add(intership);
+            if(!cbHighPriority.isChecked() && intership.getPriority() == Internship.Priority.HIGH){
+                filteredInternships.add(intership);
             }
-            */
+
 
         }
 
         //TODO faire avec filterInternships
-        stagesListAdapter = createRecyclerViewAdapter(internships);
-
+        stagesListAdapter = createRecyclerViewAdapter(filteredInternships);
         rvListeStages.setAdapter(stagesListAdapter);
     }
 
+    /**
+     * Définit les listeners pour les checkboxes pour faire le filtrage des stages.
+     */
+    private void setCheckboxesListener() {
+        cbLowPriority.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onCheckboxClicked(view);
+            }
+        });
+
+        cbMediumPriority.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onCheckboxClicked(view);
+            }
+        });
+
+        cbHighPriority.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onCheckboxClicked(view);
+            }
+        });
+
+    }
 }

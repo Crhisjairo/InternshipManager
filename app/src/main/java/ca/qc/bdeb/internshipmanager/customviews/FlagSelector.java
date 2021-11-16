@@ -1,7 +1,13 @@
 package ca.qc.bdeb.internshipmanager.customviews;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.R;
@@ -24,6 +30,9 @@ public class FlagSelector extends androidx.appcompat.widget.AppCompatImageButton
         super(context, attrs);
 
         //setBackground(null);
+
+        //On donne le flag sans couleur par défaut
+        setImageResource(R.drawable.ic_flag);
 
         //On donne l'état initial. Par défault, flag verte
         setPriority(Internship.Priority.LOW);
@@ -51,13 +60,18 @@ public class FlagSelector extends androidx.appcompat.widget.AppCompatImageButton
     private void updateImageResource() {
         switch (priority){
             case LOW:
-                setImageResource(R.drawable.ic_flag_green_24);
+                //setImageResource(R.drawable.ic_flag_green_24);
+                setImageTintList(ColorStateList
+                        .valueOf(getResources().getColor(R.color.green_flag)));
                 break;
             case MEDIUM:
-                setImageResource(R.drawable.ic_flag_yellow_24);
+                setImageTintList(ColorStateList
+                        .valueOf(getResources().getColor(R.color.yellow_flag)));
                 break;
             case HIGH:
-                setImageResource(R.drawable.ic_flag_red_24);
+                setImageTintList(ColorStateList
+                        .valueOf(getResources().getColor(R.color.red_flag)));
+
                 break;
         }
         setScaleType(ScaleType.FIT_CENTER);
