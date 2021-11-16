@@ -11,4 +11,7 @@
     <color name="underline">#F8F0DF</color>
     <color name="pale">#FEFBF3</color>
     <color name="green">#79B4B7</color>
+    <color name="red_flag">#C64756</color>
+    <color name="yellow_flag">#FAD586</color>
+    <color name="green_flag">#96BB7C</color>
 </resources>
