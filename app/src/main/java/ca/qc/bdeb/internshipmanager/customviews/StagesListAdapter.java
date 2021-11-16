@@ -38,7 +38,7 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
     }
 
     public interface OnItemClickListener {
-        void onEditClick(Internship item);
+        void onItemClick(Internship item);
     }
 
     /**
@@ -74,7 +74,6 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
         sortName();
         Collections.reverse(internshipList);
     }
-
 
     @NonNull
     @Override
@@ -194,7 +193,7 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
                     int index = internshipList.indexOf(intership);
 
                     internshipList.remove(intership);
-                    Database.getInstance(itemView.getContext()).deleteInternship(intership.getIdInternship());
+                   Database.getInstance(itemView.getContext()).deleteInternship(intership.getIdInternship());
 
                     notifyItemRemoved(index);
                 }
@@ -216,7 +215,7 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    listener.onEditClick(internship);
+                    listener.onItemClick(internship);
                 }
             });
         }

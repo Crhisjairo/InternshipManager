@@ -1,104 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".fragments.ListInternshipFragment">
+    tools:context=".fragments.ListInternshipFragment"
+    android:background="@color/green">
 
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp">
-
-                <CheckBox
-                    android:id="@+id/cbHighPriority"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="36dp"
-                    android:layout_marginBottom="8dp"
-                    android:button="@drawable/ic_flag"
-                    android:buttonTint="@color/red_flag"
-                    android:checked="false"
-                    android:scaleX="1.20"
-                    android:scaleY="1.20"
-                    android:text="@string/high_priority_text"
-                    android:textSize="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/pages_options"
-                    app:layout_constraintVertical_bias="0.50" />
-
-                <CheckBox
-                    android:id="@+id/cbMediumPriority"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:button="@drawable/ic_flag"
-                    android:buttonTint="@color/yellow_flag"
-                    android:elevation="10dp"
-                    android:scaleX="1.20"
-                    android:scaleY="1.20"
-                    android:text="@string/medium_priority_text"
-                    android:textSize="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/cbLowPriority"
-                    app:layout_constraintHorizontal_bias="0.518"
-                    app:layout_constraintStart_toEndOf="@+id/cbHighPriority"
-                    app:layout_constraintTop_toBottomOf="@+id/pages_options" />
-
-                <CheckBox
-                    android:id="@+id/cbLowPriority"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="44dp"
-                    android:button="@drawable/ic_flag"
-                    android:buttonTint="@color/green_flag"
-                    android:scaleX="1.20"
-                    android:scaleY="1.20"
-                    android:text="@string/low_priority_text"
-                    android:textSize="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvListeStage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-           />
-
-    </LinearLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAddInternship"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:clickable="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_add_internship" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="Liste Stages"
+        android:gravity="center"
+        android:textSize="30dp"/>
 
 </FrameLayout>
