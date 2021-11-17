@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.InfoFragment"
-    android:background="@color/underline">
+    tools:context=".fragments.InfoFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -79,7 +78,7 @@
             android:id="@+id/name_christian"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Christian Castenada"
+            android:text="Christian Castaneda"
             android:layout_marginTop="32dp"
             android:textSize="20dp"
             android:textStyle="bold"
@@ -100,7 +99,7 @@
             android:id="@+id/git_christian"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GitHub : @chrisjairo"
+            android:text="GitHub : @crhisjairo"
             android:textSize="20dp"
             android:textColor="@color/green"
             app:layout_constraintEnd_toEndOf="parent"
