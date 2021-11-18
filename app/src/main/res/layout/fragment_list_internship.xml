@@ -96,7 +96,9 @@
             android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_add_internship" />
+            app:srcCompat="@drawable/ic_add_internship"
+            app:backgroundTint="@color/green"
+            app:tint="@color/underline"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

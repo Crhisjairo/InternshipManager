@@ -94,7 +94,9 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/ivImageEtudiant"
                         app:layout_constraintTop_toTopOf="@+id/ivImageEtudiant"
-                        app:srcCompat="@drawable/ic_edit_pen" />
+                        app:srcCompat="@drawable/ic_edit_pen"
+                        app:backgroundTint="@color/green"
+                        app:tint="@color/underline"/>
 
                     <EditText
                         android:id="@+id/et_annee_scolaire"

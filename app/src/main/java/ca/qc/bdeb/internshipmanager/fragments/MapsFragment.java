@@ -2,11 +2,9 @@ package ca.qc.bdeb.internshipmanager.fragments;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -15,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,23 +22,30 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 
 import ca.qc.bdeb.internshipmanager.R;
+import ca.qc.bdeb.internshipmanager.dataclasses.Account;
+import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.systems.Database;
 
-public class MapsFragment extends Fragment {
+public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     private ArrayList<Internship> internshipList;
+    private ArrayList<Internship> internsToVisist = new ArrayList<>();
     private Database db;
     private GoogleMap googleMap;
     private CheckBox cbLowPriority, cbMediumPriority, cbHighPriority;
+    Hashtable<String, Internship> filteredInternshipTable = new Hashtable<String, Internship>();
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
         /**
@@ -55,7 +61,7 @@ public class MapsFragment extends Fragment {
         public void onMapReady(GoogleMap Mmap) {
 
             googleMap = Mmap;
-            addInternsIntoMap(filterMarkPoints());
+            addInternsIntoMap();
 
             //TODO Faire les UI contros fonctionner
             //Configuration de l'affichage de la Map
@@ -72,11 +78,21 @@ public class MapsFragment extends Fragment {
     /**
      * Afficher l'emplacement des stagiares dans google maps
      */
-    private void addInternsIntoMap(ArrayList<Internship> filteredInternshipList) {
-        for (Internship internship: filteredInternshipList) {
+    private void addInternsIntoMap() {
 
-            LatLng positionInternship = getLatLngFromAddress(internship.getEnterprise().getAddress());
+        //Valider la liste de stages à afficher
+        verifyVisibilityInternship();
 
+        //Parcourir chaque element de mon table pour l'afficher dans la map
+        Enumeration<String> key = filteredInternshipTable.keys();
+        while (key.hasMoreElements()) {
+            String idInternship = key.nextElement();
+
+            //Definir la position de mon marker
+            Enterprise enterprise = filteredInternshipTable.get(idInternship).getEnterprise();
+            LatLng positionInternship = getLatLngFromAddress(enterprise.getAddress());
+
+            //Definir la couleur de mon marker
             float markerColor = 0;
             float[] redColorHue = new float[3];
             float[] greenColorHue = new float[3];
@@ -85,26 +101,39 @@ public class MapsFragment extends Fragment {
             Color.colorToHSV(getResources().getColor(R.color.yellow_flag), yellowColorHue);
             Color.colorToHSV(getResources().getColor(R.color.red_flag), redColorHue);
 
-            if(internship.getPriority() == Internship.Priority.LOW){
+            if(filteredInternshipTable.get(idInternship).getPriority() == Internship.Priority.LOW){
                 markerColor = greenColorHue[0];
-            }else if(internship.getPriority() == Internship.Priority.MEDIUM){
+            }else if(filteredInternshipTable.get(idInternship).getPriority() == Internship.Priority.MEDIUM){
                 markerColor = yellowColorHue[0];
-            }else if(internship.getPriority() == Internship.Priority.HIGH){
+            }else if(filteredInternshipTable.get(idInternship).getPriority() == Internship.Priority.HIGH){
                 markerColor = redColorHue[0];
             }
 
-            googleMap.addMarker(new MarkerOptions()
-                    .position(positionInternship)
-                    .title(internship.getStudentAccount().getFullName())
-                    .snippet(internship.getEnterprise().getName())
-                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-            );
+            //Afficher marker
+            if(positionInternship != null) {
+                Marker marker = googleMap.addMarker(new MarkerOptions()
+                        .position(positionInternship)
+                        .title(filteredInternshipTable.get(idInternship).getStudentAccount().getFullName())
+                        .snippet(enterprise.getName())
+                        .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                );
+                marker.setTag(idInternship);
+            }
         }
+
+        //Set le listener pour l'ensemble de markers qui sont affiches dans la map
+        googleMap.setOnMarkerClickListener(this);
+
     }
 
 
     //TODO ajout de permissions pour le map (my position)
-    
+
+    /**
+     * Transformer l'adresse type string dans un latitude/longitude
+     * @param address l'emplacement du stage
+     * @return la combinaison de la lat et long de l'adresse
+     */
     private LatLng getLatLngFromAddress(String address) {
         LatLng positionStageLonLat = null;
         if (Geocoder.isPresent()) {
@@ -123,25 +152,30 @@ public class MapsFragment extends Fragment {
         return positionStageLonLat;
     }
 
-    private ArrayList<Internship> filterMarkPoints(){
-        googleMap.clear();
 
-        ArrayList<Internship> filteredInternships = new ArrayList<>();
+    /**
+     *
+     * @return
+     */
+    private Hashtable<String, Internship> verifyVisibilityInternship(){
+        googleMap.clear();
+        filteredInternshipTable.clear();
+
         for (Internship intership : internshipList) {
             if (!cbLowPriority.isChecked() && intership.getPriority() == Internship.Priority.LOW) {
-                filteredInternships.add(intership);
+                filteredInternshipTable.put(intership.getIdInternship(), intership);
             }
 
             if (!cbMediumPriority.isChecked() && intership.getPriority() == Internship.Priority.MEDIUM) {
-                filteredInternships.add(intership);
+                filteredInternshipTable.put(intership.getIdInternship(), intership);
             }
 
             if (!cbHighPriority.isChecked() && intership.getPriority() == Internship.Priority.HIGH) {
-                filteredInternships.add(intership);
+                filteredInternshipTable.put(intership.getIdInternship(), intership);
             }
         }
 
-        return filteredInternships;
+        return filteredInternshipTable;
     }
 
     @Nullable
@@ -187,7 +221,7 @@ public class MapsFragment extends Fragment {
         else{
             flag.setButtonDrawable(R.drawable.ic_flag);
         }
-        addInternsIntoMap(filterMarkPoints());
+        addInternsIntoMap();
     }
 
     /**
@@ -217,4 +251,17 @@ public class MapsFragment extends Fragment {
     }
 
 
+    @Override
+    public boolean onMarkerClick(@NonNull Marker marker) {
+
+        Internship intern = filteredInternshipTable.get(marker.getTag());
+
+        if(internsToVisist.contains(intern)){
+            internsToVisist.remove(intern);
+        } else{
+            internsToVisist.add(intern);
+        }
+
+        return false;
+    }
 }
