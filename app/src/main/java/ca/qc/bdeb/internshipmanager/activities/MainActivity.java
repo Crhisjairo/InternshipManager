@@ -1,16 +1,19 @@
 package ca.qc.bdeb.internshipmanager.activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -35,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private Database db;
     private ArrayList<Internship> internships;
 
-    public static final int ACTIVITY_MODIFIER_RESULT = 1;
     public static final String INTERNSHIP_ID_TO_MODIFY_KEY = "TO_MODIFY";
+    public static final int PERMISSION_MAP_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +77,13 @@ public class MainActivity extends AppCompatActivity {
                         replaceFragment(new ListInternshipFragment(internships));
                         break;
                     case R.id.nav_map:
-                        //ICI PERMISSIN D'ACCESS LOCALISATION
+                        //ICITTE PERMISSIN D'ACCESS LOCALISATION
+                        //TODO PERMISSION
+                        //On demande la permission pour la camd'abord
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.CAMERA},
+                                PERMISSION_MAP_CODE);
+
                         replaceFragment(new MapsFragment());
                         break;
                     case R.id.nav_calendar:
@@ -97,6 +106,24 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+            case PERMISSION_MAP_CODE:
+                //On check si on a la permission ou pas
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //
+
+                }else{
+                    Toast.makeText(getApplicationContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+        }
+    }
+
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -104,4 +131,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+    public void setPermission() {
+
+    }
 }

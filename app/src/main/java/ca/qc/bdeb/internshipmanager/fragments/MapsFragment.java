@@ -45,6 +45,8 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     private CheckBox cbLowPriority, cbMediumPriority, cbHighPriority;
     Hashtable<String, Internship> filteredInternshipTable = new Hashtable<String, Internship>();
 
+    private PassDataHandler passDataHandler;
+
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
         /**
          * Manipulates the map once available.
@@ -267,9 +269,14 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         super.onAttach(context);
     }
 
-    public interface PassData {
+    public void setPassDataHandler(PassDataHandler passDataHandler) {
+        this.passDataHandler = passDataHandler;
+    }
 
-        public void sendData(){}
+    public interface PassDataHandler {
+
+        public void sendData(boolean isAllowed);
 
     }
+
 }
