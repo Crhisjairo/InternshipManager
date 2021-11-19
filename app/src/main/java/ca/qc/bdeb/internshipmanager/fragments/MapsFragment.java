@@ -1,19 +1,18 @@
 package ca.qc.bdeb.internshipmanager.fragments;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
+import android.content.Context;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,7 +32,6 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.qc.bdeb.internshipmanager.R;
-import ca.qc.bdeb.internshipmanager.dataclasses.Account;
 import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.systems.Database;
@@ -62,7 +60,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
             googleMap = Mmap;
             addInternsIntoMap();
-
             //TODO Faire les UI contros fonctionner
             //Configuration de l'affichage de la Map
             UiSettings mapSettings = googleMap.getUiSettings();
@@ -263,5 +260,16 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         }
 
         return false;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+    }
+
+    public interface PassData {
+
+        public void sendData(){}
+
     }
 }

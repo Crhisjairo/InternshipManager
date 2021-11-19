@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                         replaceFragment(new ListInternshipFragment(internships));
                         break;
                     case R.id.nav_map:
+                        //ICI PERMISSIN D'ACCESS LOCALISATION
                         replaceFragment(new MapsFragment());
                         break;
                     case R.id.nav_calendar:
