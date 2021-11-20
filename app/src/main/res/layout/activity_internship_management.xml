@@ -194,7 +194,7 @@
 
                     <!--SECTION ENTREPRISE DE STAGE-->
                     <TextView
-                        android:id="@+id/tvSectionStage"
+                        android:id="@+id/tvSectionEnterprise"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -216,7 +216,7 @@
                         android:text="@string/name_text"
                         android:textColor="@color/black"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvSectionStage" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvSectionEnterprise" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/til_list_nom_enterprises"
@@ -226,7 +226,7 @@
                         android:layout_marginTop="12dp"
                         android:layout_marginEnd="24dp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvSectionStage">
+                        app:layout_constraintTop_toBottomOf="@+id/tvSectionEnterprise">
 
                         <AutoCompleteTextView
                             android:id="@+id/actv_list_nom_enterprises"
@@ -339,6 +339,56 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!--SECTION  DE STAGE-->
+                    <TextView
+                        android:id="@+id/tvSectionStage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="@string/internship_text"
+                        android:textColor="@color/material_on_background_emphasis_medium"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvJourneesStage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="Journées de stage"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvSectionStage" />
+
+                    <CheckBox
+                        android:id="@+id/checkBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="60dp"
+                        android:text="CheckBox"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvJourneesStage" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+            </androidx.cardview.widget.CardView>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

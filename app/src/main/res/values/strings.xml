@@ -28,5 +28,6 @@
     <string name="province_text">Province:</string>
     <string name="add_internship_text">ADD INTERNSHIP</string>
     <string name="profil_photo_text">Profile photo</string>
+    <string name="internship_text">Internship</string>
 
 </resources>
