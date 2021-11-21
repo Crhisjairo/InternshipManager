@@ -52,6 +52,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
                         android:fontFamily="@font/roboto"
                         android:text="@string/student_text"
                         android:textColor="@color/material_on_surface_emphasis_medium"
@@ -102,11 +103,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="32dp"
                         android:layout_marginEnd="24dp"
+                        android:layout_marginBottom="16dp"
                         android:editable="false"
                         android:hint="@string/year_text"
                         android:text="@string/school_year_text"
                         android:textColor="@color/black"
                         android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/ib_new_flagSelector" />
 
@@ -198,7 +201,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="16dp"
                         android:fontFamily="@font/roboto"
                         android:text="@string/stage_enterprise_text"
                         android:textColor="@color/material_on_background_emphasis_medium"
@@ -330,8 +333,10 @@
                         android:layout_height="56dp"
                         android:layout_marginTop="28dp"
                         android:layout_marginEnd="24dp"
+                        android:layout_marginBottom="16dp"
                         android:editable="false"
                         android:hint="@string/province_text"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/et_code_postal_stage" />
 
@@ -342,7 +347,10 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -354,7 +362,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="16dp"
                         android:fontFamily="@font/roboto"
                         android:text="@string/internship_text"
                         android:textColor="@color/material_on_background_emphasis_medium"
@@ -363,12 +371,14 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <!--Journées de stages-->
                     <TextView
                         android:id="@+id/tvJourneesStage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
-                        android:text="Journées de stage"
+                        android:layout_marginTop="24dp"
+                        android:text="@string/internshipDaysText"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -376,18 +386,363 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvSectionStage" />
 
                     <CheckBox
-                        android:id="@+id/checkBox"
+                        android:id="@+id/cbWednesday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/wednesdayText"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvJourneesStage" />
+
+                    <CheckBox
+                        android:id="@+id/cbThursday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/thursdayText"
+                        app:layout_constraintEnd_toStartOf="@+id/cbFriday"
+                        app:layout_constraintStart_toEndOf="@+id/cbWednesday"
+                        app:layout_constraintTop_toBottomOf="@+id/tvJourneesStage" />
+
+                    <CheckBox
+                        android:id="@+id/cbFriday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="50dp"
+                        android:text="@string/fridayText"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvJourneesStage" />
+
+                    <!--Horaire de stages-->
+                    <TextView
+                        android:id="@+id/tvHoraireStages"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="24dp"
+                        android:text="@string/internshipScheduleText"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cbWednesday" />
+
+                    <TextView
+                        android:id="@+id/tvHeureDebutStageTxt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="60dp"
-                        android:text="CheckBox"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/startTimeText"
+                        android:textColor="@color/black"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvJourneesStage" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvHoraireStages" />
+
+                    <Button
+                        android:id="@+id/btnModifyStartInternTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="60dp"
+                        android:backgroundTint="@color/green"
+                        android:drawableRight="@drawable/ic_clock_24"
+                        android:text="00:00"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvHeureDebutStageTxt"
+                        app:srcCompat="@drawable/ic_clock_24" />
+
+                    <TextView
+                        android:id="@+id/tvHeureFinStageTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="60dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/endTimeText"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnModifyStartInternTime" />
+
+                    <Button
+                        android:id="@+id/btnModifyEndInternTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="60dp"
+                        android:backgroundTint="@color/green"
+                        android:drawableRight="@drawable/ic_clock_24"
+                        android:text="00:00"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvHeureFinStageTxt"
+                        app:srcCompat="@drawable/ic_clock_24" />
+
+                    <!--Horaire de diner-->
+                    <TextView
+                        android:id="@+id/tvHoraireDinerTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="24dp"
+                        android:text="@string/lunchScheduleText"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnModifyEndInternTime" />
+
+                    <TextView
+                        android:id="@+id/tvHoraireDiner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="60dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/startTimeText"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvHoraireDinerTxt" />
+
+                    <Button
+                        android:id="@+id/btnModifyStartLunchTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="60dp"
+                        android:backgroundTint="@color/green"
+                        android:drawableRight="@drawable/ic_clock_24"
+                        android:text="00:00"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvHoraireDiner"
+                        app:srcCompat="@drawable/ic_clock_24" />
+
+                    <TextView
+                        android:id="@+id/tvHeureFinLunchTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="60dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/endTimeText"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnModifyStartLunchTime" />
+
+                    <Button
+                        android:id="@+id/btnModifyEndLunchTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="60dp"
+                        android:backgroundTint="@color/green"
+                        android:drawableRight="@drawable/ic_clock_24"
+                        android:text="00:00"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvHeureFinLunchTxt"
+                        app:srcCompat="@drawable/ic_clock_24" />
+
+                    <!--Horaire de diner-->
+                    <TextView
+                        android:id="@+id/tvDureeVisites"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="24dp"
+                        android:text="@string/averageDurationVisitsText"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnModifyEndLunchTime" />
+
+                    <RadioGroup
+                        android:id="@+id/rbg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="50dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDureeVisites">
+
+                        <RadioButton
+                            android:id="@+id/rb30Minutes"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/_30MinsText" />
+
+                        <RadioButton
+                            android:id="@+id/rb45Minutes"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/_45MinsText" />
+
+                        <RadioButton
+                            android:id="@+id/rb1Hour"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/_1HourText" />
+                    </RadioGroup>
+
+                    <!--Disponibilités du tuteur de stage-->
+                    <TextView
+                        android:id="@+id/tvDispoTuteurStage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="24dp"
+                        android:text="@string/InternshipTutorAvailabilityText"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/rbg" />
+
+                    <!--AM-->
+                    <CheckBox
+                        android:id="@+id/cbWednesdayAM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="25dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/wednesdayAmText"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDispoTuteurStage" />
+
+                    <CheckBox
+                        android:id="@+id/cbThursdayAM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/thursdayAmText"
+                        app:layout_constraintEnd_toStartOf="@+id/cbFridayAM"
+                        app:layout_constraintStart_toEndOf="@+id/cbWednesdayAM"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDispoTuteurStage" />
+
+                    <CheckBox
+                        android:id="@+id/cbFridayAM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="25dp"
+                        android:text="@string/fridayAmText"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDispoTuteurStage" />
+
+                    <!--PM-->
+                    <CheckBox
+                        android:id="@+id/cbWednesdayPM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="25dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/wednesdayPmText"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cbThursdayAM" />
+
+                    <CheckBox
+                        android:id="@+id/cbThursdayPM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="@string/thursdayPmText"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/cbFridayPM"
+                        app:layout_constraintStart_toEndOf="@+id/cbWednesdayPM"
+                        app:layout_constraintTop_toBottomOf="@+id/cbThursdayAM" />
+
+                    <CheckBox
+                        android:id="@+id/cbFridayPM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="25dp"
+                        android:text="@string/fridayPmText"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cbThursdayAM" />
+
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+            </androidx.cardview.widget.CardView>
 
+            <!--SECTION COMMENTAIRES-->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!--SECTION  DE STAGE-->
+
+                    <TextView
+                        android:id="@+id/tvSectionCommentaires"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/roboto"
+                        android:text="@string/commentsText"
+                        android:textColor="@color/material_on_background_emphasis_medium"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <TextView
+                        android:id="@+id/txtCommentaires"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/internshipCommentsText"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvSectionCommentaires" />
+
+
+                    <androidx.core.widget.NestedScrollView
+                        android:layout_width="337dp"
+                        android:layout_height="136dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:scrollbars="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txtCommentaires">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <EditText
+                                android:id="@+id/editTextTextMultiLine"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:autoSizeMaxTextSize="20dp"
+                                android:ems="10"
+                                android:gravity="start|top"
+                                android:inputType="textMultiLine" />
+                        </LinearLayout>
+                    </androidx.core.widget.NestedScrollView>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.constraintlayout.widget.ConstraintLayout
