@@ -386,7 +386,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvSectionStage" />
 
                     <CheckBox
-                        android:id="@+id/cbWednesday"
+                        android:id="@+id/cbWedInternDay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="50dp"
@@ -396,17 +396,17 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvJourneesStage" />
 
                     <CheckBox
-                        android:id="@+id/cbThursday"
+                        android:id="@+id/cbThuInternDay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="@string/thursdayText"
-                        app:layout_constraintEnd_toStartOf="@+id/cbFriday"
-                        app:layout_constraintStart_toEndOf="@+id/cbWednesday"
+                        app:layout_constraintEnd_toStartOf="@+id/cbFriInternDay"
+                        app:layout_constraintStart_toEndOf="@+id/cbWedInternDay"
                         app:layout_constraintTop_toBottomOf="@+id/tvJourneesStage" />
 
                     <CheckBox
-                        android:id="@+id/cbFriday"
+                        android:id="@+id/cbFriInternDay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -427,7 +427,7 @@
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cbWednesday" />
+                        app:layout_constraintTop_toBottomOf="@+id/cbWedInternDay" />
 
                     <TextView
                         android:id="@+id/tvHeureDebutStageTxt"
@@ -558,7 +558,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/btnModifyEndLunchTime" />
 
                     <RadioGroup
-                        android:id="@+id/rbg"
+                        android:id="@+id/rgAverageDuration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="50dp"
@@ -600,11 +600,11 @@
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/rbg" />
+                        app:layout_constraintTop_toBottomOf="@+id/rgAverageDuration" />
 
                     <!--AM-->
                     <CheckBox
-                        android:id="@+id/cbWednesdayAM"
+                        android:id="@+id/cbWedAMTutorAvail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="25dp"
@@ -614,17 +614,17 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvDispoTuteurStage" />
 
                     <CheckBox
-                        android:id="@+id/cbThursdayAM"
+                        android:id="@+id/cbThuAMTutorAvail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="@string/thursdayAmText"
-                        app:layout_constraintEnd_toStartOf="@+id/cbFridayAM"
-                        app:layout_constraintStart_toEndOf="@+id/cbWednesdayAM"
+                        app:layout_constraintEnd_toStartOf="@+id/cbFriAMTutorAvail"
+                        app:layout_constraintStart_toEndOf="@+id/cbWedAMTutorAvail"
                         app:layout_constraintTop_toBottomOf="@+id/tvDispoTuteurStage" />
 
                     <CheckBox
-                        android:id="@+id/cbFridayAM"
+                        android:id="@+id/cbFriAMTutorAvail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -635,36 +635,36 @@
 
                     <!--PM-->
                     <CheckBox
-                        android:id="@+id/cbWednesdayPM"
+                        android:id="@+id/cbWedPMTutorAvail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="25dp"
                         android:layout_marginTop="8dp"
                         android:text="@string/wednesdayPmText"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cbThursdayAM" />
+                        app:layout_constraintTop_toBottomOf="@+id/cbThuAMTutorAvail" />
 
                     <CheckBox
-                        android:id="@+id/cbThursdayPM"
+                        android:id="@+id/cbThuPMTutorAvail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="16dp"
                         android:text="@string/thursdayPmText"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/cbFridayPM"
-                        app:layout_constraintStart_toEndOf="@+id/cbWednesdayPM"
-                        app:layout_constraintTop_toBottomOf="@+id/cbThursdayAM" />
+                        app:layout_constraintEnd_toStartOf="@+id/cbFriPMTutorAvail"
+                        app:layout_constraintStart_toEndOf="@+id/cbWedPMTutorAvail"
+                        app:layout_constraintTop_toBottomOf="@+id/cbThuAMTutorAvail" />
 
                     <CheckBox
-                        android:id="@+id/cbFridayPM"
+                        android:id="@+id/cbFriPMTutorAvail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="25dp"
                         android:text="@string/fridayPmText"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cbThursdayAM" />
+                        app:layout_constraintTop_toBottomOf="@+id/cbThuAMTutorAvail" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -716,6 +716,7 @@
 
 
                     <androidx.core.widget.NestedScrollView
+                        android:id="@+id/nlComments"
                         android:layout_width="337dp"
                         android:layout_height="136dp"
                         android:layout_marginTop="8dp"
@@ -732,7 +733,7 @@
                             android:orientation="vertical">
 
                             <EditText
-                                android:id="@+id/editTextTextMultiLine"
+                                android:id="@+id/etComments"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:autoSizeMaxTextSize="20dp"

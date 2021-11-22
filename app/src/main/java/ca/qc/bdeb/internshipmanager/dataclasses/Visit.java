@@ -1,7 +1,5 @@
 package ca.qc.bdeb.internshipmanager.dataclasses;
 
-import java.util.UUID;
-
 
 /**
  * Classe qui permet de créer, modifier ou supprimer une visite.
@@ -9,33 +7,33 @@ import java.util.UUID;
  * et une heure de fin.
  * */
 public class Visit {
-    private String stageId;
+    private String visitId;
+    private String internshipId;
     private String visitDate;
-    private String startTime;
-    private int during;
+    private String startHour;
+    private String endHour;
+    private String startLunch;
+    private String endLunch;
+    private String startDuring;
+    private String endDuring;
 
     /**
      * Crée une nouvelle visite.
      * Le id de la visite est la même du stage auquelle elle est associé.
-     * @param stageId Id du stage auquelle la visite est associé.
+     * @param visitId Id du stage auquelle la visite est associé.
      * @param visitDate Date de la visite.
-     * @param startTime Heure du début de la visite.
-     * @param during Heure de fin de la visite.
+     * @param startHour Heure du début de la visite.
      */
-    public Visit(String stageId, String visitDate, String startTime, int during)
-    {
-        this.stageId = stageId;
+    public Visit(String visitId, String internshipId, String visitDate, String startHour, String endHour, String startLunch, String endLunch, String startDuring, String endDuring) {
+        this.visitId = visitId;
+        this.internshipId = internshipId;
         this.visitDate = visitDate;
-        this.startTime = startTime;
-        this.during = during;
-    }
-
-    /**
-     * Recupère le during de la visite.
-     * @return During de la visite.
-     */
-    public int getDuring() {
-        return during;
+        this.startHour = startHour;
+        this.endHour = endHour;
+        this.startLunch = startLunch;
+        this.endLunch = endLunch;
+        this.startDuring = startDuring;
+        this.endDuring = endDuring;
     }
 
     /**
@@ -50,8 +48,8 @@ public class Visit {
      * Recupère l'heure du début de la visite.
      * @return heure de début de la visite.
      */
-    public String getStartTime() {
-        return startTime;
+    public String getStartHour() {
+        return startHour;
     }
 
     /**
@@ -59,6 +57,62 @@ public class Visit {
      * @return Heure de fin de la visite.
      */
     public String getVisit_id() {
-        return stageId;
+        return visitId;
+    }
+
+    public String getVisitId() {
+        return visitId;
+    }
+
+    public void setVisitId(String visitId) {
+        this.visitId = visitId;
+    }
+
+    public void setVisitDate(String visitDate) {
+        this.visitDate = visitDate;
+    }
+
+    public void setStartHour(String startHour) {
+        this.startHour = startHour;
+    }
+
+    public String getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(String endHour) {
+        this.endHour = endHour;
+    }
+
+    public String getStartLunch() {
+        return startLunch;
+    }
+
+    public void setStartLunch(String startLunch) {
+        this.startLunch = startLunch;
+    }
+
+    public String getEndLunch() {
+        return endLunch;
+    }
+
+    public void setEndLunch(String endLunch) {
+        this.endLunch = endLunch;
+    }
+
+    public String getStartDuring() {
+        return startDuring;
+    }
+
+    public void setStartDuring(String startDuring) {
+        this.startDuring = startDuring;
+    }
+
+    public String getEndDuring() {
+        return endDuring;
+    }
+
+    public void setEndDuring(String endDuring) {
+        this.endDuring = endDuring;
     }
 }

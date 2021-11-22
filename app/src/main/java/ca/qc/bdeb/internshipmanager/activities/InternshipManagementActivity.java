@@ -12,7 +12,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -59,7 +61,18 @@ public class InternshipManagementActivity extends AppCompatActivity {
 
     private AutoCompleteTextView actv_list_etudiants, actv_list_enterprises;
 
-    private Button btn_add_internship;
+    private Button btn_add_internship, btnModifyStartInternTime, btnModifyEndInternTime,
+            btnModifyStartLunchTime, btnModifyEndLunchTime;
+
+    private CheckBox cbWedInternDay, cbThuInternDay, cbFriInternDay, cbWedAMTutorAvail,
+            cbThuAMTutorAvail, cbFriAMTutorAvail, cbWedPMTutorAvail,
+            cbThuPMTutorAvail, cbFriPMTutorAvail;
+
+    private RadioGroup rgAverageDuration;
+
+    private EditText etComments;
+
+    private int visitAvgDurationMins;
 
     private ArrayList<Account> list_etudiants;
     private ArrayList<Enterprise> list_enterprises;
@@ -103,7 +116,7 @@ public class InternshipManagementActivity extends AppCompatActivity {
 
         ib_new_flagSelector = (FlagSelector) findViewById(R.id.ib_new_flagSelector); //Pour la priorité
 
-        //Références des listes
+        //Références des listes dropdown
         //LIST ÉTUDIANTS
         til_list_etudiants = (TextInputLayout) findViewById(R.id.til_list_etudiants);
         actv_list_etudiants = (AutoCompleteTextView) findViewById(R.id.actv_list_etudiants);
@@ -146,13 +159,56 @@ public class InternshipManagementActivity extends AppCompatActivity {
 
         btn_add_internship = (Button) findViewById(R.id.btn_add_internship);
 
+        //Références des views contenant informations des stages
+
+        //Journées de stage
+        cbWedInternDay = (CheckBox) findViewById(R.id.cbWedInternDay);
+        cbThuInternDay = (CheckBox) findViewById(R.id.cbThuInternDay);
+        cbFriInternDay = (CheckBox) findViewById(R.id.cbFriInternDay);
+
+        //Stage schedule
+        btnModifyStartInternTime = (Button) findViewById(R.id.btnModifyStartInternTime);
+        btnModifyEndInternTime = (Button) findViewById(R.id.btnModifyEndInternTime);
+        //Diner schedule
+        btnModifyStartLunchTime = (Button) findViewById(R.id.btnModifyStartLunchTime);
+        btnModifyEndLunchTime = (Button) findViewById(R.id.btnModifyEndLunchTime);
+
+        //Durée de la visite
+        rgAverageDuration = (RadioGroup) findViewById(R.id.rgAverageDuration);
+        rgAverageDuration.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+
+                switch(i) {
+                    case R.id.rb30Minutes:
+                        visitAvgDurationMins = 30;
+                        break;
+                    case R.id.rb45Minutes:
+                        visitAvgDurationMins = 45;
+                        break;
+                    case R.id.rb1Hour:
+                        visitAvgDurationMins = 60;
+                        break;
+                }
+            }
+        });
+
+        //Disponibilité des tuteurs pour le stage
+        cbWedAMTutorAvail = (CheckBox) findViewById(R.id.cbWedAMTutorAvail);
+        cbThuAMTutorAvail = (CheckBox) findViewById(R.id.cbThuAMTutorAvail);
+        cbFriAMTutorAvail = (CheckBox) findViewById(R.id.cbFriAMTutorAvail);
+
+        cbWedPMTutorAvail = (CheckBox) findViewById(R.id.cbWedPMTutorAvail);
+        cbThuPMTutorAvail = (CheckBox) findViewById(R.id.cbThuPMTutorAvail);
+        cbFriPMTutorAvail = (CheckBox) findViewById(R.id.cbFriPMTutorAvail);
+
+        etComments = (EditText) findViewById(R.id.etComments);
+
         //On ajoute les text fields pour vérifier s'ils sont vides avant l'ajout du stage.
         inputFields = new ArrayList<>();
 
         inputFields.add(til_list_etudiants);
         inputFields.add(til_list_enterprises);
-
-
     }
 
     /**
@@ -308,10 +364,13 @@ public class InternshipManagementActivity extends AppCompatActivity {
         Account student = selectedStudent;
         //TODO on recupère le seul teacher qui doit exister. Le InternshipSystem va retourner le teacher en fonction du Log In plus tard.
         Account teacher = db.getCurrentTeacherAccount();
+
+
+        //TODO il faut ajouter icitte les visits en fonctions des données fournis
         //Visit list
         ArrayList<Visit> visitList = new ArrayList<>();
-        //TODO il faut ajouter au moins une visite après.
         //visitList.add(new Visit(idInternship, ));
+
 
         //On modifie le compte étudiant avec sa nouvelle photo
         student.setPhoto(studentPhoto);
@@ -319,7 +378,7 @@ public class InternshipManagementActivity extends AppCompatActivity {
 
         //On l'ajoute à la BD
         db.insertInternship(anneeScolaire, entreprise.getEnterpriseId(), student.getAccountId(),
-                teacher.getAccountId(), ib_new_flagSelector.getPriority());
+                teacher.getAccountId(), visitList,ib_new_flagSelector.getPriority());
 
         //On retourne à l'activité précedente après avoir insérer le nouveau étudiant
         returnToPreviousActivity();
