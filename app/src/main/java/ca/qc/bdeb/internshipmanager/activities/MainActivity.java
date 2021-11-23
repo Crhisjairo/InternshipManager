@@ -96,7 +96,9 @@ public class MainActivity extends AppCompatActivity {
                         replaceFragment(new SettingsFragment());
                         break;
                     case R.id.nav_logout:
-                        replaceFragment(new LogoutFragment());
+                        Intent intent = new Intent(MainActivity.this, Login.class);
+                        startActivity(intent);
+                        finish();
                         break;
                     case R.id.nav_info:
                         replaceFragment(new InfoFragment());

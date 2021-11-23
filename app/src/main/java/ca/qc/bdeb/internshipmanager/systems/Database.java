@@ -156,6 +156,8 @@ public class Database extends SQLiteOpenHelper {
         currentTeacherAccount = queryForAllAccountsByType(1).get(0);
     }
 
+
+
     //region SQL Tables names
     /**
      * Classe qui permet de définir la table entreprise
@@ -434,6 +436,37 @@ public class Database extends SQLiteOpenHelper {
         cursor.close();
 
         return studentAccounts;
+    }
+
+    public Account getTeacherByName(String email){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Account teacher;
+
+
+        String query = "SELECT * FROM " + AccountTable.TABLE_NAME + " WHERE " + AccountTable.ACCOUNT_TYPE + " = ? AND " + AccountTable.EMAIL + " = ?";
+        String[] args = new String[]{"1", email};
+
+        Cursor cursor = db.rawQuery(query, args);
+        if (cursor.getCount() != 1) {
+            return null;
+        }
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+        }
+        byte[] imgByte = cursor.getBlob(5);
+        Bitmap photo = BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
+
+        teacher =new Account(
+                cursor.getInt(0), cursor.getString(6),
+                cursor.getString(7), cursor.getString(3),
+                cursor.getInt(9) > 0, cursor.getString(4),
+                cursor.getString(2), cursor.getString(1),
+                photo, cursor.getString(8),
+                cursor.getInt(10));
+
+        cursor.close();
+        return teacher;
     }
 
     public ArrayList<Account> getStudentsAccount(){
