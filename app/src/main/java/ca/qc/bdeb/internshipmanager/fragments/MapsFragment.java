@@ -43,7 +43,13 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     private Database db;
     private GoogleMap googleMap;
     private CheckBox cbLowPriority, cbMediumPriority, cbHighPriority;
-    Hashtable<String, Internship> filteredInternshipTable = new Hashtable<String, Internship>();
+    private Hashtable<String, Internship> filteredInternshipTable = new Hashtable<String, Internship>();
+    private boolean allowAccessLocation;
+
+    public MapsFragment(boolean allowAccessLocation) {
+        super();
+        this.allowAccessLocation = allowAccessLocation;
+    }
 
 //    private PassDataHandler passDataHandler;
 
@@ -62,14 +68,16 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
             googleMap = Mmap;
             addInternsIntoMap();
-            //TODO Faire les UI contros fonctionner
+
             //Configuration de l'affichage de la Map
             UiSettings mapSettings = googleMap.getUiSettings();
             mapSettings.setZoomControlsEnabled(true);
-            mapSettings.setMyLocationButtonEnabled(true);
-            mapSettings.setScrollGesturesEnabled(true);
             LatLng montreal = new LatLng(45.495759,-73.703628);
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(montreal, 12));
+            if(allowAccessLocation) {
+                mapSettings.setMyLocationButtonEnabled(true);
+            }
+            mapSettings.setScrollGesturesEnabled(true);
         }
 
     };

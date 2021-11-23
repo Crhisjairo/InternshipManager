@@ -38,7 +38,7 @@ public class Login extends AppCompatActivity {
         guiMessage= findViewById(R.id.tvMessage);
 
         db = Database.getInstance(getApplicationContext());
-
+        //guiLogin.setEnabled(false);
 
         guiLogin.setOnClickListener(new View.OnClickListener() {
             @Override

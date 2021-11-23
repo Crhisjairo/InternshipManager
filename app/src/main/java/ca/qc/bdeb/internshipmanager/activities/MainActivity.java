@@ -17,6 +17,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -58,6 +59,12 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.navigation_view);
 
+
+        //todo placer
+        ActivityCompat.requestPermissions(MainActivity.this,
+                permissions,
+                PERMISSION_MAP_CODE);
+
         // On permet que le click ouvre et ferme le menu a cote
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
             @Override
@@ -82,12 +89,7 @@ public class MainActivity extends AppCompatActivity {
                         replaceFragment(new ListInternshipFragment(internships));
                         break;
                     case R.id.nav_map:
-                        //Il faut d'abord demander la permission pour utiliser la localisation
-                        ActivityCompat.requestPermissions(MainActivity.this,
-                                permissions,
-                                PERMISSION_MAP_CODE);
-                        //Aprés on rentre dans le fragment
-                        replaceFragment(new MapsFragment());
+                        replaceFragment(new MapsFragment(isLocationEnabled));
                         break;
                     case R.id.nav_calendar:
                         replaceFragment(new CalendarFragment());
