@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -39,7 +40,11 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Internship> internships;
 
     public static final String INTERNSHIP_ID_TO_MODIFY_KEY = "TO_MODIFY";
+
+    // Demander la permission d'activer la localisation
     public static final int PERMISSION_MAP_CODE = 1;
+    private boolean isLocationEnabled = false;
+    private String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +82,11 @@ public class MainActivity extends AppCompatActivity {
                         replaceFragment(new ListInternshipFragment(internships));
                         break;
                     case R.id.nav_map:
-                        //ICITTE PERMISSIN D'ACCESS LOCALISATION
-                        //TODO PERMISSION
-                        //On demande la permission pour la camd'abord
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.CAMERA},
+                        //Il faut d'abord demander la permission pour utiliser la localisation
+                        ActivityCompat.requestPermissions(MainActivity.this,
+                                permissions,
                                 PERMISSION_MAP_CODE);
-
+                        //Aprés on rentre dans le fragment
                         replaceFragment(new MapsFragment());
                         break;
                     case R.id.nav_calendar:
@@ -112,15 +115,13 @@ public class MainActivity extends AppCompatActivity {
 
         switch (requestCode){
             case PERMISSION_MAP_CODE:
-                //On check si on a la permission ou pas
+                //On check si l'utilisateur a permis l'utilisation de sa localisation par l'application ou pas
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    //
-
+                    isLocationEnabled = true;
                 }else{
                     Toast.makeText(getApplicationContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
                 }
                 break;
-
         }
     }
 
@@ -131,7 +132,4 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    public void setPermission() {
-
-    }
 }

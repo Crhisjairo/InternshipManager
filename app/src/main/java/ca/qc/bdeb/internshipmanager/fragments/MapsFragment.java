@@ -45,7 +45,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     private CheckBox cbLowPriority, cbMediumPriority, cbHighPriority;
     Hashtable<String, Internship> filteredInternshipTable = new Hashtable<String, Internship>();
 
-    private PassDataHandler passDataHandler;
+//    private PassDataHandler passDataHandler;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
         /**
@@ -182,8 +182,12 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
+
+
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -267,16 +271,17 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-    }
-
-    public void setPassDataHandler(PassDataHandler passDataHandler) {
-        this.passDataHandler = passDataHandler;
-    }
-
-    public interface PassDataHandler {
-
-        public void sendData(boolean isAllowed);
 
     }
+
+//    public void setPassDataHandler(PassDataHandler passDataHandler) {
+//        this.passDataHandler = passDataHandler;
+//    }
+//
+//    public interface PassDataHandler {
+//
+//        public void sendData(boolean isAllowed);
+//
+//    }
 
 }
