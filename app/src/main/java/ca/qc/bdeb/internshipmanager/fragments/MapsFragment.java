@@ -26,7 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import ca.qc.bdeb.internshipmanager.R;
 
-public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickListener {
+public class MapsFragment extends Fragment {
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
