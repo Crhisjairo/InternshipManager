@@ -12,7 +12,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +25,8 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,7 +38,6 @@ import ca.qc.bdeb.internshipmanager.customviews.FlagSelector;
 import ca.qc.bdeb.internshipmanager.dataclasses.Account;
 import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
-import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
 import ca.qc.bdeb.internshipmanager.systems.Database;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -59,7 +62,19 @@ public class InternshipManagementActivity extends AppCompatActivity {
 
     private AutoCompleteTextView actv_list_etudiants, actv_list_enterprises;
 
-    private Button btn_add_internship;
+    private Button btn_add_internship, btnModifyStartInternTime, btnModifyEndInternTime,
+            btnModifyStartLunchTime, btnModifyEndLunchTime;
+
+    private CheckBox cbWedInternDay, cbThuInternDay, cbFriInternDay, cbWedAMTutorAvail,
+            cbThuAMTutorAvail, cbFriAMTutorAvail, cbWedPMTutorAvail,
+            cbThuPMTutorAvail, cbFriPMTutorAvail;
+
+    private RadioGroup rgAverageDuration;
+
+    private EditText etComments;
+
+    private String startHour, endHour, startLunch, endLunch;
+    private int avgVisitDuring;
 
     private ArrayList<Account> list_etudiants;
     private ArrayList<Enterprise> list_enterprises;
@@ -103,7 +118,7 @@ public class InternshipManagementActivity extends AppCompatActivity {
 
         ib_new_flagSelector = (FlagSelector) findViewById(R.id.ib_new_flagSelector); //Pour la priorité
 
-        //Références des listes
+        //Références des listes dropdown
         //LIST ÉTUDIANTS
         til_list_etudiants = (TextInputLayout) findViewById(R.id.til_list_etudiants);
         actv_list_etudiants = (AutoCompleteTextView) findViewById(R.id.actv_list_etudiants);
@@ -146,13 +161,155 @@ public class InternshipManagementActivity extends AppCompatActivity {
 
         btn_add_internship = (Button) findViewById(R.id.btn_add_internship);
 
+        //Références des views contenant informations des stages
+
+        //Journées de stage
+        cbWedInternDay = (CheckBox) findViewById(R.id.cbWedInternDay);
+        cbThuInternDay = (CheckBox) findViewById(R.id.cbThuInternDay);
+        cbFriInternDay = (CheckBox) findViewById(R.id.cbFriInternDay);
+
+
+
+        //Stage schedule
+        btnModifyStartInternTime = (Button) findViewById(R.id.btnModifyStartInternTime);
+        btnModifyEndInternTime = (Button) findViewById(R.id.btnModifyEndInternTime);
+        //Diner schedule
+        btnModifyStartLunchTime = (Button) findViewById(R.id.btnModifyStartLunchTime);
+        btnModifyEndLunchTime = (Button) findViewById(R.id.btnModifyEndLunchTime);
+
+        setTimeButtonsListeners();
+
+        //Durée de la visite
+        rgAverageDuration = (RadioGroup) findViewById(R.id.rgAverageDuration);
+        rgAverageDuration.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+
+                switch(i) {
+                    case R.id.rb30Minutes:
+                        avgVisitDuring = 30;
+                        break;
+                    case R.id.rb45Minutes:
+                        avgVisitDuring = 45;
+                        break;
+                    case R.id.rb1Hour:
+                        avgVisitDuring = 60;
+                        break;
+                }
+            }
+        });
+
+        //Disponibilité des tuteurs pour le stage
+        cbWedAMTutorAvail = (CheckBox) findViewById(R.id.cbWedAMTutorAvail);
+        cbThuAMTutorAvail = (CheckBox) findViewById(R.id.cbThuAMTutorAvail);
+        cbFriAMTutorAvail = (CheckBox) findViewById(R.id.cbFriAMTutorAvail);
+
+        cbWedPMTutorAvail = (CheckBox) findViewById(R.id.cbWedPMTutorAvail);
+        cbThuPMTutorAvail = (CheckBox) findViewById(R.id.cbThuPMTutorAvail);
+        cbFriPMTutorAvail = (CheckBox) findViewById(R.id.cbFriPMTutorAvail);
+
+        etComments = (EditText) findViewById(R.id.etComments);
+
         //On ajoute les text fields pour vérifier s'ils sont vides avant l'ajout du stage.
         inputFields = new ArrayList<>();
 
         inputFields.add(til_list_etudiants);
         inputFields.add(til_list_enterprises);
+    }
 
+    private void setTimeButtonsListeners() {
+        //Heure de début du stage
+        btnModifyStartInternTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
+                        .setTimeFormat(TimeFormat.CLOCK_24H)
+                        .build();
 
+                materialTimePicker.addOnPositiveButtonClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int newHour = materialTimePicker.getHour();
+                        int newMinute = materialTimePicker.getMinute();
+
+                        startHour = newHour + ":" + newMinute;
+                        //on set le text du boutton
+                        btnModifyStartInternTime.setText(startHour);
+                    }
+                });
+
+                materialTimePicker.show(getSupportFragmentManager(), "ABC");
+            }
+        });
+
+        //Heure de fin du stage
+        btnModifyEndInternTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
+                        .setTimeFormat(TimeFormat.CLOCK_24H)
+                        .build();
+
+                materialTimePicker.addOnPositiveButtonClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int newHour = materialTimePicker.getHour();
+                        int newMinute = materialTimePicker.getMinute();
+
+                        endHour = newHour + ":" + newMinute;
+                        btnModifyEndInternTime.setText(endHour);
+                    }
+                });
+
+                materialTimePicker.show(getSupportFragmentManager(), "ABC");
+            }
+        });
+
+        //Heure de début du diner
+        btnModifyStartLunchTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
+                        .setTimeFormat(TimeFormat.CLOCK_24H)
+                        .build();
+
+                materialTimePicker.addOnPositiveButtonClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int newHour = materialTimePicker.getHour();
+                        int newMinute = materialTimePicker.getMinute();
+
+                        startLunch = newHour + ":" + newMinute;
+                        btnModifyStartLunchTime.setText(startLunch);
+                    }
+                });
+
+                materialTimePicker.show(getSupportFragmentManager(), "ABC");
+            }
+        });
+
+        //Heure de fin du diner
+        btnModifyEndLunchTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
+                        .setTimeFormat(TimeFormat.CLOCK_24H)
+                        .build();
+
+                materialTimePicker.addOnPositiveButtonClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int newHour = materialTimePicker.getHour();
+                        int newMinute = materialTimePicker.getMinute();
+
+                        endLunch = newHour + ":" + newMinute;
+                        btnModifyEndLunchTime.setText(endLunch);
+                    }
+                });
+
+                materialTimePicker.show(getSupportFragmentManager(), "ABC");
+            }
+        });
     }
 
     /**
@@ -195,6 +352,9 @@ public class InternshipManagementActivity extends AppCompatActivity {
     private void setInternshipToModifyData(String idIntenship) {
         internshipToModify = db.getInternshipById(idIntenship);
         //Log.d("Icitte", internshipToModify.toString());
+        //On désactive la liste des étudiants et entreprises
+        til_list_enterprises.setEnabled(false);
+        til_list_etudiants.setEnabled(false);
 
         //On définit le titre de la page
         getSupportActionBar().setTitle(R.string.title_modify_internship);
@@ -217,6 +377,35 @@ public class InternshipManagementActivity extends AppCompatActivity {
         //On définit la priorité
         ib_new_flagSelector.setPriority(internshipToModify.getPriority());
 
+        //On définit les informations du stage
+        setInternshipDaysChecked(internshipToModify.getInternshipDays());
+        //les boutons de temps
+        startHour = internshipToModify.getStartHour();
+        btnModifyStartInternTime.setText(startHour);
+        endHour = internshipToModify.getEndHour();
+        btnModifyEndInternTime.setText(endHour);
+
+        startLunch = internshipToModify.getStartLunch();
+        btnModifyStartLunchTime.setText(startLunch);
+        endLunch = internshipToModify.getEndLunch();
+        btnModifyEndLunchTime.setText(endLunch);
+
+        //Durée moyenne des visites
+        switch(internshipToModify.getAverageVisitDuring()){
+            case 30:
+                rgAverageDuration.check(R.id.rb30Minutes);
+                break;
+            case 45:
+                rgAverageDuration.check(R.id.rb45Minutes);
+                break;
+            case 60:
+                rgAverageDuration.check(R.id.rb1Hour);
+                break;
+        }
+
+        setTutorDisponibilitiesChecked(internshipToModify.getTutorDisponibilities());
+
+        etComments.setText(internshipToModify.getComments());
         //On définit le text du boutton
         btn_add_internship.setText(getString(R.string.modify_internship_text));
     }
@@ -280,8 +469,14 @@ public class InternshipManagementActivity extends AppCompatActivity {
         internshipToModify.setAccountStudent(selectedStudent);
         internshipToModify.setPriority(ib_new_flagSelector.getPriority());
         //Le même prof reste pour le même internship
-        //TODO il faut peut-être modifier la liste des visits aussi. Pour le même, on le change pas
-        //internshipToModify.setVisitList();
+        internshipToModify.setInternshipDays(getInternshipDaysChecked());
+        internshipToModify.setStartHour(this.startHour);
+        internshipToModify.setEndHour(this.endHour);
+        internshipToModify.setStartLunch(this.startLunch);
+        internshipToModify.setEndLunch(this.endLunch);
+        internshipToModify.setAverageVisitDuring(this.avgVisitDuring);
+        internshipToModify.setTutorDisponibility(getTutorDisponibilitiesChecked());
+        internshipToModify.setComments(etComments.getText().toString());
 
         //On modifie le compte étudiant avec sa photo
         db.updateAccount(internshipToModify.getStudentAccount());
@@ -306,23 +501,125 @@ public class InternshipManagementActivity extends AppCompatActivity {
         Enterprise entreprise = selectedEnterprise;
         //Account Student
         Account student = selectedStudent;
-        //TODO on recupère le seul teacher qui doit exister. Le InternshipSystem va retourner le teacher en fonction du Log In plus tard.
+        //TODO on recupère le seul teacher qui doit exister. Le Database va retourner le teacher en fonction du Log In plus tard.
         Account teacher = db.getCurrentTeacherAccount();
-        //Visit list
-        ArrayList<Visit> visitList = new ArrayList<>();
-        //TODO il faut ajouter au moins une visite après.
-        //visitList.add(new Visit(idInternship, ));
 
         //On modifie le compte étudiant avec sa nouvelle photo
         student.setPhoto(studentPhoto);
         db.updateAccount(student);
 
+        //définir les données pour le stage
+        String internshipDays = getInternshipDaysChecked();
+        String startHour = this.startHour;
+        String endHour = this.endHour;
+        String startLunch = this.startLunch;
+        String endLunch = this.endLunch;
+        int averageVisitDuring = avgVisitDuring;
+        String tutorDisponibility = getTutorDisponibilitiesChecked();
+        String comments = etComments.getText().toString();
+
         //On l'ajoute à la BD
         db.insertInternship(anneeScolaire, entreprise.getEnterpriseId(), student.getAccountId(),
-                teacher.getAccountId(), ib_new_flagSelector.getPriority());
+                teacher.getAccountId(), ib_new_flagSelector.getPriority(), internshipDays, startHour,
+                endHour, startLunch, endLunch, averageVisitDuring, tutorDisponibility, comments);
 
         //On retourne à l'activité précedente après avoir insérer le nouveau étudiant
         returnToPreviousActivity();
+    }
+
+    private String getTutorDisponibilitiesChecked() {
+        String tutorDisponibility = "";
+
+        if(cbWedAMTutorAvail.isChecked()){
+            tutorDisponibility += "wednesdayAM|";
+        }
+
+        if(cbWedPMTutorAvail.isChecked()){
+            tutorDisponibility += "wednesdayPM|";
+        }
+
+        if(cbThuAMTutorAvail.isChecked()){
+            tutorDisponibility += "thursdayAM|";
+        }
+
+        if(cbThuPMTutorAvail.isChecked()){
+            tutorDisponibility += "thursdayPM|";
+        }
+
+        if(cbFriAMTutorAvail.isChecked()){
+            tutorDisponibility += "fridayAM|";
+        }
+
+        if(cbFriPMTutorAvail.isChecked()){
+            tutorDisponibility += "fridayPM|";
+        }
+
+        return tutorDisponibility;
+    }
+
+    private void setTutorDisponibilitiesChecked(String tutorDisponibilitiesDays){
+        String[] days = tutorDisponibilitiesDays.split("\\|");
+
+        for (String day : days) {
+            switch (day){
+                case "wednesdayAM":
+                    cbWedAMTutorAvail.setChecked(true);
+                    break;
+                case "wednesdayPM":
+                    cbWedPMTutorAvail.setChecked(true);
+                    break;
+                case "thursdayAM":
+                    cbThuAMTutorAvail.setChecked(true);
+                    break;
+                case "thursdayPM":
+                    cbThuPMTutorAvail.setChecked(true);
+                    break;
+                case "fridayAM":
+                    cbFriAMTutorAvail.setChecked(true);
+                    break;
+                case "fridayPM":
+                    cbFriPMTutorAvail.setChecked(true);
+                    break;
+            }
+        }
+    }
+
+    private String getInternshipDaysChecked(){
+        String internshipDays = "";
+
+        //TODO On peut optimiser ça par assignant un onCheckListener à chaque checkboxe et remplir un string en fonction de ça
+        if(cbWedInternDay.isChecked()){
+            internshipDays += "wednesday|";
+        }
+
+        if(cbThuInternDay.isChecked()){
+            internshipDays += "thursday|";
+        }
+
+        if(cbFriInternDay.isChecked()){
+            internshipDays += "friday";
+        }
+
+        return internshipDays;
+    }
+
+    private void setInternshipDaysChecked(String internshipDays){
+        String[] days = internshipDays.split("\\|");
+        Log.d("Icitte", days[0] + "");
+
+        for (String day : days) {
+            switch (day){
+                case "wednesday":
+                    cbWedInternDay.setChecked(true);
+                    break;
+                case "thursday":
+                    cbThuInternDay.setChecked(true);
+                    break;
+                case "friday":
+                    cbFriInternDay.setChecked(true);
+                    break;
+            }
+        }
     }
 
     /**
@@ -379,4 +676,7 @@ public class InternshipManagementActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
+
+
 }

@@ -28,5 +28,27 @@
     <string name="province_text">Province:</string>
     <string name="add_internship_text">ADD INTERNSHIP</string>
     <string name="profil_photo_text">Profile photo</string>
+    <string name="internship_text">Internship</string>
+    <string name="internshipDaysText">Internship days</string>
+    <string name="wednesdayText">Wednesday</string>
+    <string name="thursdayText">Thursday</string>
+    <string name="fridayText">Friday</string>
+    <string name="internshipScheduleText">Internship schedule</string>
+    <string name="startTimeText">Start time:</string>
+    <string name="endTimeText">End time:</string>
+    <string name="lunchScheduleText">Dinner schedule</string>
+    <string name="averageDurationVisitsText">Average visit duration</string>
+    <string name="_30MinsText">30 minutes</string>
+    <string name="_45MinsText">45 minutes</string>
+    <string name="_1HourText">1 hour</string>
+    <string name="InternshipTutorAvailabilityText">Internship tutor availability</string>
+    <string name="wednesdayAmText">Wednesday AM</string>
+    <string name="thursdayAmText">Thursday AM</string>
+    <string name="fridayAmText">Friday AM</string>
+    <string name="wednesdayPmText">Wednesday PM</string>
+    <string name="thursdayPmText">Thursday PM</string>
+    <string name="fridayPmText">Friday PM</string>
+    <string name="commentsText">Comments</string>
+    <string name="internshipCommentsText">"Comments about the internship "</string>
 
 </resources>

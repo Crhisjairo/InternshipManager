@@ -29,4 +29,26 @@
     <string name="province_text">Province:</string>
     <string name="add_internship_text">AJOUTER STAGE</string>
     <string name="profil_photo_text">Photo de profil</string>
+    <string name="internship_text">Stage</string>
+    <string name="internshipDaysText">Journées de stage</string>
+    <string name="fridayText">Vendredi</string>
+    <string name="internshipScheduleText">Horaire de stage</string>
+    <string name="startTimeText">Heure de début:</string>
+    <string name="endTimeText">Heure de fin:</string>
+    <string name="averageDurationVisitsText">Durée moyenne des visites</string>
+    <string name="_30MinsText">30 minutes</string>
+    <string name="_45MinsText">45 minutes</string>
+    <string name="_1HourText">1 heure</string>
+    <string name="InternshipTutorAvailabilityText">Disponibilités du tuteur de stage</string>
+    <string name="wednesdayAmText">Mercredi AM</string>
+    <string name="thursdayAmText">Jeudi AM</string>
+    <string name="thursdayPmText">Jeudi PM</string>
+    <string name="fridayPmText">Vendredi PM</string>
+    <string name="commentsText">Commentaires</string>
+    <string name="internshipCommentsText">Commentaires sur le stage</string>
+    <string name="wednesdayText">Mercredi</string>
+    <string name="thursdayText">Jeudi</string>
+    <string name="lunchScheduleText">Horaire de diner</string>
+    <string name="fridayAmText">Vendredi AM</string>
+    <string name="wednesdayPmText">Mercredi PM</string>
 </resources>
