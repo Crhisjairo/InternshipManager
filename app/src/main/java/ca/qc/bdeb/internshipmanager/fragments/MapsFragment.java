@@ -24,12 +24,36 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Locale;
+
 import ca.qc.bdeb.internshipmanager.R;
+import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
+import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
+import ca.qc.bdeb.internshipmanager.systems.Database;
 
 public class MapsFragment extends Fragment {
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    private ArrayList<Internship> internshipList;
+    private ArrayList<Internship> internsToVisist = new ArrayList<>();
+    private Database db;
+    private GoogleMap googleMap;
+    private CheckBox cbLowPriority, cbMediumPriority, cbHighPriority;
+    private Hashtable<String, Internship> filteredInternshipTable = new Hashtable<String, Internship>();
+    private boolean allowAccessLocation;
 
+    public MapsFragment(boolean allowAccessLocation) {
+        super();
+        this.allowAccessLocation = allowAccessLocation;
+    }
+
+//    private PassDataHandler passDataHandler;
+
+    private OnMapReadyCallback callback = new OnMapReadyCallback() {
         /**
          * Manipulates the map once available.
          * This callback is triggered when the map is ready to be used.
@@ -176,10 +200,96 @@ public class MapsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        db = Database.getInstance(getContext());
+        internshipList = db.getAllInternships();
+
+        //Checkboxes pour faire le filtrage des stages
+        cbLowPriority = view.findViewById(R.id.cbLowPriority);
+        cbMediumPriority = view.findViewById(R.id.cbMediumPriority);
+        cbHighPriority = view.findViewById(R.id.cbHighPriority);
+        setCheckboxesListener();
+
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
     }
+
+    /**
+     * Comportement du filtre des stages par rapport aux drapeaux de priorité.
+     * Les stages vont se cacher en fonction des drapeaux cochées.
+     * @param view View qui fait appelle à la méthode.
+     */
+    public void onCheckboxClicked(View view) {
+        boolean checked = ((CheckBox) view).isChecked();
+        CheckBox flag = view.findViewById(view.getId());
+        //On définit le drawable en fonction s'il est clické ou pas
+        if(checked) {
+            flag.setButtonDrawable(R.drawable.ic_flag_unclick);
+        }
+        else{
+            flag.setButtonDrawable(R.drawable.ic_flag);
+        }
+        addInternsIntoMap();
+    }
+
+    /**
+     * Définit les listeners pour les checkboxes pour faire le filtrage des stages.
+     */
+    private void setCheckboxesListener() {
+        cbLowPriority.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onCheckboxClicked(view);
+            }
+        });
+
+        cbMediumPriority.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onCheckboxClicked(view);
+            }
+        });
+
+        cbHighPriority.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onCheckboxClicked(view);
+            }
+        });
+    }
+
+
+    @Override
+    public boolean onMarkerClick(@NonNull Marker marker) {
+
+        Internship intern = filteredInternshipTable.get(marker.getTag());
+
+        if(internsToVisist.contains(intern)){
+            internsToVisist.remove(intern);
+        } else{
+            internsToVisist.add(intern);
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+    }
+
+//    public void setPassDataHandler(PassDataHandler passDataHandler) {
+//        this.passDataHandler = passDataHandler;
+//    }
+//
+//    public interface PassDataHandler {
+//
+//        public void sendData(boolean isAllowed);
+//
+//    }
+
 }
