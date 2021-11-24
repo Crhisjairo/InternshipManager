@@ -36,7 +36,7 @@ import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.systems.Database;
 
-public class MapsFragment extends Fragment {
+public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     private ArrayList<Internship> internshipList;
     private ArrayList<Internship> internsToVisist = new ArrayList<>();
