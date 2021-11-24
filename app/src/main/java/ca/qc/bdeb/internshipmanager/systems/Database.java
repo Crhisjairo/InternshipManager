@@ -17,8 +17,9 @@ import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
 
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Array;
 import java.text.Normalizer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
@@ -80,12 +81,8 @@ public class Database extends SQLiteOpenHelper {
             + " (" + VisitTable._ID + " VARCHAR2(255) PRIMARY KEY,"
             + VisitTable.INTERNSHIP_ID + " VARCHAR2(255),"
             + VisitTable.DATE + " DATE,"
-            + VisitTable.START_HOUR + " BLOB,"
-            + VisitTable.END_HOUR + " BLOB,"
-            + VisitTable.START_LUNCH + " BLOB,"
-            + VisitTable.END_LUNCH + " BLOB,"
-            + VisitTable.START_DURING + " BLOB,"
-            + VisitTable.END_DURING + " INT(20))";
+            + VisitTable.START_HOUR + " DATETIME,"
+            + VisitTable.DURING + " VARCHAR2(255))";
 
     /**
      * Requête pour crée la table des stages.
@@ -97,7 +94,15 @@ public class Database extends SQLiteOpenHelper {
             + InternshipTable.ENTERPRISE_ID + " VARCHAR2(255),"
             + InternshipTable.STUDENT_ID + " INT(20),"
             + InternshipTable.PROFESSOR_ID + " INT(20)," +
-            InternshipTable.PRIORITY + " VARCHAR2(255))";
+            InternshipTable.PRIORITY + " VARCHAR2(255)," +
+            InternshipTable.INTERNSHIP_DAYS + " VARCHAR2(255)," +
+            InternshipTable.START_HOUR + " DATETIME," +
+            InternshipTable.END_HOUR + " DATETIME," +
+            InternshipTable.START_LUNCH+ " DATETIME," +
+            InternshipTable.END_LUNCH + " DATETIME," +
+            InternshipTable.AVERAGE_VISIT_DURING + " INT(20)," +
+            InternshipTable.TUTOR_DISPONIBILITY + " VARCHAR2(255)," +
+            InternshipTable.COMMENTS + " VARCHAR2(255))";
 
     //endregion
 
@@ -201,6 +206,14 @@ public class Database extends SQLiteOpenHelper {
         public static final String STUDENT_ID = "student_id";
         public static final String PROFESSOR_ID = "professor_id";
         public static final String PRIORITY = "priority";
+        public static final String INTERNSHIP_DAYS = "internship_days";
+        public static final String START_HOUR = "start_hour";
+        public static final String END_HOUR = "end_hour";
+        public static final String START_LUNCH = "start_lunch";
+        public static final String END_LUNCH = "end_lunch";
+        public static final String AVERAGE_VISIT_DURING = "average_visit_during";
+        public static final String TUTOR_DISPONIBILITY = "tutor_disponibility";
+        public static final String COMMENTS = "comments";
     }
 
     /**
@@ -211,11 +224,7 @@ public class Database extends SQLiteOpenHelper {
         public static final String INTERNSHIP_ID = "stage_id";
         public static final String DATE = "date";
         public static final String START_HOUR = "start_hour";
-        public static final String END_HOUR = "end_hour";
-        public static final String START_LUNCH = "start_lunch";
-        public static final String END_LUNCH = "end_lunch";
-        public static final String START_DURING = "start_during";
-        public static final String END_DURING = "end_during";
+        public static final String DURING = "during";
     }
     //endregion
 
@@ -293,14 +302,15 @@ public class Database extends SQLiteOpenHelper {
     /**
      * Methode qui va permettre d'insérer une nouvelle visite
      */
-    public void insertVisit(String idStage, String visiteDate, String startTime, int during) {
+    public void insertVisit(String internshipId ,String date, String startHour, String during) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(VisitTable._ID, idStage);
-        values.put(VisitTable.DATE, visiteDate);
-        values.put(VisitTable.START_HOUR, startTime);
-        values.put(VisitTable.START_DURING, during);
+        values.put(VisitTable._ID, UUID.randomUUID().toString());
+        values.put(VisitTable.INTERNSHIP_ID, internshipId);
+        values.put(VisitTable.DATE, date);
+        values.put(VisitTable.START_HOUR, startHour);
+        values.put(VisitTable.DURING, during);
 
         long id = db.insert(VisitTable.TABLE_NAME, null, values);
     }
@@ -314,7 +324,10 @@ public class Database extends SQLiteOpenHelper {
      * @param priority Priorité du nouveau stage.
      */
     public void insertInternship(String schoolYear, String idEntreprise,
-                                 int idStudentAccount, int idTeacherAccount, ArrayList<Visit> visits, Internship.Priority priority) {
+                                 int idStudentAccount, int idTeacherAccount,
+                                 Internship.Priority priority, String internshipDays ,String startHour, String endHour,
+                                 String startLunch, String endLunch, int averageVisitDuring,
+                                 String tutorDisponibility, String comments) {
 
         ContentValues values = new ContentValues();
         values.put(InternshipTable._ID, UUID.randomUUID().toString());
@@ -323,8 +336,16 @@ public class Database extends SQLiteOpenHelper {
         values.put(InternshipTable.STUDENT_ID, idStudentAccount);
         values.put(InternshipTable.PROFESSOR_ID, idTeacherAccount);
         values.put(InternshipTable.PRIORITY, priority.toString());
+        values.put(InternshipTable.INTERNSHIP_DAYS, internshipDays);
+        values.put(InternshipTable.START_HOUR, startHour);
+        values.put(InternshipTable.END_HOUR, endHour);
+        values.put(InternshipTable.START_LUNCH, startLunch);
+        values.put(InternshipTable.END_LUNCH, endLunch);
+        values.put(InternshipTable.AVERAGE_VISIT_DURING, averageVisitDuring);
+        values.put(InternshipTable.TUTOR_DISPONIBILITY, tutorDisponibility);
+        values.put(InternshipTable.COMMENTS, comments);
 
-        //On ajoute les différentes visites
+        //On ajoute pas des visites lorsqu'on crée un internship
 
         long id = db.insert(InternshipTable.TABLE_NAME, null, values);
         internshipList = queryForAllInternships();
@@ -344,7 +365,15 @@ public class Database extends SQLiteOpenHelper {
                 InternshipTable.ENTERPRISE_ID,
                 InternshipTable.STUDENT_ID,
                 InternshipTable.PROFESSOR_ID,
-                InternshipTable.PRIORITY
+                InternshipTable.PRIORITY,
+                InternshipTable.INTERNSHIP_DAYS,
+                InternshipTable.START_HOUR,
+                InternshipTable.END_HOUR,
+                InternshipTable.START_LUNCH,
+                InternshipTable.END_LUNCH,
+                InternshipTable.AVERAGE_VISIT_DURING,
+                InternshipTable.TUTOR_DISPONIBILITY,
+                InternshipTable.COMMENTS
         };
 
         String selection = null;
@@ -361,11 +390,20 @@ public class Database extends SQLiteOpenHelper {
                 String idInternship = cursor.getString(0);
                 String anneeScolaire = cursor.getString(1);
                 //id pour créer les autres objets
+                String idEntreprise = cursor.getString(2);
                 int idStudentAccount = cursor.getInt(3);
                 int idTeacherAccount = cursor.getInt(4);
-                String idEntreprise = cursor.getString(2);
-
+                //données de le stage
                 Internship.Priority priority;
+                String internshipDays = cursor.getString(6);
+                String starthour = cursor.getString(7);
+                String endHour = cursor.getString(8);
+                String startLunch = cursor.getString(9);
+                String endLunch = cursor.getString(10);
+                int averageVisitDuring = cursor.getInt(11);
+                String tutorDisponibility = cursor.getString(12);
+                String comments = cursor.getString(13);
+
 
                 try {
                     priority = Internship.Priority.valueOf(cursor.getString(5));
@@ -375,7 +413,6 @@ public class Database extends SQLiteOpenHelper {
                     priority = Internship.Priority.LOW;
                 }
 
-
                 //On demande à la BD l'account du prof
                 Account studentAccount = queryForAccountById(idStudentAccount);
                 Account teacherAccount = queryForAccountById(idTeacherAccount);
@@ -384,10 +421,12 @@ public class Database extends SQLiteOpenHelper {
                 Enterprise entreprise = queryForEntrepriseById(idEntreprise);
 
                 //On demande la liste de visit
-                ArrayList<Visit> visitList = getVisitListByInternshipId(idInternship);
+                ArrayList<Visit> visitList = queryForVisitsByInternshipId(idInternship);
 
-                Internship internship = new Internship(idInternship, anneeScolaire,
-                        entreprise, studentAccount, teacherAccount, visitList, priority);
+                Internship internship = new Internship(idInternship, anneeScolaire, entreprise,
+                        studentAccount, teacherAccount, visitList, priority, internshipDays,starthour,
+                        endHour, startLunch, endLunch, averageVisitDuring, tutorDisponibility,
+                        comments);
 
                 internships.add(internship);
 
@@ -519,11 +558,19 @@ public class Database extends SQLiteOpenHelper {
         String idInternship = cursor.getString(0);
         String anneeScolaire = cursor.getString(1);
         //id pour créer les autres objets
+        String idEntreprise = cursor.getString(2);
         int idStudentAccount = cursor.getInt(3);
         int idTeacherAccount = cursor.getInt(4);
-        String idEntreprise = cursor.getString(2);
-
+        //Les données de le stage
         Internship.Priority priority;
+        String internshipDays = cursor.getString(6);
+        String starthour = cursor.getString(7);
+        String endHour = cursor.getString(8);
+        String startLunch = cursor.getString(9);
+        String endLunch = cursor.getString(10);
+        int averageVisitDuring = cursor.getInt(11);
+        String tutorDisponibility = cursor.getString(12);
+        String comments = cursor.getString(13);
 
         try {
             priority = Internship.Priority.valueOf(cursor.getString(5));
@@ -541,10 +588,12 @@ public class Database extends SQLiteOpenHelper {
         Enterprise entreprise = getEntrepriseById(idEntreprise);
 
         //On demande la liste de visit
-        ArrayList<Visit> visitList = getVisitListByInternshipId(idInternship);
+        ArrayList<Visit> visitList = queryForVisitsByInternshipId(idInternship);
 
-        Internship internship = new Internship(idInternship, anneeScolaire,
-                entreprise, studentAccount, teacherAccount, visitList, priority);
+        Internship internship = new Internship(idInternship, anneeScolaire, entreprise,
+                studentAccount, teacherAccount, visitList, priority, internshipDays, starthour, endHour, startLunch,
+                endLunch, averageVisitDuring, tutorDisponibility, comments);
+
 
         cursor.close();
 
@@ -657,7 +706,7 @@ public class Database extends SQLiteOpenHelper {
      * @param internshipId
      * @return
      */
-    public ArrayList<Visit> getVisitListByInternshipId(String internshipId) {
+    private ArrayList<Visit> queryForVisitsByInternshipId(String internshipId) {
         //SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Visit> visitsList = new ArrayList<>();
 
@@ -666,24 +715,17 @@ public class Database extends SQLiteOpenHelper {
 
         Cursor cursorVisit = db.rawQuery(query, args);
 
-        if (cursorVisit != null) {
+        if (cursorVisit != null && cursorVisit.getCount() > 0) {
             cursorVisit.moveToFirst();
         } else { //S'il y n'y a pas de visites
             return new ArrayList<>();
         }
 
         do {
-            try {
+            Visit visit = new Visit(cursorVisit.getString(0), cursorVisit.getString(1),
+                    cursorVisit.getString(2), cursorVisit.getString(3), cursorVisit.getString(4));
 
-                Visit visit = new Visit(cursorVisit.getString(0), cursorVisit.getString(1),
-                        cursorVisit.getString(2), cursorVisit.getString(3), cursorVisit.getString(4),
-                        cursorVisit.getString(5), cursorVisit.getString(6), cursorVisit.getString(7), cursorVisit.getString(8));
-
-                visitsList.add(visit);
-            } catch (Exception e) {
-                return new ArrayList<>();
-            }
-
+            visitsList.add(visit);
         } while (cursorVisit.moveToNext());
 
         cursorVisit.close();
@@ -704,9 +746,15 @@ public class Database extends SQLiteOpenHelper {
         values.put(InternshipTable.STUDENT_ID, internship.getStudentAccount().getAccountId());
         values.put(InternshipTable.PROFESSOR_ID, internship.getTeacherAccount().getAccountId());
         values.put(InternshipTable.PRIORITY, internship.getPriority().toString());
+        values.put(InternshipTable.INTERNSHIP_DAYS, internship.getInternshipDays());
+        values.put(InternshipTable.START_HOUR, internship.getStartHour());
+        values.put(InternshipTable.END_HOUR, internship.getEndHour());
+        values.put(InternshipTable.START_LUNCH, internship.getStartLunch());
+        values.put(InternshipTable.END_LUNCH, internship.getEndLunch());
+        values.put(InternshipTable.AVERAGE_VISIT_DURING, internship.getAverageVisitDuring());
+        values.put(InternshipTable.TUTOR_DISPONIBILITY, internship.getTutorDisponibilities());
+        values.put(InternshipTable.COMMENTS, internship.getComments());
 
-        //On update les visits du internship
-        updateVisitsByInternshipId(internship.getIdInternship(), internship.getVisitList());
 
         String whereClause = InternshipTable._ID + " = " + "\"" + internship.getIdInternship() + "\"";
 
@@ -829,35 +877,70 @@ public class Database extends SQLiteOpenHelper {
         //String[] firstName = {"Mikaël", "Thomas", "Simon", "Kevin", "Cédric", "Vanessa", "Vincent", "Mélissa", "Diego", "Geneviève"};
         //String[] lastName = {"Boucher", "Caron", "Gingras", "Leblanc", "Masson", "Monette", "Picard", "Poulain", "Vargas", "Tremblay"};
 
+        //Default date
+        String strCurrentDate= "2016-07-13 13:10:00";
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date newDate = null;
+        String defaultDateTest = null;
+        try {
+            newDate = format.parse(strCurrentDate);
+            format = new SimpleDateFormat("hh:mm");
+            defaultDateTest = format.format(newDate);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
         insertInternship("2021", jeanCoutu, 2,
-                1, new ArrayList<Visit>(), Internship.Priority.LOW);
+                1, Internship.Priority.LOW, "monday|wednesday", defaultDateTest,
+                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
+                "");
 
         insertInternship("2021", garageTremblay, 3,
-                1, new ArrayList<Visit>(),Internship.Priority.LOW);
+                1, Internship.Priority.LOW, "monday|wednesday", defaultDateTest,
+                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
+                "");
 
         insertInternship("2021", pharmaprix, 4,
-                1, new ArrayList<Visit>(), Internship.Priority.LOW);
+                1, Internship.Priority.LOW,"monday|wednesday", defaultDateTest,
+                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
+                "");
 
         insertInternship("2021", alimentationGenerale, 5,
-                1, new ArrayList<Visit>(), Internship.Priority.LOW);
+                1, Internship.Priority.LOW, "monday|wednesday",defaultDateTest,
+                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
+                "");
 
         insertInternship("2021", autoRepair, 6,
-                1, new ArrayList<Visit>(), Internship.Priority.LOW);
+                1, Internship.Priority.LOW, "monday|wednesday",defaultDateTest,
+                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
+                "");
 
         insertInternship("2021", subway, 7,
-                1, new ArrayList<Visit>(), Internship.Priority.LOW);
+                1, Internship.Priority.LOW, "monday|wednesday",defaultDateTest,
+                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
+                "");
 
         insertInternship("2021", metro, 8,
-                1, new ArrayList<Visit>(), Internship.Priority.LOW);
+                1, Internship.Priority.LOW,"monday|wednesday", defaultDateTest,
+                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
+                "");
 
         insertInternship("2021", epicerieLesJardinieres, 9,
-                1, new ArrayList<Visit>(), Internship.Priority.LOW);
+                1, Internship.Priority.LOW,"monday|wednesday", defaultDateTest,
+                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
+                "");
 
         insertInternship("2021", boucherieMarien, 10,
-                1, new ArrayList<Visit>(), Internship.Priority.LOW);
+                1, Internship.Priority.LOW, "monday|wednesday",defaultDateTest,
+                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
+                "");
 
         insertInternship("2021", iga, 11,
-                1, new ArrayList<Visit>(), Internship.Priority.LOW);
+                1, Internship.Priority.LOW, "monday|wednesday",defaultDateTest,
+                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
+                "");
 
     }
 

@@ -20,6 +20,14 @@ public class Internship implements Comparable<Internship> {
     private Account accountTeacher;
     private ArrayList<Visit> visitList;
     private Priority priority = Priority.LOW;
+    private String internshipDays;
+    private String startHour;
+    private String endHour;
+    private String startLunch;
+    private String endLunch;
+    private int averageVisitDuring;
+    private String tutorDisponibility;
+    private String comments;
 
     /**
      * Permet de créer un nouveau stage. Un stage doit contenir les informations d'un compte d'un prof,
@@ -34,7 +42,9 @@ public class Internship implements Comparable<Internship> {
      * @param priority Priorité du stage.
      */
     public Internship(String idInternship, String schoolYear, Enterprise enterprise,
-                      Account accountStudent, Account accountTeacher, ArrayList<Visit> visitList, Priority priority){
+                      Account accountStudent, Account accountTeacher, ArrayList<Visit> visitList, Priority priority,
+                      String internshipDays, String startHour, String endHour, String startLunch, String endLunch, int averageVisitDuring,
+                      String tutorDisponibility, String comments){
         this.idInternship = idInternship;
         this.schoolYear = schoolYear;
         this.accountTeacher = accountTeacher;
@@ -42,6 +52,14 @@ public class Internship implements Comparable<Internship> {
         this.enterprise = enterprise;
         this.visitList = visitList;
         this.priority = priority;
+        this.internshipDays = internshipDays;
+        this.startHour = startHour;
+        this.endHour = endHour;
+        this.startLunch = startLunch;
+        this.endLunch = endLunch;
+        this.averageVisitDuring = averageVisitDuring;
+        this.tutorDisponibility = tutorDisponibility;
+        this.comments = comments;
     }
 
     /**
@@ -122,6 +140,70 @@ public class Internship implements Comparable<Internship> {
 
     public void setVisitList(ArrayList<Visit> visitList) {
         this.visitList = visitList;
+    }
+
+    public String getInternshipDays() {
+        return internshipDays;
+    }
+
+    public void setInternshipDays(String internshipDays) {
+        this.internshipDays = internshipDays;
+    }
+
+    public String getStartHour() {
+        return startHour;
+    }
+
+    public void setStartHour(String startHour) {
+        this.startHour = startHour;
+    }
+
+    public String getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(String endHour) {
+        this.endHour = endHour;
+    }
+
+    public String getStartLunch() {
+        return startLunch;
+    }
+
+    public void setStartLunch(String startLunch) {
+        this.startLunch = startLunch;
+    }
+
+    public String getEndLunch() {
+        return endLunch;
+    }
+
+    public void setEndLunch(String endLunch) {
+        this.endLunch = endLunch;
+    }
+
+    public int getAverageVisitDuring() {
+        return averageVisitDuring;
+    }
+
+    public void setAverageVisitDuring(int averageVisitDuring) {
+        this.averageVisitDuring = averageVisitDuring;
+    }
+
+    public String getTutorDisponibilities() {
+        return tutorDisponibility;
+    }
+
+    public void setTutorDisponibility(String tutorDisponibility) {
+        this.tutorDisponibility = tutorDisponibility;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 
     @Override

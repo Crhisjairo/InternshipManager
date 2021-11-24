@@ -11,11 +11,15 @@ public class Visit {
     private String internshipId;
     private String visitDate;
     private String startHour;
-    private String endHour;
-    private String startLunch;
-    private String endLunch;
-    private String startDuring;
-    private String endDuring;
+    private String during;
+
+    /*
+    public static final String TABLE_NAME = "visits";
+        public static final String INTERNSHIP_ID = "stage_id";
+        public static final String DATE = "date";
+        public static final String START_HOUR = "start_hour";
+        public static final String DURING = "during";
+     */
 
     /**
      * Crée une nouvelle visite.
@@ -24,16 +28,12 @@ public class Visit {
      * @param visitDate Date de la visite.
      * @param startHour Heure du début de la visite.
      */
-    public Visit(String visitId, String internshipId, String visitDate, String startHour, String endHour, String startLunch, String endLunch, String startDuring, String endDuring) {
+    public Visit(String visitId, String internshipId, String visitDate, String startHour, String during) {
         this.visitId = visitId;
         this.internshipId = internshipId;
         this.visitDate = visitDate;
         this.startHour = startHour;
-        this.endHour = endHour;
-        this.startLunch = startLunch;
-        this.endLunch = endLunch;
-        this.startDuring = startDuring;
-        this.endDuring = endDuring;
+        this.during = during;
     }
 
     /**
@@ -76,43 +76,13 @@ public class Visit {
         this.startHour = startHour;
     }
 
-    public String getEndHour() {
-        return endHour;
+
+
+    public String getDuring() {
+        return during;
     }
 
-    public void setEndHour(String endHour) {
-        this.endHour = endHour;
-    }
-
-    public String getStartLunch() {
-        return startLunch;
-    }
-
-    public void setStartLunch(String startLunch) {
-        this.startLunch = startLunch;
-    }
-
-    public String getEndLunch() {
-        return endLunch;
-    }
-
-    public void setEndLunch(String endLunch) {
-        this.endLunch = endLunch;
-    }
-
-    public String getStartDuring() {
-        return startDuring;
-    }
-
-    public void setStartDuring(String startDuring) {
-        this.startDuring = startDuring;
-    }
-
-    public String getEndDuring() {
-        return endDuring;
-    }
-
-    public void setEndDuring(String endDuring) {
-        this.endDuring = endDuring;
+    public void setDuring(String during) {
+        this.during = during;
     }
 }
