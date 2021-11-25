@@ -15,6 +15,8 @@ import ca.qc.bdeb.internshipmanager.dataclasses.Account;
 import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
+import ca.qc.bdeb.internshipmanager.reseau.JustineAPI;
+import ca.qc.bdeb.internshipmanager.reseau.JustineAPIClient;
 
 import java.io.ByteArrayOutputStream;
 import java.text.Normalizer;
@@ -29,6 +31,8 @@ import java.util.UUID;
  * Elle permet de faire les différentes requêtes à la BD.
  */
 public class Database extends SQLiteOpenHelper {
+
+    private JustineAPI client;
 
     public static final int DB_VERSION = 1;
     public static final String DB_NAME = "InternshipSystem.db";
@@ -143,6 +147,8 @@ public class Database extends SQLiteOpenHelper {
         this.db = sqLiteDatabase;
 
         firstInsert(sqLiteDatabase);
+
+        client = JustineAPIClient.getRetrofit().create(JustineAPI.class);
         /*
         internshipList = queryForAllInternships();
         enterprisesList = queryForAllEnterprises();

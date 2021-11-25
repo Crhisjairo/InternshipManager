@@ -25,6 +25,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
+import ca.qc.bdeb.internshipmanager.ConnectionValidation;
 import ca.qc.bdeb.internshipmanager.R;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.fragments.CalendarFragment;
@@ -59,8 +60,7 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.navigation_view);
 
-
-        //todo placer
+        //demande la permission de prendre votre localisation
         ActivityCompat.requestPermissions(MainActivity.this,
                 permissions,
                 PERMISSION_MAP_CODE);
@@ -74,8 +74,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //On set le ListInternshipFragment comme défaut et on séléctionne le premier élément du drawer
-        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ListInternshipFragment(internships)).commit();
-        navigationView.getMenu().getItem(0).setChecked(true);
+        if (ConnectionValidation.authToken.isEmpty()) {
+            connecter();
+        } else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ListInternshipFragment(internships)).commit();
+            navigationView.getMenu().getItem(0).setChecked(true);
+        }
 
         // On set le comportment des clicks sur le menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -84,29 +88,33 @@ public class MainActivity extends AppCompatActivity {
                 int id = item.getItemId();
                 item.setChecked(true);
                 drawerLayout.closeDrawer(GravityCompat.START);
-                switch (id){
-                    case R.id.nav_internship_list:
-                        replaceFragment(new ListInternshipFragment(internships));
-                        break;
-                    case R.id.nav_map:
-                        replaceFragment(new MapsFragment(isLocationEnabled));
-                        break;
-                    case R.id.nav_calendar:
-                        replaceFragment(new CalendarFragment());
-                        break;
-                    case R.id.nav_settings:
-                        replaceFragment(new SettingsFragment());
-                        break;
-                    case R.id.nav_logout:
-                        Intent intent = new Intent(MainActivity.this, Login.class);
-                        startActivity(intent);
-                        finish();
-                        break;
-                    case R.id.nav_info:
-                        replaceFragment(new InfoFragment());
-                        break;
-                    default:
-                        break;
+                if (ConnectionValidation.authToken.isEmpty()) {
+                    connecter();
+                } else {
+                    switch (id) {
+                        case R.id.nav_internship_list:
+                            replaceFragment(new ListInternshipFragment(internships));
+                            break;
+                        case R.id.nav_map:
+                            replaceFragment(new MapsFragment(isLocationEnabled));
+                            break;
+                        case R.id.nav_calendar:
+                            replaceFragment(new CalendarFragment());
+                            break;
+                        case R.id.nav_settings:
+                            replaceFragment(new SettingsFragment());
+                            break;
+                        case R.id.nav_logout:
+                            Intent intent = new Intent(MainActivity.this, Login.class);
+                            startActivity(intent);
+                            finish();
+                            break;
+                        case R.id.nav_info:
+                            replaceFragment(new InfoFragment());
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 return true;
             }
@@ -136,4 +144,9 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+    private void connecter() {
+        Intent intent = new Intent(MainActivity.this, Login.class);
+        startActivity(intent);
+        finish();
+    }
 }
