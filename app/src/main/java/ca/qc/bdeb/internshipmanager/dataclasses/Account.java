@@ -12,7 +12,7 @@ import java.io.Serializable;
  * On a trois types de comptes: 0. Admin  1. Professeur  2. Étudiant.
  */
 public class Account implements Comparable<Account>  {
-    private int accountId;
+    private String accountId;
     private String createdAt;
     private String deletedAt;
     private String email;
@@ -40,7 +40,7 @@ public class Account implements Comparable<Account>  {
      * @param updatedAt Date de la dernière actualisation des information du compte.
      * @param accountType Type de compte, s'il s'agit d'un admin, professeur ou étudiant.
      */
-    public Account(int accountId, String createdAt, String deletedAt, String email, boolean isActive,
+    public Account(String accountId, String createdAt, String deletedAt, String email, boolean isActive,
                    String password, String lastName, String firstName, Bitmap photo, String updatedAt,
                    int accountType) {
         this.accountId = accountId;
@@ -159,7 +159,7 @@ public class Account implements Comparable<Account>  {
      * Recupère l'id unique du compte.
      * @return Id unique du compte.
      */
-    public int getAccountId() {
+    public String getAccountId() {
         return accountId;
     }
 

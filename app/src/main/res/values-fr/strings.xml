@@ -51,4 +51,7 @@
     <string name="lunchScheduleText">Horaire de diner</string>
     <string name="fridayAmText">Vendredi AM</string>
     <string name="wednesdayPmText">Mercredi PM</string>
+    <string name="invalid_username">Nom utilisateur non valide</string>
+    <string name="invalid_password">Mot de passe doit avoir >5 caractères</string>
+    <string name="login_failed">"Login echué"</string>
 </resources>

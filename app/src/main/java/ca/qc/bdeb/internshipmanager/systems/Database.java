@@ -17,11 +17,7 @@ import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
 
 import java.io.ByteArrayOutputStream;
-import java.text.Normalizer;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -36,7 +32,7 @@ public class Database extends SQLiteOpenHelper {
     private static Database instance = null;
     private final Context context;
 
-    private SQLiteDatabase db;
+    private static SQLiteDatabase db;
 
     private Account currentTeacherAccount;
     private ArrayList<Internship> internshipList;
@@ -49,7 +45,7 @@ public class Database extends SQLiteOpenHelper {
      */
     private static final String CREATION_TABLE_ACCOUNTS = "CREATE TABLE "
             + AccountTable.TABLE_NAME
-            + " (" + AccountTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + " (" + AccountTable._ID + " VARCHAR2(255) PRIMARY KEY,"
             + AccountTable.FIRST_NAME + " VARCHAR2(255),"
             + AccountTable.LAST_NAME + " VARCHAR2(255),"
             + AccountTable.EMAIL + " VARCHAR2(255),"
@@ -115,9 +111,12 @@ public class Database extends SQLiteOpenHelper {
         this.db = this.getWritableDatabase();
 
         internshipList = queryForAllInternships();
-        enterprisesList = queryForAllEnterprises();
-        studentsAccountList = queryForAllStudentsAccount();
-        logInTeacher();
+//        enterprisesList = queryForAllEnterprises();
+//        studentsAccountList = queryForAllStudentsAccount();
+    }
+
+    public static  SQLiteDatabase getSql(){
+        return db;
     }
 
     /**
@@ -142,7 +141,6 @@ public class Database extends SQLiteOpenHelper {
 
         this.db = sqLiteDatabase;
 
-        firstInsert(sqLiteDatabase);
         /*
         internshipList = queryForAllInternships();
         enterprisesList = queryForAllEnterprises();
@@ -153,20 +151,6 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
     }
-
-    /**
-     * Il récupère le compte du prof qui utilise l'application
-     * @deprecated Cette méthode récupère le premier compte de type prof qui a été ajouté à la BD. Il
-     * faut rendre ça dinamique.
-     */
-    private void logInTeacher() {
-        /*TODO il faut get le account du teacher en fonction de la page de Login.
-          Pour le moment, on get le seul teacher qui doit exister.
-         */
-        currentTeacherAccount = queryForAllAccountsByType(1).get(0);
-    }
-
-
 
     //region SQL Tables names
     /**
@@ -233,12 +217,12 @@ public class Database extends SQLiteOpenHelper {
     /**
      * Methode qui va permettre d'insérer un nouvel étudiant
      */
-    public void insertAccount(SQLiteDatabase db, String createdAt, String deletedAt, String email, boolean isActive,
+    public void insertAccount(SQLiteDatabase db, String id, String createdAt, String deletedAt, String email, boolean isActive,
                               String password, String lastName, String firstName, Bitmap photo, String updatedAt,
                               int accountType) {
 
         ContentValues values = new ContentValues();
-
+        values.put(AccountTable._ID, id);
         values.put(AccountTable.CREATED_AT, createdAt);
         values.put(AccountTable.DELETED_AT, deletedAt);
         values.put(AccountTable.EMAIL, email);
@@ -269,36 +253,26 @@ public class Database extends SQLiteOpenHelper {
         values.put(AccountTable.UPDATED_AT, updatedAt);
         values.put(AccountTable.ACCOUNT_TYPE, accountType);
 
-        int active = 0;
-        if (isActive)
-            active = 1;
-        values.put(AccountTable.IS_ACTIVE, active);
+        values.put(AccountTable.IS_ACTIVE, isActive ? 1 : 0);
 
         db.insert(AccountTable.TABLE_NAME, null, values);
-
     }
 
     /**
      * Methode qui va permettre d'insérer une nouvelle entreprise
      */
-    public String insertEnterprise(String name, String address, String town,
+    public void insertEnterprise(String id, String name, String address, String town,
                                    String province, String postalCode) {
 
         ContentValues values = new ContentValues();
-        String idEntreprise = UUID.randomUUID().toString();
-        values.put(EnterpriseTable._ID, idEntreprise);
+        values.put(EnterpriseTable._ID, id);
         values.put(EnterpriseTable.ENTERPRISE_NAME, name);
         values.put(EnterpriseTable.ENTERPRISE_ADDRESS, address);
         values.put(EnterpriseTable.PROVINCE, province);
         values.put(EnterpriseTable.POSTAL_CODE, postalCode);
         values.put(EnterpriseTable.TOWN, town);
 
-        long id = db.insert(EnterpriseTable.TABLE_NAME, null, values);
-
-        if (id != 0) {
-            return idEntreprise;
-        }
-        return "";
+        db.insert(EnterpriseTable.TABLE_NAME, null, values);
     }
 
     /**
@@ -314,7 +288,7 @@ public class Database extends SQLiteOpenHelper {
         values.put(VisitTable.START_HOUR, startHour);
         values.put(VisitTable.DURING, during);
 
-        long id = db.insert(VisitTable.TABLE_NAME, null, values);
+        db.insert(VisitTable.TABLE_NAME, null, values);
     }
 
     /**
@@ -325,14 +299,14 @@ public class Database extends SQLiteOpenHelper {
      * @param idTeacherAccount id du compte du professeur lié au stage.
      * @param priority Priorité du nouveau stage.
      */
-    public void insertInternship(String schoolYear, String idEntreprise,
-                                 int idStudentAccount, int idTeacherAccount,
+    public void insertInternship(String id, String schoolYear, String idEntreprise,
+                                 String idStudentAccount, String idTeacherAccount,
                                  Internship.Priority priority, String internshipDays ,String startHour, String endHour,
                                  String startLunch, String endLunch, int averageVisitDuring,
                                  String tutorDisponibility, String comments) {
 
-        ContentValues values = new ContentValues();
-        values.put(InternshipTable._ID, UUID.randomUUID().toString());
+        ContentValues values = new ContentValues(); //UUID.randomUUID().toString()
+        values.put(InternshipTable._ID, id);
         values.put(InternshipTable.SCHOOL_YEAR, schoolYear);
         values.put(InternshipTable.ENTERPRISE_ID, idEntreprise);
         values.put(InternshipTable.STUDENT_ID, idStudentAccount);
@@ -349,7 +323,7 @@ public class Database extends SQLiteOpenHelper {
 
         //On ajoute pas des visites lorsqu'on crée un internship
 
-        long id = db.insert(InternshipTable.TABLE_NAME, null, values);
+        db.insert(InternshipTable.TABLE_NAME, null, values);
         internshipList = queryForAllInternships();
     }
 
@@ -393,8 +367,8 @@ public class Database extends SQLiteOpenHelper {
                 String anneeScolaire = cursor.getString(1);
                 //id pour créer les autres objets
                 String idEntreprise = cursor.getString(2);
-                int idStudentAccount = cursor.getInt(3);
-                int idTeacherAccount = cursor.getInt(4);
+                String idStudentAccount = cursor.getString(3);
+                String idTeacherAccount = cursor.getString(4);
                 //données de le stage
                 Internship.Priority priority;
                 String internshipDays = cursor.getString(6);
@@ -416,8 +390,8 @@ public class Database extends SQLiteOpenHelper {
                 }
 
                 //On demande à la BD l'account du prof
-                Account studentAccount = queryForAccountById(idStudentAccount);
-                Account teacherAccount = queryForAccountById(idTeacherAccount);
+                Account studentAccount = queryForAccountByLocalId(idStudentAccount);
+                Account teacherAccount = queryForAccountByLocalId(idTeacherAccount);
 
                 //On demande à la BD l'entreprise
                 Enterprise entreprise = queryForEntrepriseById(idEntreprise);
@@ -476,7 +450,7 @@ public class Database extends SQLiteOpenHelper {
             Bitmap photo = BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
 
             Account account = new Account(
-                    cursor.getInt(0), cursor.getString(6),
+                    cursor.getString(0), cursor.getString(6),
                     cursor.getString(7), cursor.getString(3),
                     cursor.getInt(9) > 0, cursor.getString(4),
                     cursor.getString(2), cursor.getString(1),
@@ -513,7 +487,7 @@ public class Database extends SQLiteOpenHelper {
         Bitmap photo = BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
 
         teacher =new Account(
-                cursor.getInt(0), cursor.getString(6),
+                cursor.getString(0), cursor.getString(6),
                 cursor.getString(7), cursor.getString(3),
                 cursor.getInt(9) > 0, cursor.getString(4),
                 cursor.getString(2), cursor.getString(1),
@@ -539,11 +513,11 @@ public class Database extends SQLiteOpenHelper {
      * @param id id du compte à recupérer.
      * @return Le compte si elle existe, sinon il return null.
      */
-    private Account queryForAccountById(int id) {
+    public Account queryForAccountByLocalId(String id) {
         //SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT * FROM " + AccountTable.TABLE_NAME + " WHERE _id = ?";
-        String[] args = new String[]{Integer.toString(id)};
+        String[] args = new String[]{id};
 
         Cursor cursor = db.rawQuery(query, args);
 
@@ -560,7 +534,7 @@ public class Database extends SQLiteOpenHelper {
         Bitmap photo = BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
 
         Account account = new Account(
-                cursor.getInt(0), cursor.getString(6),
+                cursor.getString(0), cursor.getString(6),
                 cursor.getString(7), cursor.getString(3),
                 cursor.getInt(9) > 0, cursor.getString(4),
                 cursor.getString(2), cursor.getString(1),
@@ -592,8 +566,8 @@ public class Database extends SQLiteOpenHelper {
         String anneeScolaire = cursor.getString(1);
         //id pour créer les autres objets
         String idEntreprise = cursor.getString(2);
-        int idStudentAccount = cursor.getInt(3);
-        int idTeacherAccount = cursor.getInt(4);
+        String idStudentAccount = cursor.getString(3);
+        String idTeacherAccount = cursor.getString(4);
         //Les données de le stage
         Internship.Priority priority;
         String internshipDays = cursor.getString(6);
@@ -614,8 +588,8 @@ public class Database extends SQLiteOpenHelper {
         }
 
         //On demande à la BD l'account du prof
-        Account studentAccount = queryForAccountById(idStudentAccount);
-        Account teacherAccount = queryForAccountById(idTeacherAccount);
+        Account studentAccount = queryForAccountByLocalId(idStudentAccount);
+        Account teacherAccount = queryForAccountByLocalId(idTeacherAccount);
 
         //On demande à la BD l'entreprise
         Enterprise entreprise = getEntrepriseById(idEntreprise);
@@ -676,7 +650,7 @@ public class Database extends SQLiteOpenHelper {
         return enterprises;
     }
 
-    private Enterprise queryForEntrepriseById(String id){
+    public Enterprise queryForEntrepriseById(String id){
         //SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT * FROM " + EnterpriseTable.TABLE_NAME + " WHERE _id = ?";
@@ -826,8 +800,6 @@ public class Database extends SQLiteOpenHelper {
 
         db.update(AccountTable.TABLE_NAME, values, whereClause, null);
         studentsAccountList = queryForAllStudentsAccount();
-        //TODO il faut mettre à jour aussi le compte du teacher dans le cas où on update ses données à lui. Ça c'est juste pour faire fonctionner xd.
-        logInTeacher();
     }
 
     /**
@@ -842,139 +814,5 @@ public class Database extends SQLiteOpenHelper {
         internshipList = queryForAllInternships();
     }
 
-    /**
-     * Méthode utilisé lors de la première insertion des données.
-     * Elle ajoute les données par défault.
-     *
-     * @param db Connection à la BD.
-     */
-    private void firstInsert(SQLiteDatabase db) {
-
-        String[] firstName = {"Mikaël", "Thomas", "Simon", "Kevin", "Cédric", "Vanessa", "Vincent", "Mélissa", "Diego", "Geneviève"};
-        String[] lastName = {"Boucher", "Caron", "Gingras", "Leblanc", "Masson", "Monette", "Picard", "Poulain", "Vargas", "Tremblay"};
-        String date = (new Date()).toString();
-
-        //Insert prof
-        insertAccount(db, date, null, "prades.pierre@test.com",
-                true, "mdp123", "Prades", "Pierre", null,
-                date, 1);
-
-        //Insert élèves
-        for (int inserts = 0; inserts < firstName.length; inserts++) {
-
-            String courriel = lastName[inserts].toLowerCase() + "." + firstName[inserts].toLowerCase()
-                    + "@test.com";
-            courriel = Normalizer.normalize(courriel, Normalizer.Form.NFD);
-            courriel = courriel.replaceAll("[^\\p{ASCII}]", "");
-
-            insertAccount(db, date, null, courriel, true,
-                    "mdp123", lastName[inserts], firstName[inserts], null,
-                    date, 2);
-
-
-        }
-
-        //TODO
-        //Première donnée
-        String jeanCoutu = insertEnterprise("Jean Coutu",
-                "4885 Henri-Bourassa Blvd W #731", "Montréal",
-                "Quebec", "H3L 1P3");
-        String garageTremblay = insertEnterprise("Garage Tremblay",
-                "10142 Boul. Saint-Laurent", "Montréal",
-                "Quebec", "H3L 2N7");
-        String pharmaprix = insertEnterprise("Pharmaprix",
-                "3611 Rue Jarry E", "Montréal",
-                "Quebec", "H1Z 2G1");
-        String alimentationGenerale = insertEnterprise("Alimentation Générale",
-                "1853 Chem. Rockland,", "Montréal",
-                "Quebec", "H3P 2Y7");
-        String autoRepair = insertEnterprise("Auto Repair",
-                "8490 Rue Saint-Dominique", "Montréal",
-                "Quebec", "H2P 2L5");
-        String subway = insertEnterprise("Subway",
-                "775 Rue Chabanel O", "Montréal",
-                "Quebec", "H4N 3J7");
-        String metro = insertEnterprise("Métro",
-                "1331 Blvd. de la Côte-Vertu", "Montréal",
-                "Quebec", "H4L 1Z1");
-        String epicerieLesJardinieres = insertEnterprise("Épicerie les Jardinières",
-                "10345 Ave Christophe-Colomb", "Montréal",
-                "Quebec", "H2C 2V1");
-        String boucherieMarien = insertEnterprise("Boucherie Marien",
-                "1499-1415 Rue Jarry E", "Montréal",
-                "Quebec", "");
-        String iga = insertEnterprise("IGA",
-                "8921 Rue Lajeunesse", "Montréal",
-                "Quebec", "H2M 1S1");
-
-        //String[] firstName = {"Mikaël", "Thomas", "Simon", "Kevin", "Cédric", "Vanessa", "Vincent", "Mélissa", "Diego", "Geneviève"};
-        //String[] lastName = {"Boucher", "Caron", "Gingras", "Leblanc", "Masson", "Monette", "Picard", "Poulain", "Vargas", "Tremblay"};
-
-        //Default date
-        String strCurrentDate= "2016-07-13 13:10:00";
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date newDate = null;
-        String defaultDateTest = null;
-        try {
-            newDate = format.parse(strCurrentDate);
-            format = new SimpleDateFormat("hh:mm");
-            defaultDateTest = format.format(newDate);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-
-        insertInternship("2021", jeanCoutu, 2,
-                1, Internship.Priority.LOW, "monday|wednesday", defaultDateTest,
-                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
-                "");
-
-        insertInternship("2021", garageTremblay, 3,
-                1, Internship.Priority.LOW, "monday|wednesday", defaultDateTest,
-                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
-                "");
-
-        insertInternship("2021", pharmaprix, 4,
-                1, Internship.Priority.LOW,"monday|wednesday", defaultDateTest,
-                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
-                "");
-
-        insertInternship("2021", alimentationGenerale, 5,
-                1, Internship.Priority.LOW, "monday|wednesday",defaultDateTest,
-                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
-                "");
-
-        insertInternship("2021", autoRepair, 6,
-                1, Internship.Priority.LOW, "monday|wednesday",defaultDateTest,
-                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
-                "");
-
-        insertInternship("2021", subway, 7,
-                1, Internship.Priority.LOW, "monday|wednesday",defaultDateTest,
-                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
-                "");
-
-        insertInternship("2021", metro, 8,
-                1, Internship.Priority.LOW,"monday|wednesday", defaultDateTest,
-                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
-                "");
-
-        insertInternship("2021", epicerieLesJardinieres, 9,
-                1, Internship.Priority.LOW,"monday|wednesday", defaultDateTest,
-                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
-                "");
-
-        insertInternship("2021", boucherieMarien, 10,
-                1, Internship.Priority.LOW, "monday|wednesday",defaultDateTest,
-                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
-                "");
-
-        insertInternship("2021", iga, 11,
-                1, Internship.Priority.LOW, "monday|wednesday",defaultDateTest,
-                defaultDateTest, defaultDateTest, defaultDateTest, 30, "Monday",
-                "");
-
-    }
 
 }
