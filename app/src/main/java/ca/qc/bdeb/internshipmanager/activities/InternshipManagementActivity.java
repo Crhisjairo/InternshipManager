@@ -519,6 +519,7 @@ public class InternshipManagementActivity extends AppCompatActivity {
         String comments = etComments.getText().toString();
 
         //On l'ajoute à la BD
+        //TODO CHANGER ÇA Là send l'id
 //        db.insertInternship(anneeScolaire, entreprise.getEnterpriseId(), student.getAccountId(),
 //                teacher.getAccountId(), ib_new_flagSelector.getPriority(), internshipDays, startHour,
 //                endHour, startLunch, endLunch, averageVisitDuring, tutorDisponibility, comments);

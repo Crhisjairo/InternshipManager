@@ -106,6 +106,7 @@ public class ListInternshipFragment extends Fragment {
             }
         });
 
+
         //RecyclerView avec adapter
         rvListeStages = view.findViewById(R.id.rvListeStage); //Initialise le recyclerView
         stagesListAdapter = createRecyclerViewAdapter(internships);

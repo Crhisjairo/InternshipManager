@@ -125,6 +125,8 @@ public class Login extends AppCompatActivity {
                        JSONObject rep = new JSONObject(response.body().string());
                        ConnectionValidation.authToken = rep.getString("access_token");
                        ConnectionValidation.authId = rep.getString("id");
+                       Log.d("Icitte", "Token: " + ConnectionValidation.authToken + " Id: " + ConnectionValidation.authId );
+
                        Toast.makeText(getApplicationContext(), "Connexion réussie!!", Toast.LENGTH_LONG).show();
                        Intent intent = new Intent(Login.this, MainActivity.class);
                        startActivity(intent);

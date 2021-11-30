@@ -50,12 +50,15 @@ enum Type{
     PROFESSEUR,
     ETUDIANT
 }
+
 public class MainActivity extends AppCompatActivity {
 
     private JustineAPI client;
     private Database db;
     private SQLiteDatabase sql;
     private ArrayList<Internship> internships;
+
+    private NavigationView navigationView;
 
     public static final String INTERNSHIP_ID_TO_MODIFY_KEY = "TO_MODIFY";
 
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         MaterialToolbar toolbar = findViewById(R.id.topAppbar);
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView = findViewById(R.id.navigation_view);
 
         //demande la permission de prendre votre localisation
         ActivityCompat.requestPermissions(MainActivity.this,
@@ -97,10 +100,13 @@ public class MainActivity extends AppCompatActivity {
         if (ConnectionValidation.authToken.isEmpty()) {
             connecter();
         } else {
+            /*
             internships = db.getAllInternships();
+
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,
                     new ListInternshipFragment(internships)).commit();
             navigationView.getMenu().getItem(0).setChecked(true);
+            */
         }
 
         // On set le comportment des clicks sur le menu
@@ -158,51 +164,79 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     if (response.code() == 200) {
                         JSONArray internships = new JSONArray(response.body().string());
+                        Log.d("Database", internships.length() + "");
+
                         for (int i = 0; i < internships.length(); i++) {
                             JSONObject internship = (JSONObject) internships.get(i);
                             String id = internship.get("id").toString();
                             String createdAt = internship.get("createdAt").toString();
                             String updatedAt = internship.get("updatedAt").toString();
+                            String deletedAt = internship.getString("deletedAt");
                             String anneeScolaire = internship.get("anneeScolaire").toString();
+
                             JSONObject etudiant = (JSONObject) internship.get("etudiant");
                             JSONObject professeur = (JSONObject) internship.get("professeur");
                             JSONObject entreprise = (JSONObject) internship.get("entreprise");
+
                             String priorite = internship.get("priorite").toString();
                             String commentaire = internship.get("commentaire").toString();
                             String heureDebut = internship.get("heureDebut").toString();
                             String heureFin = internship.get("heureFin").toString();
                             String heureDebutPause = internship.get("heureDebutPause").toString();
                             String heureFinPause = internship.get("heureFinPause").toString();
+                            Log.d("Database", etudiant.getString("id") + " :" + i);
 
-                            if (db.queryForAccountByAPIId(etudiant.get("id").toString()) == null){
-                                addAccountsSQL(etudiant);
+                            //Étudiant
+                            if (db.queryForAccountByLocalId(etudiant.get("id").toString()) == null){
+                                //addAccountsSQL(etudiant);
+                                String idEtudiant = etudiant.getString("id");
+
+                                String createdAtEtudiant = etudiant.get("createdAt").toString();
+                                String deletedAtEtudiant = etudiant.get("deletedAt").toString();
+                                String email = etudiant.get("email").toString();
+                                boolean isActive = etudiant.getBoolean("estActif");
+                                String password = "secret";
+                                String lastName = etudiant.get("nom").toString();
+                                String firstName = etudiant.get("prenom").toString();
+                                String updatedAtEtudiant = etudiant.get("updatedAt").toString();
+                                int accountType = (Type.valueOf(etudiant.get("typeCompte")
+                                        .toString())).ordinal();
+
+                                db.insertAccount(sql, idEtudiant, createdAtEtudiant, deletedAtEtudiant,
+                                        email, isActive, password, lastName, firstName, null,
+                                        updatedAtEtudiant, accountType);
+
                             }
-                            if (db.queryForAccountByAPIId(professeur.get("id").toString()) == null){
-                                String id_prof = professeur.get("id").toString();
-                                String created_at = professeur.get("createdAt").toString();
+
+                            //Prof
+                            if (db.queryForAccountByLocalId(professeur.get("id").toString()) == null){
+                                String idProf = professeur.get("id").toString();
+                                String createdAtProf = professeur.get("createdAt").toString();
+                                String deletedAtProf = professeur.get("deletedAt").toString();
                                 String email = professeur.get("email").toString();
                                 boolean isActive = professeur.getBoolean("estActif");
                                 String password = "secret";
                                 String lastName = professeur.get("nom").toString();
                                 String firstName = professeur.get("prenom").toString();
-                                String updated_at = professeur.get("updatedAt").toString();
+                                String updatedAtProf = professeur.get("updatedAt").toString();
                                 int accountType = (Type.valueOf(professeur.get("typeCompte")
                                         .toString())).ordinal();
 
-                                db.insertAccount(sql, id_prof, created_at, null, email, isActive,
+                                db.insertAccount(sql, idProf, createdAtProf, deletedAtProf, email, isActive,
                                         password, lastName, firstName, null,
-                                        updated_at, accountType);
+                                        updatedAtProf, accountType);
                                 Log.d("TAG", "onResponse: Prof added");
                             }
+
                             if(db.queryForEntrepriseById(entreprise.get("id").toString()) == null){
                                 addEnterpriseSQL(entreprise);
                             }
 
                             db.insertInternship(id, anneeScolaire, entreprise.get("id").toString(),
                                     etudiant.get("id").toString(), professeur.get("id").toString(),
-                                    Internship.Priority.LOW, "intershipDays", heureDebut,
+                                    Internship.Priority.LOW, "monday", heureDebut,
                                     heureFin, heureDebutPause,heureFinPause,30,
-                                    null,commentaire);
+                                    "wednesdayAM|",commentaire);
                         }
 
 //                        if (stages.length() == 0) {
@@ -212,6 +246,9 @@ public class MainActivity extends AppCompatActivity {
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
+
+                //Fait que là, on initialise le fragment. C,est pas beau, mais sa roule
+                initListFragment();
             }
 
             @Override
@@ -219,6 +256,17 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("TAG", t.toString());
             }
         });
+    }
+
+    /**
+     * Pour initialiser le fragment qui contient la liste des stages.
+     */
+    private void initListFragment() {
+        internships = db.getAllInternships();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,
+                new ListInternshipFragment(internships)).commit();
+        navigationView.getMenu().getItem(0).setChecked(true);
     }
 
     private void getEntreprises() {
@@ -250,9 +298,12 @@ public class MainActivity extends AppCompatActivity {
         String id = entreprise.get("id").toString();
         String name = entreprise.get("nom").toString();
         String address = entreprise.get("adresse").toString();
+        String postalCode = entreprise.getString("codePostal");
+        String province = entreprise.getString("province");
+        String city  = entreprise.getString("ville");
 
-        db.insertEnterprise(id, name, address, "Montreal",
-                "Quebec", "postalCode" );
+        db.insertEnterprise(id, name, address, city,
+                province, postalCode );
     }
 
     private void getStudents() {

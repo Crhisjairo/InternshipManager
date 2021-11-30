@@ -45,7 +45,7 @@ public class Database extends SQLiteOpenHelper {
      */
     private static final String CREATION_TABLE_ACCOUNTS = "CREATE TABLE "
             + AccountTable.TABLE_NAME
-            + " (" + AccountTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + " (" + AccountTable._ID + " VARCHAR2(255) PRIMARY KEY,"
             + AccountTable.FIRST_NAME + " VARCHAR2(255),"
             + AccountTable.LAST_NAME + " VARCHAR2(255),"
             + AccountTable.EMAIL + " VARCHAR2(255),"
@@ -55,8 +55,7 @@ public class Database extends SQLiteOpenHelper {
             + AccountTable.DELETED_AT + " BLOB,"
             + AccountTable.UPDATED_AT + " BLOB,"
             + AccountTable.IS_ACTIVE + " INT(1),"
-            + AccountTable.ACCOUNT_TYPE + " INT(11),"
-            + AccountTable.ACCOUNT_ID + " VARCHAR2(255))";
+            + AccountTable.ACCOUNT_TYPE + " INT(11))";
 
     /**
      * Requête pour crée la table des enterprises.
@@ -114,7 +113,6 @@ public class Database extends SQLiteOpenHelper {
         internshipList = queryForAllInternships();
 //        enterprisesList = queryForAllEnterprises();
 //        studentsAccountList = queryForAllStudentsAccount();
-        logInTeacher();
     }
 
     public static  SQLiteDatabase getSql(){
@@ -154,20 +152,6 @@ public class Database extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
     }
 
-    /**
-     * Il récupère le compte du prof qui utilise l'application
-     * @deprecated Cette méthode récupère le premier compte de type prof qui a été ajouté à la BD. Il
-     * faut rendre ça dinamique.
-     */
-    private void logInTeacher() {
-        /*TODO il faut get le account du teacher en fonction de la page de Login.
-          Pour le moment, on get le seul teacher qui doit exister.
-        currentTeacherAccount = queryForAllAccountsByType(1).get(0);
-        */
-    }
-
-
-
     //region SQL Tables names
     /**
      * Classe qui permet de définir la table entreprise
@@ -185,7 +169,6 @@ public class Database extends SQLiteOpenHelper {
      * Classe qui permet de définir la table etudiant
      */
     public static class AccountTable implements BaseColumns {
-        public static final String ACCOUNT_ID = "account_id";
         public static final String TABLE_NAME = "accounts";
         public static final String CREATED_AT = "creation_date";
         public static final String DELETED_AT = "delete_date";
@@ -239,7 +222,7 @@ public class Database extends SQLiteOpenHelper {
                               int accountType) {
 
         ContentValues values = new ContentValues();
-        values.put(AccountTable.ACCOUNT_ID, id);
+        values.put(AccountTable._ID, id);
         values.put(AccountTable.CREATED_AT, createdAt);
         values.put(AccountTable.DELETED_AT, deletedAt);
         values.put(AccountTable.EMAIL, email);
@@ -270,7 +253,7 @@ public class Database extends SQLiteOpenHelper {
         values.put(AccountTable.UPDATED_AT, updatedAt);
         values.put(AccountTable.ACCOUNT_TYPE, accountType);
 
-        values.put(AccountTable.IS_ACTIVE, isActive);
+        values.put(AccountTable.IS_ACTIVE, isActive ? 1 : 0);
 
         db.insert(AccountTable.TABLE_NAME, null, values);
     }
@@ -384,7 +367,7 @@ public class Database extends SQLiteOpenHelper {
                 String anneeScolaire = cursor.getString(1);
                 //id pour créer les autres objets
                 String idEntreprise = cursor.getString(2);
-                int idStudentAccount = cursor.getInt(3);
+                String idStudentAccount = cursor.getString(3);
                 String idTeacherAccount = cursor.getString(4);
                 //données de le stage
                 Internship.Priority priority;
@@ -408,7 +391,7 @@ public class Database extends SQLiteOpenHelper {
 
                 //On demande à la BD l'account du prof
                 Account studentAccount = queryForAccountByLocalId(idStudentAccount);
-                Account teacherAccount = queryForAccountByAPIId(idTeacherAccount);
+                Account teacherAccount = queryForAccountByLocalId(idTeacherAccount);
 
                 //On demande à la BD l'entreprise
                 Enterprise entreprise = queryForEntrepriseById(idEntreprise);
@@ -467,7 +450,7 @@ public class Database extends SQLiteOpenHelper {
             Bitmap photo = BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
 
             Account account = new Account(
-                    cursor.getInt(0), cursor.getString(6),
+                    cursor.getString(0), cursor.getString(6),
                     cursor.getString(7), cursor.getString(3),
                     cursor.getInt(9) > 0, cursor.getString(4),
                     cursor.getString(2), cursor.getString(1),
@@ -504,7 +487,7 @@ public class Database extends SQLiteOpenHelper {
         Bitmap photo = BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
 
         teacher =new Account(
-                cursor.getInt(0), cursor.getString(6),
+                cursor.getString(0), cursor.getString(6),
                 cursor.getString(7), cursor.getString(3),
                 cursor.getInt(9) > 0, cursor.getString(4),
                 cursor.getString(2), cursor.getString(1),
@@ -530,43 +513,10 @@ public class Database extends SQLiteOpenHelper {
      * @param id id du compte à recupérer.
      * @return Le compte si elle existe, sinon il return null.
      */
-    private Account queryForAccountByLocalId(int id) {
+    public Account queryForAccountByLocalId(String id) {
         //SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT * FROM " + AccountTable.TABLE_NAME + " WHERE _id = ?";
-        String[] args = new String[]{Integer.toString(id)};
-
-        Cursor cursor = db.rawQuery(query, args);
-
-        if (cursor.getCount() <= 0) {
-            return null;
-        }
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-        }
-
-        //On recupère l'image
-        byte[] imgByte = cursor.getBlob(5);
-        Bitmap photo = BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
-
-        Account account = new Account(
-                cursor.getInt(0), cursor.getString(6),
-                cursor.getString(7), cursor.getString(3),
-                cursor.getInt(9) > 0, cursor.getString(4),
-                cursor.getString(2), cursor.getString(1),
-                photo, cursor.getString(8),
-                cursor.getInt(10));
-
-        cursor.close();
-
-        return account;
-    }
-
-    public Account queryForAccountByAPIId(String id) {
-        //SQLiteDatabase db = this.getReadableDatabase();
-
-        String query = "SELECT * FROM " + AccountTable.TABLE_NAME + " WHERE account_id = ?";
         String[] args = new String[]{id};
 
         Cursor cursor = db.rawQuery(query, args);
@@ -584,7 +534,7 @@ public class Database extends SQLiteOpenHelper {
         Bitmap photo = BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
 
         Account account = new Account(
-                cursor.getInt(0), cursor.getString(6),
+                cursor.getString(0), cursor.getString(6),
                 cursor.getString(7), cursor.getString(3),
                 cursor.getInt(9) > 0, cursor.getString(4),
                 cursor.getString(2), cursor.getString(1),
@@ -616,8 +566,8 @@ public class Database extends SQLiteOpenHelper {
         String anneeScolaire = cursor.getString(1);
         //id pour créer les autres objets
         String idEntreprise = cursor.getString(2);
-        int idStudentAccount = cursor.getInt(3);
-        int idTeacherAccount = cursor.getInt(4);
+        String idStudentAccount = cursor.getString(3);
+        String idTeacherAccount = cursor.getString(4);
         //Les données de le stage
         Internship.Priority priority;
         String internshipDays = cursor.getString(6);
@@ -850,8 +800,6 @@ public class Database extends SQLiteOpenHelper {
 
         db.update(AccountTable.TABLE_NAME, values, whereClause, null);
         studentsAccountList = queryForAllStudentsAccount();
-        //TODO il faut mettre à jour aussi le compte du teacher dans le cas où on update ses données à lui. Ça c'est juste pour faire fonctionner xd.
-        logInTeacher();
     }
 
     /**
