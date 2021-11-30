@@ -94,7 +94,10 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
 
     @Override
     public int getItemCount() {
-        return internshipList.size();
+        if (internshipList != null){
+            return internshipList.size();
+        }
+        return 0;
     }
 
     /**

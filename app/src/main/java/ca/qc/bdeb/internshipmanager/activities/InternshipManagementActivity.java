@@ -519,9 +519,9 @@ public class InternshipManagementActivity extends AppCompatActivity {
         String comments = etComments.getText().toString();
 
         //On l'ajoute à la BD
-        db.insertInternship(anneeScolaire, entreprise.getEnterpriseId(), student.getAccountId(),
-                teacher.getAccountId(), ib_new_flagSelector.getPriority(), internshipDays, startHour,
-                endHour, startLunch, endLunch, averageVisitDuring, tutorDisponibility, comments);
+//        db.insertInternship(anneeScolaire, entreprise.getEnterpriseId(), student.getAccountId(),
+//                teacher.getAccountId(), ib_new_flagSelector.getPriority(), internshipDays, startHour,
+//                endHour, startLunch, endLunch, averageVisitDuring, tutorDisponibility, comments);
 
         //On retourne à l'activité précedente après avoir insérer le nouveau étudiant
         returnToPreviousActivity();
