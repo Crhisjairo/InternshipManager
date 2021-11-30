@@ -26,7 +26,9 @@
         <entry key="..\:/Projects/Android/InternshipManager/app/src/main/res/drawable-v24/ic_flag_unclick.xml" value="0.2759259259259259" />
         <entry key="..\:/Projects/Android/InternshipManager/app/src/main/res/layout/activity_internship_management.xml" value="0.371875" />
         <entry key="..\:/Projects/Android/InternshipManager/app/src/main/res/layout/activity_main.xml" value="0.18034447821681865" />
+        <entry key="..\:/Projects/Android/InternshipManager/app/src/main/res/layout/fragment_calendar.xml" value="0.33" />
         <entry key="..\:/Projects/Android/InternshipManager/app/src/main/res/layout/fragment_list_internship.xml" value="0.5552099533437014" />
+        <entry key="..\:/Projects/Android/InternshipManager/app/src/main/res/layout/fragment_maps.xml" value="0.1757852077001013" />
         <entry key="..\:/Projects/Android/InternshipManager/app/src/main/res/layout/stage_item.xml" value="0.33" />
       </map>
     </option>

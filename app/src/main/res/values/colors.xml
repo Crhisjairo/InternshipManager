@@ -8,9 +8,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#9D9D9D</color>
+    <color name="silver">#C2C2C2</color>
     <color name="underline">#F8F0DF</color>
     <color name="pale">#FEFBF3</color>
     <color name="green">#79B4B7</color>
+    <color name="dark_green">#476A6B</color>
+    <color name="pale_green">#E3EFF0</color>
+    <color name="dark_blue">#0F1C1C</color>
     <color name="red_flag">#C64756</color>
     <color name="yellow_flag">#FAD586</color>
     <color name="green_flag">#96BB7C</color>
