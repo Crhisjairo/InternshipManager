@@ -23,7 +23,8 @@ public class Enterprise {
      * @param province
      * @param postalCode
      */
-    public Enterprise(String enterpriseId, String name, String address, String town, String province, String postalCode) {
+    public Enterprise(String enterpriseId, String name, String address, String town, String province,
+                      String postalCode) {
         this.enterpriseId = enterpriseId;
         this.name = name;
         this.address = address;

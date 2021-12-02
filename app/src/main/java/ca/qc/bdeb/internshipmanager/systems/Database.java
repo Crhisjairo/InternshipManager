@@ -693,7 +693,6 @@ public class Database extends SQLiteOpenHelper {
 
     /**
      * Fait une requête pour recupérer touts les enterprises disponibles dans la BD.
-     *
      * @return Un ArrayList avec tous les enterprises.
      */
     public ArrayList<Enterprise> getEntreprises() {
@@ -741,6 +740,53 @@ public class Database extends SQLiteOpenHelper {
     }
 
     /**
+     * @param internshipId
+     * @return
+     */
+    public Internship queryForInternshipId(String internshipId) {
+
+        String query = "SELECT * FROM " + InternshipTable.TABLE_NAME + " WHERE " + InternshipTable._ID + " = ?";
+        String[] args = new String[]{internshipId};
+
+        Cursor cursor = db.rawQuery(query, args);
+
+        if (cursor.getCount() <= 0) {
+            return null;
+        }
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        ArrayList<Visit> visitList = queryForVisitsByInternshipId(internshipId);
+        Enterprise enterprise = queryForEntrepriseById(cursor.getString(2));
+        Account student = queryForAccountByLocalId(cursor.getString(3));
+        Account teacher = queryForAccountByLocalId(cursor.getString(4));
+
+        Internship.Priority priorite = null;
+        String priorite_str = cursor.getString(5);
+        if(priorite_str.equals("LOW")){
+            priorite = Internship.Priority.LOW;
+        } else if(priorite_str.equals("MEDIUM")){
+            priorite = Internship.Priority.MEDIUM;
+        } else{
+            priorite = Internship.Priority.HIGH;
+        }
+
+        Internship internship = new Internship(cursor.getString(0),
+                cursor.getString(1), enterprise, student, teacher,
+                visitList, priorite,cursor.getString(6),
+                cursor.getString(7),cursor.getString(8),
+                cursor.getString(9),cursor.getString(10),
+                cursor.getInt(11),cursor.getString(12),
+                cursor.getString(13));
+
+        cursor.close();
+
+        return internship;
+
+    }
+
+    /**
      * Fait une requête pour mettre à jour le stage selon l'id passé en paramètre.
      * Le stage sera modifié dans la BD grâce à son id unique
      */
@@ -769,6 +815,31 @@ public class Database extends SQLiteOpenHelper {
         internshipList = queryForAllInternships();
     }
 
+    /**
+     * Fait une requête pour mettre à jour le stage selon l'id passé en paramètre.
+     * Le stage sera modifié dans la BD grâce à son id unique
+     */
+    public void updateInternship (String internshipId, String schoolYear, String idEntreprise,
+                                 String idStudent, String idTeacher, Internship.Priority priority,
+                                 String startHour, String endHour, String StartLunch, String endLunch) {
+        ContentValues values = new ContentValues();
+
+        values.put(InternshipTable.SCHOOL_YEAR, schoolYear);
+        values.put(InternshipTable.ENTERPRISE_ID, idEntreprise);
+        values.put(InternshipTable.STUDENT_ID, idStudent);
+        values.put(InternshipTable.PROFESSOR_ID, idTeacher);
+        values.put(InternshipTable.PRIORITY, priority.toString());
+        values.put(InternshipTable.START_HOUR, startHour);
+        values.put(InternshipTable.END_HOUR, endHour);
+        values.put(InternshipTable.START_LUNCH, StartLunch);
+        values.put(InternshipTable.END_LUNCH, endLunch);
+
+        String whereClause = InternshipTable._ID + " = " + "\"" + internshipId + "\"";
+
+        db.update(InternshipTable.TABLE_NAME, values, whereClause, null);
+        internshipList = queryForAllInternships();
+    }
+
     private void updateVisitsByInternshipId(String internshipId, ArrayList<Visit> visits){
         //SELECT * visits FROM visit WHERE internship_id = internshipId;
         //TODO Pour tous les entrées, il faut UPDATE les nouvelles visits
@@ -786,17 +857,18 @@ public class Database extends SQLiteOpenHelper {
         values.put(AccountTable.LAST_NAME, account.getLastName());
 
         //On définit la photo
-        ByteArrayOutputStream photoInBytes = new ByteArrayOutputStream();
-        account.getPhoto().compress(Bitmap.CompressFormat.JPEG, 100, photoInBytes);
-        byte[] img = photoInBytes.toByteArray();
+        if(! (account.getPhoto() == null)){
+            ByteArrayOutputStream photoInBytes = new ByteArrayOutputStream();
+            account.getPhoto().compress(Bitmap.CompressFormat.JPEG, 100, photoInBytes);
+            byte[] img = photoInBytes.toByteArray();
 
-        values.put(AccountTable.PROFILE, img);
+            values.put(AccountTable.PROFILE, img);
+        }
 
         values.put(AccountTable.UPDATED_AT, account.getUpdatedDate());
         values.put(AccountTable.ACCOUNT_TYPE, account.getAccountType());
 
         String whereClause = AccountTable._ID + " = " + "\"" + account.getAccountId() + "\"";
-
 
         db.update(AccountTable.TABLE_NAME, values, whereClause, null);
         studentsAccountList = queryForAllStudentsAccount();
@@ -814,5 +886,19 @@ public class Database extends SQLiteOpenHelper {
         internshipList = queryForAllInternships();
     }
 
+    public void updateEntreprise(Enterprise enterprise) {
+        ContentValues values = new ContentValues();
+//        Le id reste le même
+        values.put(EnterpriseTable.ENTERPRISE_NAME, enterprise.getName());
+        values.put(EnterpriseTable.ENTERPRISE_ADDRESS, enterprise.getAddress());
+        values.put(EnterpriseTable.TOWN, enterprise.getTown());
+        values.put(EnterpriseTable.PROVINCE, enterprise.getProvince());
+        values.put(EnterpriseTable.POSTAL_CODE, enterprise.getPostalCode());
+
+        String whereClause = EnterpriseTable._ID + " = " + "\"" + enterprise.getEnterpriseId() + "\"";
+
+        db.update(EnterpriseTable.TABLE_NAME, values, whereClause, null);
+        enterprisesList = queryForAllEnterprises();
+    }
 
 }

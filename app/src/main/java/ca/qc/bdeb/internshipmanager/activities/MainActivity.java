@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -31,6 +33,8 @@ import java.util.ArrayList;
 
 import ca.qc.bdeb.internshipmanager.ConnectionValidation;
 import ca.qc.bdeb.internshipmanager.R;
+import ca.qc.bdeb.internshipmanager.dataclasses.Account;
+import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.fragments.CalendarFragment;
 import ca.qc.bdeb.internshipmanager.fragments.InfoFragment;
@@ -53,14 +57,14 @@ enum Type{
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String INTERNSHIP_ID_TO_MODIFY_KEY = "TO_MODIFY";
+    private NavigationView navigationView;
+
+    //Persistence de données
     private JustineAPI client;
     private Database db;
     private SQLiteDatabase sql;
     private ArrayList<Internship> internships;
-
-    private NavigationView navigationView;
-
-    public static final String INTERNSHIP_ID_TO_MODIFY_KEY = "TO_MODIFY";
 
     // Demander la permission d'activer la localisation
     public static final int PERMISSION_MAP_CODE = 1;
@@ -77,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         sql = Database.getSql();
         connexionAPI();
 
+        // Navigation Bar
         MaterialToolbar toolbar = findViewById(R.id.topAppbar);
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
@@ -94,19 +99,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //On set le ListInternshipFragment comme défaut et on séléctionne le premier
-        // élément du drawer
-
         if (ConnectionValidation.authToken.isEmpty()) {
-            connecter();
-        } else {
-            /*
-            internships = db.getAllInternships();
-
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,
-                    new ListInternshipFragment(internships)).commit();
-            navigationView.getMenu().getItem(0).setChecked(true);
-            */
+            demanderConnection();
         }
 
         // On set le comportment des clicks sur le menu
@@ -118,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 item.setChecked(true);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 if (ConnectionValidation.authToken.isEmpty()) {
-                    connecter();
+                    demanderConnection();
                 } else {
                     switch (id) {
                         case R.id.nav_internship_list:
@@ -150,6 +144,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Permet la récuperation des données d'une base de données externe.
+     */
     private void connexionAPI() {
         client = JustineAPIClient.getRetrofit().create(JustineAPI.class);
         getStudents();
@@ -157,6 +154,128 @@ public class MainActivity extends AppCompatActivity {
         getStages();
     }
 
+    /**
+     * Récupérer les comptes du type "ETUDIANT"
+     */
+    private void getStudents() {
+        client.getComptesEleves(ConnectionValidation.authToken)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        try {
+                            if (response.code() == 200) {
+                                JSONArray eleves = new JSONArray(response.body().string());
+                                for (int i = 0; i < eleves.length(); i++) {
+                                    JSONObject intern = (JSONObject) eleves.get(i);
+                                    boolean interExists = ! (db.queryForAccountByLocalId(intern
+                                            .getString("id")) == null);
+                                    manageAccountStudentSLQ(intern, interExists);
+                                }
+                            }
+                        } catch (JSONException | IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                    }
+                });
+    }
+
+    /**
+     * Sauvegarder dans la BD local les données reçus comme reponse de la requete faite au moment
+     * de la connexion. Ces données caractérisent une compte d'etudiant
+     * @param intern c'est l'objet qui contient les informations de l'etudiant
+     * @param internExists Condition pour definir si il faut ajouter l'etudiant (false) ou s'il faut
+     * juste actualiser ses informations (true)
+     * @throws JSONException
+     */
+    private void manageAccountStudentSLQ(JSONObject intern, boolean internExists) throws JSONException {
+        String id = intern.getString("id");
+        String createdAt = intern.getString("created_at");
+        String email = intern.getString("email");
+        boolean isActive = intern.getBoolean("est_actif");
+        String password = null;
+        String lastName = intern.getString("nom");
+        String firstName = intern.getString("prenom");
+        String updatedAt = intern.getString("updated_at");
+        int accountType = (Type.valueOf(intern.getString("type_compte"))).ordinal();
+
+        if(internExists){
+            Log.d("TAG", "manageAccountSLQ: UPDATE STUDENT " );
+            Account studentAccount = new Account(id, createdAt, null, email, isActive,
+                    "projet", lastName,firstName,null, updatedAt, accountType);
+
+            db.updateAccount(studentAccount);
+        }else{
+            Log.d("TAG", "manageAccountSLQ: CREATE STUDENT" );
+            db.insertAccount(sql, id, createdAt, null, email, isActive,
+                    password, lastName, firstName, null,
+                    updatedAt, accountType);
+        }
+    }
+
+    /**
+     * Récupérer les entreprises qui sont dans la DB à distance
+     */
+    private void getEntreprises() {
+        client.getEntreprises(ConnectionValidation.authToken)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        try {
+                            if (response.code() == 200) {
+                                JSONArray entreprises = new JSONArray(response.body().string());
+                                for (int i = 0; i < entreprises.length(); i++) {
+                                    JSONObject entreprise = (JSONObject) entreprises.get(i);
+                                    boolean entrepriseExistes = ! (db.queryForEntrepriseById(entreprise
+                                            .getString("id")) == null);
+                                    manageEntrepriseSLQ(entreprise, entrepriseExistes);
+                                }
+                            }
+                        } catch (JSONException | IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    }
+                });
+    }
+
+    /**
+     * Sauvegarder dans la BD local les données reçus comme reponse de la requete faite au moment
+     * de la connexion. Ces données caractérisent une compte d'entreprise
+     * @param entreprise c'est l'objet qui contient les informations de l'entreprise
+     * @param entrepriseExistes Condition pour definir si il faut ajouter l'etudiant (false) ou
+     * s'il faut juste actualiser ses entreprise (true)
+     * @throws JSONException
+     */
+    private void manageEntrepriseSLQ(JSONObject entreprise, boolean entrepriseExistes) throws JSONException {
+        String id = entreprise.getString("id");
+        String name = entreprise.getString("nom");
+        String address = entreprise.getString("adresse");
+        String postalCode = entreprise.getString("codePostal");
+        String province = entreprise.getString("province");
+        String city  = entreprise.getString("ville");
+
+        if(entrepriseExistes){
+            Log.d("TAG", "manageAccountSLQ: UPDATE ENTREPRISE " );
+            Enterprise newEntreprise = new Enterprise(id, name, address, city, province, postalCode);
+            db.updateEntreprise(newEntreprise);
+        } else{
+            Log.d("TAG", "manageAccountSLQ: CREATE ENTREPRISE " );
+            db.insertEnterprise(id, name, address, city, province, postalCode );
+        }
+    }
+
+    /**
+     * Récupérer les comptes des stages qui doivent être liées à un étudiant,
+     * une entreprise et à un professeur existents.
+     */
     public void getStages() {
         client.getStages(ConnectionValidation.authToken).enqueue(new Callback<ResponseBody>() {
             @Override
@@ -164,90 +283,25 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     if (response.code() == 200) {
                         JSONArray internships = new JSONArray(response.body().string());
-                        Log.d("Database", internships.length() + "");
 
                         for (int i = 0; i < internships.length(); i++) {
                             JSONObject internship = (JSONObject) internships.get(i);
-                            String id = internship.get("id").toString();
-                            String createdAt = internship.get("createdAt").toString();
-                            String updatedAt = internship.get("updatedAt").toString();
-                            String deletedAt = internship.getString("deletedAt");
-                            String anneeScolaire = internship.get("anneeScolaire").toString();
+                            JSONObject professeur = internship.getJSONObject("professeur");
 
-                            JSONObject etudiant = (JSONObject) internship.get("etudiant");
-                            JSONObject professeur = (JSONObject) internship.get("professeur");
-                            JSONObject entreprise = (JSONObject) internship.get("entreprise");
-
-                            String priorite = internship.get("priorite").toString();
-                            String commentaire = internship.get("commentaire").toString();
-                            String heureDebut = internship.get("heureDebut").toString();
-                            String heureFin = internship.get("heureFin").toString();
-                            String heureDebutPause = internship.get("heureDebutPause").toString();
-                            String heureFinPause = internship.get("heureFinPause").toString();
-                            Log.d("Database", etudiant.getString("id") + " :" + i);
-
-                            //Étudiant
-                            if (db.queryForAccountByLocalId(etudiant.get("id").toString()) == null){
-                                //addAccountsSQL(etudiant);
-                                String idEtudiant = etudiant.getString("id");
-
-                                String createdAtEtudiant = etudiant.get("createdAt").toString();
-                                String deletedAtEtudiant = etudiant.get("deletedAt").toString();
-                                String email = etudiant.get("email").toString();
-                                boolean isActive = etudiant.getBoolean("estActif");
-                                String password = "secret";
-                                String lastName = etudiant.get("nom").toString();
-                                String firstName = etudiant.get("prenom").toString();
-                                String updatedAtEtudiant = etudiant.get("updatedAt").toString();
-                                int accountType = (Type.valueOf(etudiant.get("typeCompte")
-                                        .toString())).ordinal();
-
-                                db.insertAccount(sql, idEtudiant, createdAtEtudiant, deletedAtEtudiant,
-                                        email, isActive, password, lastName, firstName, null,
-                                        updatedAtEtudiant, accountType);
-
+                            boolean goodTeacher = (professeur.getString("id")).equals(ConnectionValidation.authId);
+                            if(goodTeacher){
+                                String id = internship.getString("id");
+                                boolean stageExists = !(db.queryForInternshipId(id) == null);
+                                manageStageSLQ(internship, stageExists);
                             }
-
-                            //Prof
-                            if (db.queryForAccountByLocalId(professeur.get("id").toString()) == null){
-                                String idProf = professeur.get("id").toString();
-                                String createdAtProf = professeur.get("createdAt").toString();
-                                String deletedAtProf = professeur.get("deletedAt").toString();
-                                String email = professeur.get("email").toString();
-                                boolean isActive = professeur.getBoolean("estActif");
-                                String password = "secret";
-                                String lastName = professeur.get("nom").toString();
-                                String firstName = professeur.get("prenom").toString();
-                                String updatedAtProf = professeur.get("updatedAt").toString();
-                                int accountType = (Type.valueOf(professeur.get("typeCompte")
-                                        .toString())).ordinal();
-
-                                db.insertAccount(sql, idProf, createdAtProf, deletedAtProf, email, isActive,
-                                        password, lastName, firstName, null,
-                                        updatedAtProf, accountType);
-                                Log.d("TAG", "onResponse: Prof added");
-                            }
-
-                            if(db.queryForEntrepriseById(entreprise.get("id").toString()) == null){
-                                addEnterpriseSQL(entreprise);
-                            }
-
-                            db.insertInternship(id, anneeScolaire, entreprise.get("id").toString(),
-                                    etudiant.get("id").toString(), professeur.get("id").toString(),
-                                    Internship.Priority.LOW, "monday", heureDebut,
-                                    heureFin, heureDebutPause,heureFinPause,30,
-                                    "wednesdayAM|",commentaire);
                         }
-
-//                        if (stages.length() == 0) {
-//                            ajouterStages();
-//                        }
                     }
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
 
-                //Fait que là, on initialise le fragment. C,est pas beau, mais sa roule
+                //Garantir que les méthodes respectent l'ordre necessaire de récupérer tous
+                // les informations avant de créer le fragment avec son adapteur.
                 initListFragment();
             }
 
@@ -259,93 +313,93 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Pour initialiser le fragment qui contient la liste des stages.
+     * Sauvegarder dans la BD local les données reçus comme reponse de la requete faite au moment
+     * de la connexion. Ces données caractérisent une compte d'internship
+     * @param internship c'est l'objet qui contient les informations de l'internship
+     * @param stageExists Condition pour definir si il faut ajouter l'internship (false) ou
+     * s'il faut juste actualiser ses entreprise (true)
+     * @throws JSONException
+     */
+    private void manageStageSLQ(JSONObject internship, boolean stageExists) throws JSONException {
+
+        String id = internship.getString("id");
+        String anneeScolaire = internship.getString("anneeScolaire");
+        String commentaire = internship.getString("commentaire");
+        String heureDebut = internship.getString("heureDebut");
+        String heureFin = internship.getString("heureFin");
+        String heureDebutPause = internship.getString("heureDebutPause");
+        String heureFinPause = internship.getString("heureFinPause");
+
+        String priorite_str = internship.getString("priorite");
+        Internship.Priority priorite = null;
+        if(priorite_str.equals("HAUTE")){
+            priorite = Internship.Priority.HIGH;
+        } if(priorite_str.equals("MOYENNE")){
+            priorite = Internship.Priority.MEDIUM;
+        } else {
+            priorite = Internship.Priority.HIGH;
+        }
+
+        JSONObject etudiant = internship.getJSONObject("etudiant");
+        JSONObject professeur = internship.getJSONObject("professeur");
+        JSONObject entreprise = internship.getJSONObject("entreprise");
+        Log.d("TAG", "manageStageSLQ: ICCIIIII" + etudiant.getString("prenom") + priorite);
+        //Étudiant
+        if (db.queryForAccountByLocalId(etudiant.get("id").toString()) == null){
+            createAccount(etudiant);
+        }
+
+        //Entreprise
+        if(db.queryForEntrepriseById(entreprise.get("id").toString()) == null){
+            manageEntrepriseSLQ(entreprise,false);
+        }
+
+        if(stageExists){
+
+            db.updateInternship(id, anneeScolaire, entreprise.getString("id"),
+                    etudiant.getString("id"), professeur.getString("id"),
+                    priorite, heureDebut, heureFin,heureDebutPause, heureFinPause );
+        }else{
+            Log.d("TAG", "PRIORITÉ : " + priorite);
+            db.insertInternship(id, anneeScolaire, entreprise.get("id").toString(),
+                    etudiant.getString("id"), professeur.get("id").toString(),
+                    priorite, "monday", heureDebut, heureFin,
+                    heureDebutPause,heureFinPause,30,"wednesdayAM|",
+                    commentaire);
+        }
+
+    }
+
+    /**
+     * Permet de recuperer un account de la BD à distance et l'inserer dans notre BD local
+     * @param account objet JSON qui contient tous les informations sur le professeur ou l'etudiant
+     * @throws JSONException
+     */
+    private void createAccount(JSONObject account) throws JSONException {
+        String id = account.getString("id");
+        String createdAt = account.getString("createdAt");
+        String deletedAt = account.getString("deletedAt");
+        String email = account.getString("email");
+        boolean isActive = account.getBoolean("estActif");
+        String password = "secret";
+        String lastName = account.getString("nom");
+        String firstName = account.getString("prenom");
+        String updatedAt = account.getString("updatedAt");
+        int accountType = (Type.valueOf(account.get("typeCompte")
+                .toString())).ordinal();
+
+        db.insertAccount(sql, id, createdAt, deletedAt, email, isActive, password,
+                lastName, firstName, null, updatedAt, accountType);
+    }
+
+    /**
+     * Initialise le fragment qui contient la liste des stages.
      */
     private void initListFragment() {
         internships = db.getAllInternships();
-
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,
                 new ListInternshipFragment(internships)).commit();
         navigationView.getMenu().getItem(0).setChecked(true);
-    }
-
-    private void getEntreprises() {
-        client.getEntreprises(ConnectionValidation.authToken)
-                .enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        try {
-                            if (response.code() == 200) {
-                                JSONArray entreprises = new JSONArray(response.body().string());
-                                for (int i = 0; i < entreprises.length(); i++) {
-                                    JSONObject entreprise = (JSONObject) entreprises.get(i);
-                                    addEnterpriseSQL(entreprise);
-                                }
-                            }
-                        } catch (JSONException | IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.e("TAG", t.toString());
-                    }
-                });
-    }
-
-    private void addEnterpriseSQL(JSONObject entreprise) throws JSONException {
-        String id = entreprise.get("id").toString();
-        String name = entreprise.get("nom").toString();
-        String address = entreprise.get("adresse").toString();
-        String postalCode = entreprise.getString("codePostal");
-        String province = entreprise.getString("province");
-        String city  = entreprise.getString("ville");
-
-        db.insertEnterprise(id, name, address, city,
-                province, postalCode );
-    }
-
-    private void getStudents() {
-        client.getComptesEleves(ConnectionValidation.authToken)
-                .enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    if (response.code() == 200) {
-                        JSONArray eleves = new JSONArray(response.body().string());
-                        for (int i = 0; i < eleves.length(); i++) {
-                            JSONObject intern = (JSONObject) eleves.get(i);
-                            addAccountsSQL(intern);
-                        }
-                    }
-                } catch (JSONException | IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
-        });
-    }
-
-    private void addAccountsSQL(JSONObject intern) throws JSONException {
-        String id = intern.get("id").toString();
-        String createdAt = intern.get("created_at").toString();
-        String email = intern.get("email").toString();
-        boolean isActive = intern.getBoolean("est_actif");
-        String password = "secret";
-        String lastName = intern.get("nom").toString();
-        String firstName = intern.get("prenom").toString();
-        String updatedAt = intern.get("updated_at").toString();
-        int accountType = (Type.valueOf(intern.get("type_compte")
-                .toString())).ordinal();
-
-        db.insertAccount(sql, id, createdAt, null, email, isActive,
-                password, lastName, firstName, null,
-                updatedAt, accountType);
     }
 
     @Override
@@ -367,6 +421,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Gérer les routes des pages de l'application. La méthode dirait quel fragment il
+     * faut charger dès le click dans le menu lateral d'options.
+     * @param fragment c'est où il faut charger le layout desiré
+     */
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -374,7 +433,10 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    private void connecter() {
+    /**
+     * Envoier utilisateur vers la page de login pour l'authentification
+     */
+    private void demanderConnection() {
         Intent intent = new Intent(MainActivity.this, Login.class);
         startActivity(intent);
         finish();
