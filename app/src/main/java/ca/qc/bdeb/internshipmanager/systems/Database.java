@@ -499,6 +499,9 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public ArrayList<Account> getStudentsAccount(){
+        if(studentsAccountList == null){
+            studentsAccountList = queryForAllStudentsAccount();
+        }
         return studentsAccountList;
     }
 
@@ -696,6 +699,9 @@ public class Database extends SQLiteOpenHelper {
      * @return Un ArrayList avec tous les enterprises.
      */
     public ArrayList<Enterprise> getEntreprises() {
+        if(enterprisesList == null){
+            enterprisesList = queryForAllEnterprises();
+        }
         return enterprisesList;
     }
 
@@ -900,5 +906,101 @@ public class Database extends SQLiteOpenHelper {
         db.update(EnterpriseTable.TABLE_NAME, values, whereClause, null);
         enterprisesList = queryForAllEnterprises();
     }
+
+    /**
+     * Fait une requête pour recupérer touts les stages disponibles dans la BD.
+     *
+     * @return Un ArrayList avec des Internships.
+     */
+    public ArrayList<Internship> getInternshipFromOneTeacher(String idTeacher) {
+        internshipList = queryInternshipsFromOneTeacher(idTeacher);
+        return internshipList;
+    }
+
+    private ArrayList<Internship> queryInternshipsFromOneTeacher(String idTeacher){
+        //SQLiteDatabase db = this.getReadableDatabase();
+
+        // les colonnes à retourner par la requete:
+        String[] columns = {
+                InternshipTable._ID,
+                InternshipTable.SCHOOL_YEAR,
+                InternshipTable.ENTERPRISE_ID,
+                InternshipTable.STUDENT_ID,
+                InternshipTable.PROFESSOR_ID,
+                InternshipTable.PRIORITY,
+                InternshipTable.INTERNSHIP_DAYS,
+                InternshipTable.START_HOUR,
+                InternshipTable.END_HOUR,
+                InternshipTable.START_LUNCH,
+                InternshipTable.END_LUNCH,
+                InternshipTable.AVERAGE_VISIT_DURING,
+                InternshipTable.TUTOR_DISPONIBILITY,
+                InternshipTable.COMMENTS
+        };
+
+        String selection = null;
+        String[] selectionArgs = null;
+
+
+        String query = "SELECT * FROM " + InternshipTable.TABLE_NAME + " WHERE " + InternshipTable.PROFESSOR_ID + " = ?";
+        String[] args = new String[]{idTeacher};
+
+        Cursor cursor = db.rawQuery(query, args);
+
+        ArrayList<Internship> internships = new ArrayList<>(cursor.getCount());
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+
+            do {
+                String idInternship = cursor.getString(0);
+                String anneeScolaire = cursor.getString(1);
+                //id pour créer les autres objets
+                String idEntreprise = cursor.getString(2);
+                String idStudentAccount = cursor.getString(3);
+                String idTeacherAccount = cursor.getString(4);
+                //données de le stage
+                Internship.Priority priority;
+                String internshipDays = cursor.getString(6);
+                String starthour = cursor.getString(7);
+                String endHour = cursor.getString(8);
+                String startLunch = cursor.getString(9);
+                String endLunch = cursor.getString(10);
+                int averageVisitDuring = cursor.getInt(11);
+                String tutorDisponibility = cursor.getString(12);
+                String comments = cursor.getString(13);
+
+
+                try {
+                    priority = Internship.Priority.valueOf(cursor.getString(5));
+                } catch (Exception e) {
+                    Log.d("Info", "Erreur lors de la création de la priority. " +
+                            "Priority set to LOW: " + e);
+                    priority = Internship.Priority.LOW;
+                }
+
+                //On demande à la BD l'account du prof
+                Account studentAccount = queryForAccountByLocalId(idStudentAccount);
+                Account teacherAccount = queryForAccountByLocalId(idTeacherAccount);
+
+                //On demande à la BD l'entreprise
+                Enterprise entreprise = queryForEntrepriseById(idEntreprise);
+
+                //On demande la liste de visit
+                ArrayList<Visit> visitList = queryForVisitsByInternshipId(idInternship);
+
+                Internship internship = new Internship(idInternship, anneeScolaire, entreprise,
+                        studentAccount, teacherAccount, visitList, priority, internshipDays,starthour,
+                        endHour, startLunch, endLunch, averageVisitDuring, tutorDisponibility,
+                        comments);
+
+                internships.add(internship);
+
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        return internships;
+    }
+
 
 }

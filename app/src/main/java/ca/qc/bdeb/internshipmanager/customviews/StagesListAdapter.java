@@ -29,8 +29,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 
 public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.StagesViewHolder>{
@@ -87,7 +89,6 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
         sortName();
         Collections.reverse(internshipList);
     }
-
 
     @NonNull
     @Override
@@ -165,53 +166,10 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
                 public void onChangeState() {
                     intership.setPriority(ivItemFlagSelector.getPriority());
 
-
                     //On modifie le internship dans la bd.
                     Database.getInstance(itemView.getContext()).updateInternship(intership);
                     //Modifie dans la BD à distance
-                    JustineAPI client = JustineAPIClient.getRetrofit().create(JustineAPI.class);
-                    HashMap<String, Object> requete = new HashMap<>();
-                    requete.put("id", intership.getIdInternship());
-                    requete.put("annee", intership.getSchoolYear());
-                    requete.put("id_entreprise", intership.getEnterprise().getEnterpriseId());
-                    requete.put("id_etudiant", intership.getStudentAccount().getAccountId());
-                    requete.put("id_professeur",intership.getTeacherAccount().getAccountId());
-                    requete.put("commentaire", intership.getComments());
-                    requete.put("heureDebut", intership.getStartHour());
-                    requete.put("heureFin", intership.getEndHour());
-                    requete.put("heureDebutPause", intership.getStartLunch());
-                    requete.put("heureFinPause", intership.getEndLunch());
-                    if(ivItemFlagSelector.getPriority() == Internship.Priority.HIGH){
-                        requete.put("priorite", "HAUTE");
-                    } else if(ivItemFlagSelector.getPriority() == Internship.Priority.MEDIUM){
-                        requete.put("priorite", "MOYENNE");
-                    } else {
-                        requete.put("priorite", "BASSE");
-                    }
-
-                    client.ajouterStage(ConnectionValidation.authToken, requete).enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            Log.i("justine_tag", response.toString());
-                            try {
-                                if (response.code() == 200) {
-                                    JSONObject stage = new JSONObject(response.body().string());
-                                    Log.d("MODIFY STAGE", "MODIFY STAGE : SUCCESS \n>>" + stage);
-                                }else{
-                                    Log.d("MODIFY STAGE", "MODIFY STAGE : FAIL \n>>" + response.code());
-                                }
-                            } catch (JSONException | IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        }
-                    });
-
-                    //Log.d("Icitte", "dans le flagSelector: " + ivItemFlagSelector.getPriority().toString());
-                    //Log.d("Icitte", "dans le stage: " + stage.getPriority().toString());
+                    updateInternshipAPI(intership);
                 }
             });
 
@@ -251,6 +209,7 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
                     //On efface l'entrée
                     int index = internshipList.indexOf(intership);
 
+                    deleteInternshipAPI(intership);
                     internshipList.remove(intership);
                     Database.getInstance(itemView.getContext()).deleteInternship(intership.getIdInternship());
 
@@ -267,6 +226,79 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
             });
 
             alertDialog.show();
+        }
+
+        private void deleteInternshipAPI(Internship intership) {
+            JustineAPI client = JustineAPIClient.getRetrofit().create(JustineAPI.class);
+            String id = intership.getIdInternship();
+            client.supprStage(ConnectionValidation.authToken, id)
+                    .enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            Log.i("justine_tag_delete", response.toString());
+                            try {
+                                if (response.code() == 200) {
+                                    JSONObject stage = new JSONObject(response.body().string());
+                                    Log.d("DELETE STAGE", "DELETE STAGE : SUCCESS \n>>" + stage);
+                                }else{
+                                    Log.d("DELETE STAGE", "DELETE STAGE : FAIL \n>>" + response.code());
+                                }
+                            } catch (JSONException | IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                }
+            });
+        }
+
+        private void updateInternshipAPI(Internship intership) {
+
+            JustineAPI client = JustineAPIClient.getRetrofit().create(JustineAPI.class);
+            HashMap<String, Object> requete = new HashMap<>();
+            requete.put("id", intership.getIdInternship());
+            requete.put("annee", intership.getSchoolYear());
+            requete.put("id_entreprise", intership.getEnterprise().getEnterpriseId());
+            requete.put("id_etudiant", intership.getStudentAccount().getAccountId());
+            requete.put("id_professeur",intership.getTeacherAccount().getAccountId());
+            requete.put("commentaire", intership.getComments());
+            requete.put("heureDebut", intership.getStartHour());
+            requete.put("heureFin", intership.getEndHour());
+            requete.put("heureDebutPause", intership.getStartLunch());
+            requete.put("heureFinPause", intership.getEndLunch());
+
+            if(ivItemFlagSelector.getPriority() == Internship.Priority.HIGH){
+                requete.put("priorite", "HAUTE");
+            } else if(ivItemFlagSelector.getPriority() == Internship.Priority.MEDIUM){
+                requete.put("priorite", "MOYENNE");
+            } else {
+                requete.put("priorite", "BASSE");
+            }
+
+            client.ajouterStage(ConnectionValidation.authToken, requete).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    Log.i("justine_tag", response.toString());
+                    try {
+                        if (response.code() == 200) {
+                            JSONObject stage = new JSONObject(response.body().string());
+                            Log.d("MODIFY STAGE", "MODIFY STAGE : SUCCESS \n>>" + stage);
+                        }else{
+                            Log.d("MODIFY STAGE", "MODIFY STAGE : FAIL \n>>" + response.code());
+                        }
+                    } catch (JSONException | IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                }
+            });
+
+
         }
 
 

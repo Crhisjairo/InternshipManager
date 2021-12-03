@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 
+import ca.qc.bdeb.internshipmanager.ConnectionValidation;
 import ca.qc.bdeb.internshipmanager.R;
 import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
@@ -202,7 +203,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         super.onViewCreated(view, savedInstanceState);
 
         db = Database.getInstance(getContext());
-        internshipList = db.getAllInternships();
+        internshipList = db.getInternshipFromOneTeacher(ConnectionValidation.authId);
 
         //Checkboxes pour faire le filtrage des stages
         cbLowPriority = view.findViewById(R.id.cbLowPriority);

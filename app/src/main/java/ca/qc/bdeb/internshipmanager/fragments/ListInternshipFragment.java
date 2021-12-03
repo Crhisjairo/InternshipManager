@@ -23,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
+import ca.qc.bdeb.internshipmanager.ConnectionValidation;
 import ca.qc.bdeb.internshipmanager.R;
 import ca.qc.bdeb.internshipmanager.activities.InternshipManagementActivity;
 import ca.qc.bdeb.internshipmanager.customviews.StagesListAdapter;
@@ -193,7 +194,7 @@ public class ListInternshipFragment extends Fragment {
         ArrayList<Internship> filteredInternships = new ArrayList<>();
         filteredInternships.clear();
 
-        internships = db.getAllInternships();
+        internships = db.getInternshipFromOneTeacher(ConnectionValidation.authId);
 
         for (Internship intership : internships) {
 

@@ -287,7 +287,8 @@ public class MainActivity extends AppCompatActivity {
                             JSONObject professeur = internship.getJSONObject("professeur");
 
                             boolean goodTeacher = (professeur.getString("id")).equals(ConnectionValidation.authId);
-                            if(goodTeacher){
+                            boolean internshipIsActive = (internship.getString("deletedAt").equals("null"));
+                            if(goodTeacher && internshipIsActive){
                                 String id = internship.getString("id");
                                 boolean stageExists = !(db.queryForInternshipId(id) == null);
                                 manageStageSLQ(internship, stageExists);
@@ -393,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
      * Initialise le fragment qui contient la liste des stages.
      */
     private void initListFragment() {
-        internships = db.getAllInternships();
+        internships = db.getInternshipFromOneTeacher(ConnectionValidation.authId);
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,
                 new ListInternshipFragment(internships)).commit();
         navigationView.getMenu().getItem(0).setChecked(true);
