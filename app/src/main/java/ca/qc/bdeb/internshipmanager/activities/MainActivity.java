@@ -204,13 +204,11 @@ public class MainActivity extends AppCompatActivity {
         int accountType = (Type.valueOf(intern.getString("type_compte"))).ordinal();
 
         if(internExists){
-            Log.d("TAG", "manageAccountSLQ: UPDATE STUDENT " );
             Account studentAccount = new Account(id, createdAt, null, email, isActive,
                     "projet", lastName,firstName,null, updatedAt, accountType);
 
             db.updateAccount(studentAccount);
         }else{
-            Log.d("TAG", "manageAccountSLQ: CREATE STUDENT" );
             db.insertAccount(sql, id, createdAt, null, email, isActive,
                     password, lastName, firstName, null,
                     updatedAt, accountType);
@@ -263,11 +261,9 @@ public class MainActivity extends AppCompatActivity {
         String city  = entreprise.getString("ville");
 
         if(entrepriseExistes){
-            Log.d("TAG", "manageAccountSLQ: UPDATE ENTREPRISE " );
             Enterprise newEntreprise = new Enterprise(id, name, address, city, province, postalCode);
             db.updateEntreprise(newEntreprise);
         } else{
-            Log.d("TAG", "manageAccountSLQ: CREATE ENTREPRISE " );
             db.insertEnterprise(id, name, address, city, province, postalCode );
         }
     }
@@ -331,19 +327,19 @@ public class MainActivity extends AppCompatActivity {
         String heureFinPause = internship.getString("heureFinPause");
 
         String priorite_str = internship.getString("priorite");
+        Log.d("TAG", "manageStageSLQ HAUTE: " + priorite_str);
         Internship.Priority priorite = null;
         if(priorite_str.equals("HAUTE")){
             priorite = Internship.Priority.HIGH;
-        } if(priorite_str.equals("MOYENNE")){
+        } else if(priorite_str.equals("MOYENNE")){
             priorite = Internship.Priority.MEDIUM;
         } else {
-            priorite = Internship.Priority.HIGH;
+            priorite = Internship.Priority.LOW;
         }
 
         JSONObject etudiant = internship.getJSONObject("etudiant");
         JSONObject professeur = internship.getJSONObject("professeur");
         JSONObject entreprise = internship.getJSONObject("entreprise");
-        Log.d("TAG", "manageStageSLQ: ICCIIIII" + etudiant.getString("prenom") + priorite);
         //Étudiant
         if (db.queryForAccountByLocalId(etudiant.get("id").toString()) == null){
             createAccount(etudiant);
@@ -360,7 +356,6 @@ public class MainActivity extends AppCompatActivity {
                     etudiant.getString("id"), professeur.getString("id"),
                     priorite, heureDebut, heureFin,heureDebutPause, heureFinPause );
         }else{
-            Log.d("TAG", "PRIORITÉ : " + priorite);
             db.insertInternship(id, anneeScolaire, entreprise.get("id").toString(),
                     etudiant.getString("id"), professeur.get("id").toString(),
                     priorite, "monday", heureDebut, heureFin,

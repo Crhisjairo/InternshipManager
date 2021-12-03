@@ -206,6 +206,10 @@ public class Internship implements Comparable<Internship> {
         this.comments = comments;
     }
 
+    public void setId (String id) {
+        this.idInternship = id;
+    }
+
     @Override
     public int compareTo(Internship intership) {
         int i = this.getPriority().compareTo(intership.getPriority());

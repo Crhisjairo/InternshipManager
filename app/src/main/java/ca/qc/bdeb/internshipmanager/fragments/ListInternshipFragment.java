@@ -119,12 +119,10 @@ public class ListInternshipFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("Icitte", "dans le if");
         if(requestCode == ACTIVITY_MODIFIER_RESULT){
 
             if((resultCode == RESULT_OK) && (data != null)){
                 //On met à jour la liste
-                Log.d("Info", "Actualiser");
                 filterListByCheckboxes();
             }
         }

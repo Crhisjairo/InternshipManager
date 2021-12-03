@@ -150,7 +150,7 @@ public class Login extends AppCompatActivity {
                        //Sauvegarder informations de quel enseignant est connecté
                        ConnectionValidation.authToken = teacher.getString("access_token");
                        ConnectionValidation.authId = teacher.getString("id");
-                       Log.d("Icitte", "Token: " + ConnectionValidation.authToken +
+                       Log.d("TokenTag", "Token: " + ConnectionValidation.authToken +
                                " Id: " + ConnectionValidation.authId );
 
                        Toast.makeText(getApplicationContext(), "Connexion réussie!!",
@@ -203,13 +203,11 @@ public class Login extends AppCompatActivity {
         int accountType = (Type.valueOf(teacher.getString("type_compte"))).ordinal();
 
         if(exists){
-            Log.d("TAG", "manageAccountSLQ: UPDATE TEACHER " );
             Account teacherAccount = new Account(id, createdAt, null, email, isActive,
                     "projet", lastName,firstName,null, updatedAt, accountType);
 
             db.updateAccount(teacherAccount);
         } else{
-            Log.d("TAG", "manageAccountSLQ: CREATE TEACHER " );
             db.insertAccount(sql, id, createdAt, null, email, isActive,
                     password, lastName, firstName, null,
                     updatedAt, accountType);
