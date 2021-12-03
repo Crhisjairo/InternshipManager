@@ -13,11 +13,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
@@ -61,7 +59,6 @@ public class ListInternshipFragment extends Fragment {
      *
      * @return A new instance of fragment ListInternshipFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ListInternshipFragment newInstance(ArrayList<Internship> internships) {
         ListInternshipFragment fragment = new ListInternshipFragment(internships);
 

@@ -28,9 +28,16 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.UUID;
 
+import ca.qc.bdeb.internshipmanager.ConnectionValidation;
 import ca.qc.bdeb.internshipmanager.R;
 import ca.qc.bdeb.internshipmanager.customviews.DropdownEnterprisesAdapter;
 import ca.qc.bdeb.internshipmanager.customviews.DropdownStudentsAdapter;
@@ -38,12 +45,19 @@ import ca.qc.bdeb.internshipmanager.customviews.FlagSelector;
 import ca.qc.bdeb.internshipmanager.dataclasses.Account;
 import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
+import ca.qc.bdeb.internshipmanager.reseau.JustineAPI;
+import ca.qc.bdeb.internshipmanager.reseau.JustineAPIClient;
 import ca.qc.bdeb.internshipmanager.systems.Database;
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class InternshipManagementActivity extends AppCompatActivity {
 
     private Database db;
+    private JustineAPI client;
 
     public static final int INTENT_PHOTO_RESULT = 1;
     public static final int PERMISSION_CAMERA_CODE = 1;
@@ -93,6 +107,7 @@ public class InternshipManagementActivity extends AppCompatActivity {
         setContentView(R.layout.activity_internship_management);
 
         db = Database.getInstance(getApplicationContext());
+        client = JustineAPIClient.getRetrofit().create(JustineAPI.class);
 
         initViews();
         setViewsData();
@@ -462,7 +477,6 @@ public class InternshipManagementActivity extends AppCompatActivity {
 
         //Photo du internship
         Bitmap photo = ((BitmapDrawable) ivImageEtudiant.getDrawable()).getBitmap();
-
         internshipToModify.getStudentAccount().setPhoto(photo);
         internshipToModify.setSchoolYear(et_list_annee_scolaire.getText().toString());
         internshipToModify.setEnterprise(selectedEnterprise);
@@ -477,12 +491,53 @@ public class InternshipManagementActivity extends AppCompatActivity {
         internshipToModify.setAverageVisitDuring(this.avgVisitDuring);
         internshipToModify.setTutorDisponibility(getTutorDisponibilitiesChecked());
         internshipToModify.setComments(etComments.getText().toString());
+//        internshipToModify.setId(id);
 
         //On modifie le compte étudiant avec sa photo
         db.updateAccount(internshipToModify.getStudentAccount());
 
-        //On le modifie dans la bd
+        //On le modifie dans la bd local
         db.updateInternship(internshipToModify);
+
+        //on le modifie dans la bd à distance
+        HashMap<String, Object> requete = new HashMap<>();
+        requete.put("id", internshipToModify.getIdInternship());
+        requete.put("annee", internshipToModify.getSchoolYear()); //anneeScolaire
+        requete.put("commentaire", internshipToModify.getComments());
+        requete.put("id_entreprise", internshipToModify.getEnterprise().getEnterpriseId());
+        requete.put("id_etudiant", internshipToModify.getStudentAccount().getAccountId());
+        requete.put("id_professeur", internshipToModify.getTeacherAccount().getAccountId());
+        requete.put("heureDebut", internshipToModify.getStartHour());
+        requete.put("heureFin", internshipToModify.getEndHour());
+        requete.put("heureDebutPause", internshipToModify.getStartLunch());
+        requete.put("heureFinPause", internshipToModify.getEndLunch());
+
+        if(internshipToModify.getPriority() == Internship.Priority.HIGH){
+            requete.put("priorite", "HAUTE");
+        } else if(internshipToModify.getPriority() == Internship.Priority.MEDIUM){
+            requete.put("priorite", "MOYENNE");
+        } else {
+            requete.put("priorite", "BASSE");
+        }
+
+        client.ajouterStage(ConnectionValidation.authToken, requete).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.i("justine_tag", response.toString());
+                try {
+                    if (response.code() == 200) {
+                        JSONObject stage = new JSONObject(response.body().string());
+                        Log.d("MODIFY STAGE", "MODIFY STAGE : SUCCESS \n>>" + stage);
+                    }
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            }
+        });
 
         returnToPreviousActivity();
     }
@@ -492,17 +547,12 @@ public class InternshipManagementActivity extends AppCompatActivity {
      * Recupère les données dans les field correspondants pour créer un internship.
      */
     private void createNewInternship() {
-        //Photo du compte associé au internship
-        Bitmap studentPhoto = ((BitmapDrawable) ivImageEtudiant.getDrawable()).getBitmap();
 
-        //Info du Internship
+        Bitmap studentPhoto = ((BitmapDrawable) ivImageEtudiant.getDrawable()).getBitmap();
         String anneeScolaire = et_list_annee_scolaire.getText().toString();
-        //Info du l'enterprise
         Enterprise entreprise = selectedEnterprise;
-        //Account Student
         Account student = selectedStudent;
-        //TODO on recupère le seul teacher qui doit exister. Le Database va retourner le teacher en fonction du Log In plus tard.
-        Account teacher = db.getCurrentTeacherAccount();
+        Account teacher = db.queryForAccountByLocalId(ConnectionValidation.authId);
 
         //On modifie le compte étudiant avec sa nouvelle photo
         student.setPhoto(studentPhoto);
@@ -517,12 +567,56 @@ public class InternshipManagementActivity extends AppCompatActivity {
         int averageVisitDuring = avgVisitDuring;
         String tutorDisponibility = getTutorDisponibilitiesChecked();
         String comments = etComments.getText().toString();
+        String id = UUID.randomUUID().toString();
+        Internship.Priority priority = ib_new_flagSelector.getPriority();
 
         //On l'ajoute à la BD
-        //TODO CHANGER ÇA Là send l'id
-//        db.insertInternship(anneeScolaire, entreprise.getEnterpriseId(), student.getAccountId(),
-//                teacher.getAccountId(), ib_new_flagSelector.getPriority(), internshipDays, startHour,
-//                endHour, startLunch, endLunch, averageVisitDuring, tutorDisponibility, comments);
+        db.insertInternship(id, anneeScolaire, entreprise.getEnterpriseId(), student.getAccountId(),
+                teacher.getAccountId(), priority, internshipDays, startHour,
+                endHour, startLunch, endLunch, averageVisitDuring, tutorDisponibility, comments);
+
+        //on le modifie dans la bd à distance
+
+        HashMap<String, Object> requete = new HashMap<>();
+        requete.put("id", id);
+        requete.put("annee", anneeScolaire); //anneeScolaire
+        requete.put("commentaire", comments);
+        requete.put("id_entreprise", entreprise.getEnterpriseId());
+        requete.put("id_etudiant", student.getAccountId());
+        requete.put("id_professeur", teacher.getAccountId());
+        requete.put("heureDebut", startHour);
+        requete.put("heureFin", endHour);
+        requete.put("heureDebutPause", startLunch);
+        requete.put("heureFinPause", endLunch);
+
+        if(priority == Internship.Priority.HIGH){
+            requete.put("priorite", "HAUTE");
+        } else if(priority == Internship.Priority.MEDIUM){
+            requete.put("priorite", "MOYENNE");
+        } else {
+            requete.put("priorite", "BASSE");
+        }
+
+        client.ajouterStage(ConnectionValidation.authToken, requete).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.i("justine_tag", response.toString());
+                try {
+                    if (response.code() == 200) {
+                        JSONObject stage = new JSONObject(response.body().string());
+                        Log.d("MODIFY STAGE", "MODIFY STAGE : SUCCESS \n>>" + stage);
+                    }else{
+                        Log.d("MODIFY STAGE", "MODIFY STAGE : FAIL \n>>" + response.raw());
+                    }
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            }
+        });
 
         //On retourne à l'activité précedente après avoir insérer le nouveau étudiant
         returnToPreviousActivity();

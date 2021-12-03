@@ -4,13 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.LogoutFragment"
-    android:background="@color/purple_200">
+    android:background="@color/underline">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Logout"
-        android:gravity="center"
-        android:textSize="30dp"/>
 
 </FrameLayout>

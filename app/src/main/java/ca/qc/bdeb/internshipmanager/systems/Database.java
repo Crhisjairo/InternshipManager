@@ -301,7 +301,7 @@ public class Database extends SQLiteOpenHelper {
      */
     public void insertInternship(String id, String schoolYear, String idEntreprise,
                                  String idStudentAccount, String idTeacherAccount,
-                                 Internship.Priority priority, String internshipDays ,String startHour, String endHour,
+                                 Internship.Priority priority, String internshipDays , String startHour, String endHour,
                                  String startLunch, String endLunch, int averageVisitDuring,
                                  String tutorDisponibility, String comments) {
 
@@ -762,19 +762,19 @@ public class Database extends SQLiteOpenHelper {
         Account student = queryForAccountByLocalId(cursor.getString(3));
         Account teacher = queryForAccountByLocalId(cursor.getString(4));
 
-        Internship.Priority priorite = null;
+        Internship.Priority priority = null;
         String priorite_str = cursor.getString(5);
         if(priorite_str.equals("LOW")){
-            priorite = Internship.Priority.LOW;
+            priority = Internship.Priority.LOW;
         } else if(priorite_str.equals("MEDIUM")){
-            priorite = Internship.Priority.MEDIUM;
+            priority = Internship.Priority.MEDIUM;
         } else{
-            priorite = Internship.Priority.HIGH;
+            priority = Internship.Priority.HIGH;
         }
 
         Internship internship = new Internship(cursor.getString(0),
                 cursor.getString(1), enterprise, student, teacher,
-                visitList, priorite,cursor.getString(6),
+                visitList, priority,cursor.getString(6),
                 cursor.getString(7),cursor.getString(8),
                 cursor.getString(9),cursor.getString(10),
                 cursor.getInt(11),cursor.getString(12),

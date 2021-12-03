@@ -11,7 +11,7 @@ public class JustineAPIClient {
     private static Retrofit retrofit = null;
     private static OkHttpClient client = null;
     //il faut changer pour l'ip de ta machine personnel
-    private static String adresse = "10.165.56.155";
+    private static String adresse = "192.168.56.1";
     private static String server_url = "http://"+adresse+":8888/";
 
     public static Retrofit getRetrofit(){

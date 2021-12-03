@@ -1,7 +1,5 @@
 package ca.qc.bdeb.internshipmanager.dataclasses;
 
-import android.graphics.Bitmap;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -239,7 +237,7 @@ public class Internship implements Comparable<Internship> {
     /**
      * Prioritées qu'un stage peu avoir.
      */
-    public enum Priority{
+    public enum Priority {
         LOW,
         MEDIUM,
         HIGH

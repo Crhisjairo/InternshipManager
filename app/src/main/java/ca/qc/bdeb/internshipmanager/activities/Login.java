@@ -131,7 +131,6 @@ public class Login extends AppCompatActivity {
      * @param view
      */
     public void connecter(View view) {
-
         HashMap<String, Object> loginData = new HashMap<>();
         if (!guiUser.getText().toString().isEmpty()){
             loginData.put("email", guiUser.getText().toString() );
@@ -166,12 +165,11 @@ public class Login extends AppCompatActivity {
                        Intent intent = new Intent(Login.this, MainActivity.class);
                        startActivity(intent);
                        finish();
-                   } catch (JSONException e) {
+                   } catch (JSONException | IOException e) {
                        e.printStackTrace();
-                   } catch (IOException e) {
-                       e.printStackTrace();
-                   } finally {
                    }
+               } else if(response.code() == 401){
+                   Toast.makeText(getApplicationContext(), "Echec de connexion!!", Toast.LENGTH_LONG).show();
                }
             }
 

@@ -1,5 +1,6 @@
 package ca.qc.bdeb.internshipmanager.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,7 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import ca.qc.bdeb.internshipmanager.ConnectionValidation;
 import ca.qc.bdeb.internshipmanager.R;
+import ca.qc.bdeb.internshipmanager.activities.Login;
+import ca.qc.bdeb.internshipmanager.activities.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,9 +55,8 @@ public class LogoutFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        if (ConnectionValidation.authToken.isEmpty()) {
+            demanderConnection();
         }
     }
 
@@ -62,5 +65,14 @@ public class LogoutFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_logout, container, false);
+    }
+
+    /**
+     * Envoier utilisateur vers la page de login pour l'authentification
+     */
+    private void demanderConnection() {
+        Intent intent = new Intent(getContext(), Login.class);
+        startActivity(intent);
+        getActivity().finish();
     }
 }

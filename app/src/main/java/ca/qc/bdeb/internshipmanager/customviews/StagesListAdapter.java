@@ -2,6 +2,7 @@ package ca.qc.bdeb.internshipmanager.customviews;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +14,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import ca.qc.bdeb.internshipmanager.ConnectionValidation;
 import ca.qc.bdeb.internshipmanager.R;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
+import ca.qc.bdeb.internshipmanager.reseau.JustineAPI;
+import ca.qc.bdeb.internshipmanager.reseau.JustineAPIClient;
 import ca.qc.bdeb.internshipmanager.systems.Database;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.StagesViewHolder>{
     private final ArrayList<Internship> internshipList;
@@ -152,8 +165,50 @@ public class StagesListAdapter extends RecyclerView.Adapter<StagesListAdapter.St
                 public void onChangeState() {
                     intership.setPriority(ivItemFlagSelector.getPriority());
 
+
                     //On modifie le internship dans la bd.
                     Database.getInstance(itemView.getContext()).updateInternship(intership);
+                    //Modifie dans la BD à distance
+                    JustineAPI client = JustineAPIClient.getRetrofit().create(JustineAPI.class);
+                    HashMap<String, Object> requete = new HashMap<>();
+                    requete.put("id", intership.getIdInternship());
+                    requete.put("annee", intership.getSchoolYear());
+                    requete.put("id_entreprise", intership.getEnterprise().getEnterpriseId());
+                    requete.put("id_etudiant", intership.getStudentAccount().getAccountId());
+                    requete.put("id_professeur",intership.getTeacherAccount().getAccountId());
+                    requete.put("commentaire", intership.getComments());
+                    requete.put("heureDebut", intership.getStartHour());
+                    requete.put("heureFin", intership.getEndHour());
+                    requete.put("heureDebutPause", intership.getStartLunch());
+                    requete.put("heureFinPause", intership.getEndLunch());
+                    if(ivItemFlagSelector.getPriority() == Internship.Priority.HIGH){
+                        requete.put("priorite", "HAUTE");
+                    } else if(ivItemFlagSelector.getPriority() == Internship.Priority.MEDIUM){
+                        requete.put("priorite", "MOYENNE");
+                    } else {
+                        requete.put("priorite", "BASSE");
+                    }
+
+                    client.ajouterStage(ConnectionValidation.authToken, requete).enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            Log.i("justine_tag", response.toString());
+                            try {
+                                if (response.code() == 200) {
+                                    JSONObject stage = new JSONObject(response.body().string());
+                                    Log.d("MODIFY STAGE", "MODIFY STAGE : SUCCESS \n>>" + stage);
+                                }else{
+                                    Log.d("MODIFY STAGE", "MODIFY STAGE : FAIL \n>>" + response.code());
+                                }
+                            } catch (JSONException | IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        }
+                    });
 
                     //Log.d("Icitte", "dans le flagSelector: " + ivItemFlagSelector.getPriority().toString());
                     //Log.d("Icitte", "dans le stage: " + stage.getPriority().toString());

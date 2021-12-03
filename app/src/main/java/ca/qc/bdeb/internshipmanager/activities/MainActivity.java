@@ -17,8 +17,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -128,6 +126,10 @@ public class MainActivity extends AppCompatActivity {
                             replaceFragment(new SettingsFragment());
                             break;
                         case R.id.nav_logout:
+                            client.deconnecter(ConnectionValidation.authToken);
+                            ConnectionValidation.authToken = "";
+                            ConnectionValidation.authId = "";
+//                            replaceFragment(new LogoutFragment());
                             Intent intent = new Intent(MainActivity.this, Login.class);
                             startActivity(intent);
                             finish();
@@ -328,13 +330,13 @@ public class MainActivity extends AppCompatActivity {
 
         String priorite_str = internship.getString("priorite");
         Log.d("TAG", "manageStageSLQ HAUTE: " + priorite_str);
-        Internship.Priority priorite = null;
+        Internship.Priority priority = null;
         if(priorite_str.equals("HAUTE")){
-            priorite = Internship.Priority.HIGH;
+            priority = Internship.Priority.HIGH;
         } else if(priorite_str.equals("MOYENNE")){
-            priorite = Internship.Priority.MEDIUM;
+            priority = Internship.Priority.MEDIUM;
         } else {
-            priorite = Internship.Priority.LOW;
+            priority = Internship.Priority.LOW;
         }
 
         JSONObject etudiant = internship.getJSONObject("etudiant");
@@ -354,11 +356,11 @@ public class MainActivity extends AppCompatActivity {
 
             db.updateInternship(id, anneeScolaire, entreprise.getString("id"),
                     etudiant.getString("id"), professeur.getString("id"),
-                    priorite, heureDebut, heureFin,heureDebutPause, heureFinPause );
+                    priority, heureDebut, heureFin,heureDebutPause, heureFinPause );
         }else{
             db.insertInternship(id, anneeScolaire, entreprise.get("id").toString(),
                     etudiant.getString("id"), professeur.get("id").toString(),
-                    priorite, "monday", heureDebut, heureFin,
+                    priority, "monday", heureDebut, heureFin,
                     heureDebutPause,heureFinPause,30,"wednesdayAM|",
                     commentaire);
         }
