@@ -1,6 +1,9 @@
 package ca.qc.bdeb.internshipmanager.dataclasses;
 
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 /**
  * Classe qui permet de créer, modifier ou supprimer une visite.
  * Un stage peut posséder plusieurs visites. Les visites possèdent une date, une heure de début
@@ -34,6 +37,15 @@ public class Visit {
         this.visitDate = visitDate;
         this.startHour = startHour;
         this.during = during;
+    }
+
+
+    public String getInternshipId() {
+        return internshipId;
+    }
+
+    public void setInternshipId(String internshipId) {
+        this.internshipId = internshipId;
     }
 
     /**
@@ -84,5 +96,43 @@ public class Visit {
 
     public void setDuring(String during) {
         this.during = during;
+    }
+
+    /**
+     * Crée une visite en base des données founis dans un stage.
+     * On formate les dates et on s'assure que toutes les dates peuvent s'afficher dans le calendrier.
+     *
+     * @param internship Stage auquel appartient les visites.
+     * @return Visites génerées à partir des données du stage.
+     */
+    public static ArrayList<Visit> createVisitsFromIntership(Internship internship){
+        ArrayList<Visit> visits = new ArrayList<>();
+        //On separe les jours de stages et on crée les visites en fonction
+        String visitDays = internship.getInternshipDays();
+        String[] days = visitDays.split("\\|");
+        //Données pour toutes les visites
+        String internshipId = internship.getIdInternship();
+        String startHour = internship.getStartHour();
+        String during = Integer.toString(internship.getAverageVisitDuring()); //utiliser pour calculer heureFin dans calendar
+
+        for (String day : days) {
+            String visitId = UUID.randomUUID().toString();
+            String visitDate = day;
+
+            visits.add(new Visit(visitId, internshipId, visitDate, startHour, during));
+        }
+
+        //On adapte les dates pour qu'elles restent dans une marge unique dans le calendrier.
+        
+        return visits;
+    }
+
+    /**
+     * Vérifie que chaque visite contient une marge de temps unique.
+     * @param visits
+     * @return
+     */
+    public static ArrayList<Visit> adaptVisitDates(ArrayList<Visit> visits){
+        return null;
     }
 }

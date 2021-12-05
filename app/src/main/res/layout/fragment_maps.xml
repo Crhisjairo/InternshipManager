@@ -88,17 +88,18 @@
             tools:context=".fragments.MapsFragment" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddVisits"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/ic_calendar"
+            app:backgroundTint="@color/green"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
             app:layout_constraintVertical_bias="0.95"
-            app:backgroundTint="@color/green"
-            android:src="@drawable/ic_calendar"
-            app:tint="@color/underline"/>
+            app:tint="@color/underline" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

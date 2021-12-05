@@ -17,7 +17,9 @@ import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -278,17 +280,21 @@ public class Database extends SQLiteOpenHelper {
     /**
      * Methode qui va permettre d'insérer une nouvelle visite
      */
-    public void insertVisit(String internshipId ,String date, String startHour, String during) {
+    public void insertVisits(ArrayList<Visit> visits) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(VisitTable._ID, UUID.randomUUID().toString());
-        values.put(VisitTable.INTERNSHIP_ID, internshipId);
-        values.put(VisitTable.DATE, date);
-        values.put(VisitTable.START_HOUR, startHour);
-        values.put(VisitTable.DURING, during);
+        for (Visit visit : visits) {
+            ContentValues values = new ContentValues();
+            values.put(VisitTable._ID, visit.getVisitId());
+            values.put(VisitTable.INTERNSHIP_ID, visit.getInternshipId());
+            values.put(VisitTable.DATE, visit.getVisitDate());
+            values.put(VisitTable.START_HOUR, visit.getStartHour());
+            values.put(VisitTable.DURING, visit.getDuring());
 
-        db.insert(VisitTable.TABLE_NAME, null, values);
+            db.insert(VisitTable.TABLE_NAME, null, values);
+        }
+
+        internshipList = queryForAllInternships();
     }
 
     /**
@@ -397,7 +403,7 @@ public class Database extends SQLiteOpenHelper {
                 Enterprise entreprise = queryForEntrepriseById(idEntreprise);
 
                 //On demande la liste de visit
-                ArrayList<Visit> visitList = queryForVisitsByInternshipId(idInternship);
+                ArrayList<Visit> visitList = getVisitsByInternshipId(idInternship);
 
                 Internship internship = new Internship(idInternship, anneeScolaire, entreprise,
                         studentAccount, teacherAccount, visitList, priority, internshipDays,starthour,
@@ -598,7 +604,7 @@ public class Database extends SQLiteOpenHelper {
         Enterprise entreprise = getEntrepriseById(idEntreprise);
 
         //On demande la liste de visit
-        ArrayList<Visit> visitList = queryForVisitsByInternshipId(idInternship);
+        ArrayList<Visit> visitList = getVisitsByInternshipId(idInternship);
 
         Internship internship = new Internship(idInternship, anneeScolaire, entreprise,
                 studentAccount, teacherAccount, visitList, priority, internshipDays, starthour, endHour, startLunch,
@@ -718,7 +724,7 @@ public class Database extends SQLiteOpenHelper {
      * @param internshipId
      * @return
      */
-    private ArrayList<Visit> queryForVisitsByInternshipId(String internshipId) {
+    private ArrayList<Visit> getVisitsByInternshipId(String internshipId) {
         //SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Visit> visitsList = new ArrayList<>();
 
@@ -734,10 +740,39 @@ public class Database extends SQLiteOpenHelper {
         }
 
         do {
-            Visit visit = new Visit(cursorVisit.getString(0), cursorVisit.getString(1),
-                    cursorVisit.getString(2), cursorVisit.getString(3), cursorVisit.getString(4));
 
-            visitsList.add(visit);
+                Visit visit = new Visit(cursorVisit.getString(0), cursorVisit.getString(1),
+                        cursorVisit.getString(2), cursorVisit.getString(3), cursorVisit.getString(4));
+
+                visitsList.add(visit);
+
+        } while (cursorVisit.moveToNext());
+
+        cursorVisit.close();
+
+        return visitsList;
+    }
+
+    public ArrayList<Visit> getAllVisits(){
+        //SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<Visit> visitsList = new ArrayList<>();
+
+        String query = "SELECT * FROM " + VisitTable.TABLE_NAME;
+
+        Cursor cursorVisit = db.rawQuery(query, null);
+
+        if (cursorVisit != null && cursorVisit.getCount() > 0) {
+            cursorVisit.moveToFirst();
+        } else { //S'il y n'y a pas de visites
+            return new ArrayList<>();
+        }
+
+        do {
+                Visit visit = new Visit(cursorVisit.getString(0), cursorVisit.getString(1),
+                        cursorVisit.getString(2), cursorVisit.getString(3), cursorVisit.getString(4));
+
+                visitsList.add(visit);
+
         } while (cursorVisit.moveToNext());
 
         cursorVisit.close();
@@ -763,7 +798,7 @@ public class Database extends SQLiteOpenHelper {
         if (cursor != null)
             cursor.moveToFirst();
 
-        ArrayList<Visit> visitList = queryForVisitsByInternshipId(internshipId);
+        ArrayList<Visit> visitList = getVisitsByInternshipId(internshipId);
         Enterprise enterprise = queryForEntrepriseById(cursor.getString(2));
         Account student = queryForAccountByLocalId(cursor.getString(3));
         Account teacher = queryForAccountByLocalId(cursor.getString(4));
@@ -986,7 +1021,7 @@ public class Database extends SQLiteOpenHelper {
                 Enterprise entreprise = queryForEntrepriseById(idEntreprise);
 
                 //On demande la liste de visit
-                ArrayList<Visit> visitList = queryForVisitsByInternshipId(idInternship);
+                ArrayList<Visit> visitList = getVisitsByInternshipId(idInternship);
 
                 Internship internship = new Internship(idInternship, anneeScolaire, entreprise,
                         studentAccount, teacherAccount, visitList, priority, internshipDays,starthour,

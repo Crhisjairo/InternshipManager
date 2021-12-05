@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ import ca.qc.bdeb.internshipmanager.ConnectionValidation;
 import ca.qc.bdeb.internshipmanager.R;
 import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
+import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
 import ca.qc.bdeb.internshipmanager.systems.Database;
 
 public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickListener {
@@ -44,6 +47,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     private Database db;
     private GoogleMap googleMap;
     private CheckBox cbLowPriority, cbMediumPriority, cbHighPriority;
+    private FloatingActionButton fabAddVisits;
     private Hashtable<String, Internship> filteredInternshipTable = new Hashtable<String, Internship>();
     private boolean allowAccessLocation;
 
@@ -211,6 +215,14 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         cbHighPriority = view.findViewById(R.id.cbHighPriority);
         setCheckboxesListener();
 
+        fabAddVisits = view.findViewById(R.id.fabAddVisits);
+        fabAddVisits.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickAddVisit();
+            }
+        });
+
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -274,6 +286,9 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
             internsToVisist.add(intern);
         }
 
+        Log.d("ICITTE", "onMarkerClick: " + intern.getStudentAccount().getFullName());
+        Log.d("ICITTE", "Taille: " + internsToVisist.size());
+
         return false;
     }
 
@@ -283,14 +298,20 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
     }
 
-//    public void setPassDataHandler(PassDataHandler passDataHandler) {
-//        this.passDataHandler = passDataHandler;
-//    }
-//
-//    public interface PassDataHandler {
-//
-//        public void sendData(boolean isAllowed);
-//
-//    }
+    public void onClickAddVisit(){
+        //Il faut checker que les visits n'existent pas déjà icitte.
+
+        //On ajoute les visites selectionnées. Le calendrier va s'encharger d'adapter les dates.
+        for (Internship internship : internsToVisist) {
+            //On crée une visite pour l'internship courrant
+            //On format les dates et on vérifie les marges entre les heures.
+            ArrayList<Visit> visits = Visit.createVisitsFromIntership(internship);
+
+            db.insertVisits(visits);
+        }
+
+        internsToVisist.clear();
+    }
+
 
 }
