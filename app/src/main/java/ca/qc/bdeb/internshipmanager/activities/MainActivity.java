@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ca.qc.bdeb.internshipmanager.ConnectionValidation;
 import ca.qc.bdeb.internshipmanager.R;
@@ -77,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
 
         db = Database.getInstance(getApplicationContext());
         sql = Database.getSql();
+
+        client = JustineAPIClient.getRetrofit().create(JustineAPI.class);
+        verifyAuth();
         connexionAPI();
 
         // Navigation Bar
@@ -97,10 +101,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (ConnectionValidation.authToken.isEmpty()) {
-            demanderConnection();
-        }
-
         // On set le comportment des clicks sur le menu
         navigationView.setNavigationItemSelectedListener(new NavigationView
                 .OnNavigationItemSelectedListener() {
@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 int id = item.getItemId();
                 item.setChecked(true);
                 drawerLayout.closeDrawer(GravityCompat.START);
+
                 if (ConnectionValidation.authToken.isEmpty()) {
                     demanderConnection();
                 } else {
@@ -146,11 +147,37 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void verifyAuth() {
+        if (ConnectionValidation.authToken.isEmpty()) {
+            demanderConnection();
+        } else {
+            //tester si connection est valide
+            HashMap<String, Object> user = new HashMap<>();
+            user.put("id_compte", ConnectionValidation.authId);
+            client.testerConnexion(ConnectionValidation.authToken, user).enqueue(
+                    new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            if (response.code() != 200) {
+                                demanderConnection();
+                            }
+                            else{
+
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            demanderConnection();
+                        }
+                    }
+            );
+        }
+    }
+
     /**
      * Permet la récuperation des données d'une base de données externe.
      */
     private void connexionAPI() {
-        client = JustineAPIClient.getRetrofit().create(JustineAPI.class);
         getStudents();
         getEntreprises();
         getStages();
@@ -394,10 +421,14 @@ public class MainActivity extends AppCompatActivity {
      * Initialise le fragment qui contient la liste des stages.
      */
     private void initListFragment() {
-        internships = db.getInternshipFromOneTeacher(ConnectionValidation.authId);
-        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,
-                new ListInternshipFragment(internships)).commit();
-        navigationView.getMenu().getItem(0).setChecked(true);
+        if (ConnectionValidation.authToken.isEmpty()) {
+            demanderConnection();
+        }else {
+            internships = db.getInternshipFromOneTeacher(ConnectionValidation.authId);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,
+                    new ListInternshipFragment(internships)).commit();
+            navigationView.getMenu().getItem(0).setChecked(true);
+        }
     }
 
     @Override
