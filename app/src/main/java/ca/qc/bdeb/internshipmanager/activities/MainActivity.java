@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
         }else{
             db.insertInternship(id, anneeScolaire, entreprise.get("id").toString(),
                     etudiant.getString("id"), professeur.get("id").toString(),
-                    priority, "monday", heureDebut, heureFin,
+                    priority, "", heureDebut, heureFin,
                     heureDebutPause,heureFinPause,30,"wednesdayAM|",
                     commentaire);
         }

@@ -3,14 +3,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.CalendarFragment"
     android:background="@color/grey">
 
-    <TextView
+    <com.alamkanak.weekview.WeekView
+        android:id="@+id/weekView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Calendar"
-        android:gravity="center"
-        android:textSize="30dp"/>
+        app:minTime="6"
+        app:maxTime="24"
+
+        app:showNowLine="true"
+        app:nowLineColor="@color/dark_green"
+        app:nowLineThickness="5dp"
+
+        app:headerColumnPadding="8dp"
+        app:headerColumnTextColor="@android:color/secondary_text_light"
+
+        app:hourSeparatorColor="@color/green"
+
+        app:newEventColor="@color/green_flag"
+        app:eventTextColor="@android:color/white"
+
+        app:showDistinctPastFutureColor="true"
+        app:pastBackgroundColor="@color/silver"
+        app:futureBackgroundColor="@color/pale"
+
+        app:todayHeaderTextColor="@color/black"
+
+        app:showFirstDayOfWeekFirst="true"
+
+        android:background="@color/white"
+
+        app:textSize="12sp"
+        app:hourHeight="90dp"
+        app:minHourHeight="60dp"
+        app:maxHourHeight="120dp"
+        app:columnGap="8dp"
+        app:noOfVisibleDays="3"
+        app:headerRowBackgroundColor="@color/green"
+
+        />
 
 </FrameLayout>

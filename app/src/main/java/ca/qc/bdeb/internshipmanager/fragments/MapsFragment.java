@@ -1,10 +1,12 @@
 package ca.qc.bdeb.internshipmanager.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -23,6 +26,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +39,7 @@ import ca.qc.bdeb.internshipmanager.ConnectionValidation;
 import ca.qc.bdeb.internshipmanager.R;
 import ca.qc.bdeb.internshipmanager.dataclasses.Enterprise;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
+import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
 import ca.qc.bdeb.internshipmanager.systems.Database;
 
 public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickListener {
@@ -44,6 +49,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     private Database db;
     private GoogleMap googleMap;
     private CheckBox cbLowPriority, cbMediumPriority, cbHighPriority;
+    private FloatingActionButton fabAddVisits;
     private Hashtable<String, Internship> filteredInternshipTable = new Hashtable<String, Internship>();
     private boolean allowAccessLocation;
 
@@ -211,6 +217,14 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
         cbHighPriority = view.findViewById(R.id.cbHighPriority);
         setCheckboxesListener();
 
+        fabAddVisits = view.findViewById(R.id.fabAddVisits);
+        fabAddVisits.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickAddVisit();
+            }
+        });
+
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -274,6 +288,9 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
             internsToVisist.add(intern);
         }
 
+        Log.d("ICITTE", "onMarkerClick: " + intern.getStudentAccount().getFullName());
+        Log.d("ICITTE", "Taille: " + internsToVisist.size());
+
         return false;
     }
 
@@ -283,14 +300,65 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
     }
 
-//    public void setPassDataHandler(PassDataHandler passDataHandler) {
-//        this.passDataHandler = passDataHandler;
-//    }
-//
-//    public interface PassDataHandler {
-//
-//        public void sendData(boolean isAllowed);
-//
-//    }
+    public void onClickAddVisit(){
+        ArrayList<Visit> visitsToInsert = new ArrayList<>();
+        boolean someVisitsNotAdded = false;
+
+        //On ajoute les visites selectionnées. Le calendrier va s'encharger d'adapter les dates.
+        for (Internship internship : internsToVisist) {
+            //On crée une visite pour l'internship courrant. On format les dates.
+            // Les marges entre les heures se verifient dans le calendrier.
+            ArrayList<Visit> visits = Visit.createVisitsFromIntership(internship); //On a 3 visites pour le stage
+
+            if(visits.isEmpty()){
+                //Message pour dire que le stage ne possède pas des journées de stage
+                showAlertDialog(getContext().getString(R.string.visitNotAddedTitle),
+                        getContext().getString(R.string.internshipWithoutDays));
+            }
+
+            //On check que le stage ne possède pas plus de 3 visites et qu'il ne possède plus d'une
+            //visite par journée, si jamais c'est le cas, on affiche un popup pour aviser l'utilisateur.
+            //Ces 3 visites sont forcés à être en journées séparées.
+            for (Visit visit : visits) {
+                //Pour chaque visite, on check si une visite exite avec la même journée.
+                if(Visit.containsVisitAtSameDay(internship, visit)){
+                    someVisitsNotAdded = true;
+                    continue;
+                }
+
+                visitsToInsert.add(visit);
+            }
+
+        }
+
+        //On affiche un popup si jamais des visites n'ont pas été ajoutés.
+        if(someVisitsNotAdded){
+            showAlertDialog(getContext().getString(R.string.visitNotAddedTitle),
+                    getContext().getString(R.string.someVisitsAtSameDay));
+        }
+
+        if(!visitsToInsert.isEmpty()){
+            db.insertVisits(visitsToInsert);
+        }
+
+        internsToVisist.clear();
+    }
+
+
+    private void showAlertDialog(String title, String message){
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(message);
+
+        //On déclare les actions du button oui
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getContext().getString(R.string.okText), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        alertDialog.show();
+    }
+
 
 }
