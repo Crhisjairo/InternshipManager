@@ -30,7 +30,6 @@
         app:pastBackgroundColor="@color/silver"
         app:futureBackgroundColor="@color/pale"
 
-        app:todayColumnBackgroundColor="@color/green"
         app:todayHeaderTextColor="@color/black"
 
         app:showFirstDayOfWeekFirst="true"
@@ -38,7 +37,9 @@
         android:background="@color/white"
 
         app:textSize="12sp"
-        app:hourHeight="60dp"
+        app:hourHeight="90dp"
+        app:minHourHeight="60dp"
+        app:maxHourHeight="120dp"
         app:columnGap="8dp"
         app:noOfVisibleDays="3"
         app:headerRowBackgroundColor="@color/green"

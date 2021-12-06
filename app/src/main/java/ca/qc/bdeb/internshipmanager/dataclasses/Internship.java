@@ -1,7 +1,12 @@
 package ca.qc.bdeb.internshipmanager.dataclasses;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+
 import java.util.ArrayList;
 import java.util.Comparator;
+
+import ca.qc.bdeb.internshipmanager.R;
 
 /**
  * Classe qui permet de créer, modifier ou supprimer un stage.
@@ -82,6 +87,19 @@ public class Internship implements Comparable<Internship> {
      */
     public Priority getPriority() {
         return priority;
+    }
+
+    public int getPriorityColorRessourceId(){
+        switch (priority){
+            case LOW:
+                return R.color.green_flag;
+            case MEDIUM:
+                return R.color.yellow_flag;
+            case HIGH:
+                return R.color.red_flag;
+        }
+
+        return -1;
     }
 
     /**

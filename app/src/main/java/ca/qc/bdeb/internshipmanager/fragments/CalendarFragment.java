@@ -1,14 +1,33 @@
 package ca.qc.bdeb.internshipmanager.fragments;
 
+import android.graphics.RectF;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.alamkanak.weekview.MonthLoader;
+import com.alamkanak.weekview.WeekView;
+import com.alamkanak.weekview.WeekViewEvent;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import ca.qc.bdeb.internshipmanager.R;
+import ca.qc.bdeb.internshipmanager.customviews.ModifyVisitDialog;
+import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
+import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
+import ca.qc.bdeb.internshipmanager.systems.Database;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,14 +36,10 @@ import ca.qc.bdeb.internshipmanager.R;
  */
 public class CalendarFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private WeekView weekView;
+    private Database db;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private ArrayList<Visit> visits;
 
     public CalendarFragment() {
         // Required empty public constructor
@@ -42,8 +57,7 @@ public class CalendarFragment extends Fragment {
     public static CalendarFragment newInstance(String param1, String param2) {
         CalendarFragment fragment = new CalendarFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,8 +66,7 @@ public class CalendarFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
     }
 
@@ -63,4 +76,102 @@ public class CalendarFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_calendar, container, false);
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        db = Database.getInstance(getContext());
+        weekView = view.findViewById(R.id.weekView);
+
+        visits = db.getAllVisits();
+        visits = Visit.adaptVisitDates(visits);
+
+        db.updateVisits(visits);
+
+        //Pour passer les events à la création du calendar
+        weekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
+            @Nullable
+            @Override
+            public List<? extends WeekViewEvent> onMonthChange(int i, int i1) {
+                List<WeekViewEvent> events = createEventsFromVisits(i, i1);
+                return events;
+            }
+        });
+
+        weekView.setEventClickListener(new WeekView.EventClickListener() {
+            @Override
+            public void onEventClick(@NonNull WeekViewEvent weekViewEvent, @NonNull RectF rectF) {
+                //Toast.makeText(getContext(), "icitte", Toast.LENGTH_SHORT).show();
+                //On montre un dialog pour modier le WeekViewEvent
+                ModifyVisitDialog modifyVisitDialog = new ModifyVisitDialog(getContext(), getParentFragmentManager(), weekViewEvent);
+                modifyVisitDialog.setOnClickOkButtonListener(new ModifyVisitDialog.OnClickOkButtonListener() {
+                    @Override
+                    public void onClick(String newStartTime, String newDuringTime) {
+
+                        for (Visit visit : visits) {
+                            if(visit.getVisitId().equals(weekViewEvent.getId())){
+                                visit.setStartHour(newStartTime);
+                                visit.setDuring(newDuringTime);
+
+                                db.updateVisitById(visit);
+                                visits = db.getAllVisits();
+                                weekView.notifyDataSetChanged();
+                                break;
+                            }
+                        }
+
+                    }
+                });
+
+                modifyVisitDialog.show();
+            }
+        });
+
+    }
+
+    private List<WeekViewEvent> createEventsFromVisits(int newYear, int newMonth) {
+        List<WeekViewEvent> events = new ArrayList<>();
+        Date startDate, day;
+
+        try{
+
+            for (Visit visit : visits) {
+                Calendar startTime = Calendar.getInstance();
+                startDate = new SimpleDateFormat("HH:mm:ss").parse(visit.getStartHour());
+                day = new SimpleDateFormat("yyyy-MM-dd").parse(visit.getVisitDate());
+
+                startTime.set(Calendar.HOUR_OF_DAY, startDate.getHours());
+                startTime.set(Calendar.MINUTE, startDate.getMinutes());
+                startTime.set(Calendar.DAY_OF_MONTH, day.getDay() + 5); //Le +5 c'est à cause de la librairie
+                startTime.set(Calendar.MONTH, newMonth - 1);
+                startTime.set(Calendar.YEAR, newYear);
+
+                //On calcule l'heure de fin en fonction du during de la visite
+                Calendar endTime = (Calendar) startTime.clone();
+                endTime.add(Calendar.MINUTE, Integer.parseInt(visit.getDuring()));
+
+                Internship internship = db.queryForInternshipId(visit.getInternshipId());
+
+                WeekViewEvent event = new WeekViewEvent(visit.getVisitId(),
+                        getEventTitle(internship, startTime), startTime, endTime);
+                //On donne la couleur de la priorité.
+                event.setColor(getResources().getColor(internship.getPriorityColorRessourceId()));
+                events.add(event);
+            }
+
+        }catch (Exception e){
+            Log.e("Calendar:", "createEventsFromVisits() " + e);
+        }
+
+        return events;
+    }
+
+    protected String getEventTitle(Internship internship, Calendar time) {
+        String fullName = internship.getStudentAccount().getFullName();
+
+
+        return String.format(getString(R.string.visitFor) + " " + fullName + " : %02d:%02d %s/%d",
+                time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE), time.get(Calendar.MONTH)+1, time.get(Calendar.DAY_OF_MONTH));
+    }
+    
 }

@@ -1,7 +1,12 @@
 package ca.qc.bdeb.internshipmanager.dataclasses;
 
 
+import android.util.Log;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -68,10 +73,6 @@ public class Visit {
      * Recupère l'heure de fin de la visite.
      * @return Heure de fin de la visite.
      */
-    public String getVisit_id() {
-        return visitId;
-    }
-
     public String getVisitId() {
         return visitId;
     }
@@ -100,26 +101,35 @@ public class Visit {
 
     /**
      * Crée une visite en base des données founis dans un stage.
-     * On formate les dates et on s'assure que toutes les dates peuvent s'afficher dans le calendrier.
+     * On formate les dates.
      *
      * @param internship Stage auquel appartient les visites.
      * @return Visites génerées à partir des données du stage.
      */
     public static ArrayList<Visit> createVisitsFromIntership(Internship internship){
         ArrayList<Visit> visits = new ArrayList<>();
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
         //On separe les jours de stages et on crée les visites en fonction
         String visitDays = internship.getInternshipDays();
+
+        if(visitDays.isEmpty()){
+            return new ArrayList<>(); //Parce qu'il contient pas les journées
+        }
+
         String[] days = visitDays.split("\\|");
         //Données pour toutes les visites
         String internshipId = internship.getIdInternship();
         String startHour = internship.getStartHour();
-        String during = Integer.toString(internship.getAverageVisitDuring()); //utiliser pour calculer heureFin dans calendar
+        String during = Integer.toString(internship.getAverageVisitDuring()); //utiliser pour calculer heureFin de la visite dans calendar
 
         for (String day : days) {
+            Log.d("Visit:" , day + "");
             String visitId = UUID.randomUUID().toString();
-            String visitDate = day;
+            //On format la journée pour le traiter dans le calendrier après.
+            Date visitDate = nextDayOfWeek(day).getTime();
+            String visitDateString = formater.format(visitDate);
 
-            visits.add(new Visit(visitId, internshipId, visitDate, startHour, during));
+            visits.add(new Visit(visitId, internshipId, visitDateString, startHour, during));
         }
 
         //On adapte les dates pour qu'elles restent dans une marge unique dans le calendrier.
@@ -128,11 +138,143 @@ public class Visit {
     }
 
     /**
-     * Vérifie que chaque visite contient une marge de temps unique.
-     * @param visits
+     * Recupère la prochaine journée (avec la date complète) selon le jour qu'on lui passe.
+     * @param day
      * @return
      */
+    public static Calendar nextDayOfWeek(String day) {
+        Calendar date = Calendar.getInstance();
+        int dayOfWeek = 0;
+
+        switch (day.toLowerCase()){
+            case "monday":
+                dayOfWeek = Calendar.MONDAY;
+                break;
+            case "tuesday":
+                dayOfWeek = Calendar.TUESDAY;
+                break;
+            case "wednesday":
+                dayOfWeek = Calendar.WEDNESDAY;
+                break;
+            case "thursday":
+                dayOfWeek = Calendar.THURSDAY;
+                break;
+            case "friday":
+                dayOfWeek = Calendar.FRIDAY;
+                break;
+            case "saturday":
+                dayOfWeek = Calendar.SATURDAY;
+                break;
+            case "sunday":
+                dayOfWeek = Calendar.SUNDAY;
+                break;
+            default:
+                Log.e("Error: ", "NextDayOfWeek(), day parse");
+        }
+
+        //On calcule la prochaine journée
+        int difference = dayOfWeek - date.get(Calendar.DAY_OF_WEEK);
+
+        if (difference <= 0) {
+            difference += 7;
+        }
+
+        date.add(Calendar.DAY_OF_MONTH, difference);
+
+        return date;
+    }
+
+    /**
+     * On vérifie si le stage contient déjà une visite pour la même journée.
+     * @param internship Stage auquel on va vérifier ses visites.
+     * @param visit Visit qu'on veut vérifier que sa journée ne se trouve pas dans le stage.
+     * @return S'il exite une visite dans la même journée.
+     */
+    public static boolean containsVisitAtSameDay(Internship internship, Visit visit){
+        ArrayList<Visit> visitsOnIntern = internship.getVisitList();
+
+        for (Visit visitOnIntern : visitsOnIntern) {
+            Date visitOnInternDate = new Date();
+            Date visitToProveDate = new Date();
+
+            try{
+                visitOnInternDate = new SimpleDateFormat("yyyy-MM-dd").parse(visitOnIntern.getVisitDate());
+                visitToProveDate = new SimpleDateFormat("yyyy-MM-dd").parse(visit.getVisitDate());
+
+                if(visitOnInternDate.getDay() == visitToProveDate.getDay()){
+                    return true;
+                }
+
+            }catch (Exception e){
+                Log.d("Visit", "Error containsVisitAtSameDay():" + e);
+            }
+
+        }
+
+        return false;
+    }
+
+    /**
+     * Vérifie que chaque visite contient une marge de temps unique.
+     * @param visits Toutes les visites à comparer.
+     * @return ArrayList des visites avec une marge de temps unique pour une même journée.
+     */
     public static ArrayList<Visit> adaptVisitDates(ArrayList<Visit> visits){
-        return null;
+        SimpleDateFormat formaterHour = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat formaterDay = new SimpleDateFormat("yyyy-MM-dd");
+        Date startVisitDate1 = new Date();
+        Date startVisitDate2 = new Date();
+
+        try{
+            for (int i = 0; i < visits.size(); i++) {
+                Visit visit1 = visits.get(i);
+                startVisitDate1 = new SimpleDateFormat("HH:mm:ss").parse(visit1.getStartHour());
+
+                Calendar endVisit1 = Calendar.getInstance();
+                endVisit1.set(Calendar.HOUR_OF_DAY, startVisitDate1.getHours());
+                endVisit1.set(Calendar.MINUTE, startVisitDate1.getMinutes());
+                endVisit1.add(Calendar.MINUTE, Integer.parseInt(visit1.getDuring()));
+
+                Date dayVisit1 = new SimpleDateFormat("yyyy-MM-dd").parse(visit1.getVisitDate());
+
+                for (int j = 0; j < visits.size(); j++) {
+                    Visit visit2 = visits.get(j);
+                    startVisitDate2 = new SimpleDateFormat("HH:mm:ss").parse(visit2.getStartHour());
+
+                    Calendar endVisit2 = Calendar.getInstance();
+                    endVisit2.set(Calendar.HOUR_OF_DAY, startVisitDate2.getHours());
+                    endVisit2.set(Calendar.MINUTE, startVisitDate2.getMinutes());
+                    endVisit2.add(Calendar.MINUTE, Integer.parseInt(visit2.getDuring()));
+
+                    Date dayVisit2 = new SimpleDateFormat("yyyy-MM-dd").parse(visit2.getVisitDate());
+
+                    if(startVisitDate1.getHours() >= startVisitDate2.getHours() &&
+                            startVisitDate1.getHours() <= endVisit2.getTime().getHours() &&
+                            dayVisit1.getDay() == dayVisit2.getDay() &&
+                            !visit1.getVisitId().equals(visit2.getVisitId()) ){
+                        //ici on a la même heure, même journée
+
+                        //On donne le endVisit2 au visitDate1
+                        Calendar newTime = Calendar.getInstance();
+                        newTime.set(Calendar.HOUR_OF_DAY, endVisit2.getTime().getHours());
+                        newTime.set(Calendar.MINUTE, endVisit2.getTime().getMinutes());
+                        newTime.add(Calendar.MINUTE, 30);//On ajoute 1 heure
+
+                        visit1.setStartHour(formaterHour.format(newTime.getTime()));
+                        i = 0; //Pour revérifier si la nouvelle date a des conflits encore.
+
+                        break;
+                    }
+
+                }
+
+            }
+
+        }catch (Exception e){
+            Log.d("Visit", "Error adaptVisitDates():" + e);
+        }
+
+        return visits;
+
     }
 }

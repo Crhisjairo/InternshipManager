@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -246,10 +247,17 @@ public class InternshipManagementActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         int newHour = materialTimePicker.getHour();
                         int newMinute = materialTimePicker.getMinute();
+                        SimpleDateFormat formater = new SimpleDateFormat("HH:mm:ss");
+                        Calendar startTimeCal = Calendar.getInstance();
 
-                        startHour = newHour + ":" + newMinute;
+                        startTimeCal.set(Calendar.HOUR_OF_DAY, newHour);
+                        startTimeCal.set(Calendar.MINUTE, newMinute);
+
+                        startHour = formater.format(startTimeCal.getTime());
+
+                        String startHourText = newHour + ":" + newMinute;
                         //on set le text du boutton
-                        btnModifyStartInternTime.setText(startHour);
+                        btnModifyStartInternTime.setText(startHourText);
                     }
                 });
 
@@ -270,9 +278,16 @@ public class InternshipManagementActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         int newHour = materialTimePicker.getHour();
                         int newMinute = materialTimePicker.getMinute();
+                        SimpleDateFormat formater = new SimpleDateFormat("HH:mm:ss");
+                        Calendar endTimeCal = Calendar.getInstance();
 
-                        endHour = newHour + ":" + newMinute;
-                        btnModifyEndInternTime.setText(endHour);
+                        endTimeCal.set(Calendar.HOUR_OF_DAY, newHour);
+                        endTimeCal.set(Calendar.MINUTE, newMinute);
+
+                        endHour = formater.format(endTimeCal.getTime());
+
+                        String endHourText = newHour + ":" + newMinute;
+                        btnModifyEndInternTime.setText(endHourText);
                     }
                 });
 
@@ -293,9 +308,16 @@ public class InternshipManagementActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         int newHour = materialTimePicker.getHour();
                         int newMinute = materialTimePicker.getMinute();
+                        SimpleDateFormat formater = new SimpleDateFormat("HH:mm:ss");
+                        Calendar startLunchCal = Calendar.getInstance();
 
-                        startLunch = newHour + ":" + newMinute;
-                        btnModifyStartLunchTime.setText(startLunch);
+                        startLunchCal.set(Calendar.HOUR_OF_DAY, newHour);
+                        startLunchCal.set(Calendar.MINUTE, newMinute);
+
+                        startLunch = formater.format(startLunchCal.getTime());
+
+                        String startLunchText = newHour + ":" + newMinute;
+                        btnModifyStartLunchTime.setText(startLunchText);
                     }
                 });
 
@@ -316,9 +338,16 @@ public class InternshipManagementActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         int newHour = materialTimePicker.getHour();
                         int newMinute = materialTimePicker.getMinute();
+                        SimpleDateFormat formater = new SimpleDateFormat("HH:mm:ss");
+                        Calendar endLunchCal = Calendar.getInstance();
 
-                        endLunch = newHour + ":" + newMinute;
-                        btnModifyEndLunchTime.setText(endLunch);
+                        endLunchCal.set(Calendar.HOUR_OF_DAY, newHour);
+                        endLunchCal.set(Calendar.MINUTE, newMinute);
+
+                        endLunch = formater.format(endLunchCal.getTime());
+
+                        String endLunchText = newHour + ":" + newMinute;
+                        btnModifyEndLunchTime.setText(endLunchText);
                     }
                 });
 

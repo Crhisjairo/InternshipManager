@@ -53,4 +53,10 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="visitNotAddedTitle">Some visits have not been added</string>
+    <string name="someVisitsAtSameDay">At least one visit
+        in the same day already exists</string>
+    <string name="internshipWithoutDays">One of the interships does not contain pre-set interships days</string>
+    <string name="okText">Ok</string>
+    <string name="visitFor">Visit for</string>
 </resources>

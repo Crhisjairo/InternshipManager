@@ -1,6 +1,7 @@
 package ca.qc.bdeb.internshipmanager.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -13,6 +14,7 @@ import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -299,18 +301,63 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     }
 
     public void onClickAddVisit(){
-        //Il faut checker que les visits n'existent pas déjà icitte.
+        ArrayList<Visit> visitsToInsert = new ArrayList<>();
+        boolean someVisitsNotAdded = false;
 
         //On ajoute les visites selectionnées. Le calendrier va s'encharger d'adapter les dates.
         for (Internship internship : internsToVisist) {
-            //On crée une visite pour l'internship courrant
-            //On format les dates et on vérifie les marges entre les heures.
-            ArrayList<Visit> visits = Visit.createVisitsFromIntership(internship);
+            //On crée une visite pour l'internship courrant. On format les dates.
+            // Les marges entre les heures se verifient dans le calendrier.
+            ArrayList<Visit> visits = Visit.createVisitsFromIntership(internship); //On a 3 visites pour le stage
 
-            db.insertVisits(visits);
+            if(visits.isEmpty()){
+                //Message pour dire que le stage ne possède pas des journées de stage
+                showAlertDialog(getContext().getString(R.string.visitNotAddedTitle),
+                        getContext().getString(R.string.internshipWithoutDays));
+            }
+
+            //On check que le stage ne possède pas plus de 3 visites et qu'il ne possède plus d'une
+            //visite par journée, si jamais c'est le cas, on affiche un popup pour aviser l'utilisateur.
+            //Ces 3 visites sont forcés à être en journées séparées.
+            for (Visit visit : visits) {
+                //Pour chaque visite, on check si une visite exite avec la même journée.
+                if(Visit.containsVisitAtSameDay(internship, visit)){
+                    someVisitsNotAdded = true;
+                    continue;
+                }
+
+                visitsToInsert.add(visit);
+            }
+
+        }
+
+        //On affiche un popup si jamais des visites n'ont pas été ajoutés.
+        if(someVisitsNotAdded){
+            showAlertDialog(getContext().getString(R.string.visitNotAddedTitle),
+                    getContext().getString(R.string.someVisitsAtSameDay));
+        }
+
+        if(!visitsToInsert.isEmpty()){
+            db.insertVisits(visitsToInsert);
         }
 
         internsToVisist.clear();
+    }
+
+
+    private void showAlertDialog(String title, String message){
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(message);
+
+        //On déclare les actions du button oui
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getContext().getString(R.string.okText), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        alertDialog.show();
     }
 
 

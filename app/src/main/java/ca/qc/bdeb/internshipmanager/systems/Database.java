@@ -886,6 +886,37 @@ public class Database extends SQLiteOpenHelper {
         //TODO Pour tous les entrées, il faut UPDATE les nouvelles visits
     }
 
+    public void updateVisits(ArrayList<Visit> visits){
+        ContentValues values = new ContentValues();
+
+        for (Visit visit : visits) {
+            values.put(VisitTable.DATE, visit.getVisitDate());
+            values.put(VisitTable.START_HOUR, visit.getStartHour());
+            values.put(VisitTable.DURING, visit.getDuring());
+
+            String whereClause = VisitTable._ID + " = " + "\"" + visit.getVisitId() + "\"";
+
+            db.update(VisitTable.TABLE_NAME, values, whereClause, null);
+
+        }
+
+        internshipList = queryForAllInternships();
+    }
+
+    public void updateVisitById(Visit visit){
+        ContentValues values = new ContentValues();
+
+        values.put(VisitTable.DATE, visit.getVisitDate());
+        values.put(VisitTable.START_HOUR, visit.getStartHour());
+        values.put(VisitTable.DURING, visit.getDuring());
+
+        String whereClause = VisitTable._ID + " = " + "\"" + visit.getVisitId() + "\"";
+
+        db.update(VisitTable.TABLE_NAME, values, whereClause, null);
+
+        internshipList = queryForAllInternships();
+    }
+
     public void updateAccount(Account account) {
         ContentValues values = new ContentValues();
         //Le id reste le même
