@@ -19,6 +19,7 @@ import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -310,7 +311,7 @@ public class Database extends SQLiteOpenHelper {
                                  Internship.Priority priority, String internshipDays , String startHour, String endHour,
                                  String startLunch, String endLunch, int averageVisitDuring,
                                  String tutorDisponibility, String comments) {
-
+        SimpleDateFormat formater = new SimpleDateFormat("HH:mm:ss");
         ContentValues values = new ContentValues(); //UUID.randomUUID().toString()
         values.put(InternshipTable._ID, id);
         values.put(InternshipTable.SCHOOL_YEAR, schoolYear);
@@ -319,6 +320,35 @@ public class Database extends SQLiteOpenHelper {
         values.put(InternshipTable.PROFESSOR_ID, idTeacherAccount);
         values.put(InternshipTable.PRIORITY, priority.toString());
         values.put(InternshipTable.INTERNSHIP_DAYS, internshipDays);
+
+        Calendar defaultStartCal = Calendar.getInstance();
+        defaultStartCal.set(Calendar.HOUR_OF_DAY, 8);
+        defaultStartCal.set(Calendar.MINUTE, 0);
+        defaultStartCal.set(Calendar.SECOND, 0);
+
+        Calendar defaultEndCal = Calendar.getInstance();
+        defaultEndCal.set(Calendar.HOUR_OF_DAY, 10);
+        defaultEndCal.set(Calendar.MINUTE, 0);
+        defaultEndCal.set(Calendar.SECOND, 0);
+
+
+        //On donne une valeur par défaut à l'heure de début si jamais elle est null dans la bd distante.
+        if(startHour.equals("null")){
+            startHour = formater.format(defaultStartCal.getTime());
+        }
+
+        if(endHour.equals("null")){
+            endHour = formater.format(defaultEndCal.getTime());
+        }
+
+        if(startLunch.equals("null")){
+            startLunch = formater.format(defaultStartCal.getTime());
+        }
+
+        if(endLunch.equals("null")){
+            endLunch = formater.format(defaultEndCal.getTime());
+        }
+
         values.put(InternshipTable.START_HOUR, startHour);
         values.put(InternshipTable.END_HOUR, endHour);
         values.put(InternshipTable.START_LUNCH, startLunch);

@@ -112,7 +112,7 @@ public class Visit {
         //On separe les jours de stages et on crée les visites en fonction
         String visitDays = internship.getInternshipDays();
 
-        if(visitDays.isEmpty()){
+        if(visitDays.isEmpty() || visitDays.equals("null")){
             return new ArrayList<>(); //Parce qu'il contient pas les journées
         }
 
