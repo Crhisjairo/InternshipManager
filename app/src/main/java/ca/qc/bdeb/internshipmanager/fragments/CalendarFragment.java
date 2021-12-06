@@ -1,5 +1,6 @@
 package ca.qc.bdeb.internshipmanager.fragments;
 
+import android.content.Intent;
 import android.graphics.RectF;
 import android.os.Bundle;
 
@@ -24,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import ca.qc.bdeb.internshipmanager.R;
+import ca.qc.bdeb.internshipmanager.activities.InternshipManagementActivity;
 import ca.qc.bdeb.internshipmanager.customviews.ModifyVisitDialog;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
 import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
@@ -35,6 +37,9 @@ import ca.qc.bdeb.internshipmanager.systems.Database;
  * create an instance of this fragment.
  */
 public class CalendarFragment extends Fragment {
+
+    public static final int ACTIVITY_MODIFIER_RESULT = 1;
+    public static final String ID_INTERNSHIP_MODIFY_KEY = "TO_MODIFY";
 
     private WeekView weekView;
     private Database db;
@@ -106,7 +111,7 @@ public class CalendarFragment extends Fragment {
                 ModifyVisitDialog modifyVisitDialog = new ModifyVisitDialog(getContext(), getParentFragmentManager(), weekViewEvent);
                 modifyVisitDialog.setOnClickOkButtonListener(new ModifyVisitDialog.OnClickOkButtonListener() {
                     @Override
-                    public void onClick(String newStartTime, String newDuringTime) {
+                    public void onClickOk(String newStartTime, String newDuringTime) {
 
                         for (Visit visit : visits) {
                             if(visit.getVisitId().equals(weekViewEvent.getId())){
@@ -120,6 +125,15 @@ public class CalendarFragment extends Fragment {
                             }
                         }
 
+                    }
+
+                    @Override
+                    public void onClickModifyIntenship(Internship internship) {
+                        //On démarre l'activité pour modifier l'internship
+                        Intent intent = new Intent(getContext(), InternshipManagementActivity.class);
+                        intent.putExtra(ID_INTERNSHIP_MODIFY_KEY, internship.getIdInternship()); //on passe l'id de l'internship à modifier
+
+                        startActivityForResult(intent, ACTIVITY_MODIFIER_RESULT);
                     }
                 });
 
@@ -173,5 +187,5 @@ public class CalendarFragment extends Fragment {
         return String.format(getString(R.string.visitFor) + " " + fullName + " : %02d:%02d %s/%d",
                 time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE), time.get(Calendar.MONTH)+1, time.get(Calendar.DAY_OF_MONTH));
     }
-    
+
 }

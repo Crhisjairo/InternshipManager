@@ -2,6 +2,7 @@ package ca.qc.bdeb.internshipmanager.customviews;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,7 +25,9 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import ca.qc.bdeb.internshipmanager.R;
+import ca.qc.bdeb.internshipmanager.activities.InternshipManagementActivity;
 import ca.qc.bdeb.internshipmanager.dataclasses.Internship;
+import ca.qc.bdeb.internshipmanager.dataclasses.Visit;
 import ca.qc.bdeb.internshipmanager.systems.Database;
 
 public class ModifyVisitDialog extends Dialog {
@@ -33,11 +36,9 @@ public class ModifyVisitDialog extends Dialog {
     private FragmentManager fragmentManager;
 
     private WeekViewEvent weekViewEvent;
-    private Button btnNewStartTime, btnNewEndTime, btnOk;
+    private Button btnNewStartTime, btnNewEndTime, btnOk, btnModifyInternship;
     private TextView tvStudentName;
     private String newStartTime, newDuringTime;
-
-    private Internship internship;
 
     private Calendar startTimeCal, endTimeCal;
 
@@ -76,8 +77,28 @@ public class ModifyVisitDialog extends Dialog {
         getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         getWindow().setGravity(Gravity.CENTER);
 
+        initViews();
+    }
+
+    private void initViews() {
+
         tvStudentName = findViewById(R.id.tvStudentName);
         tvStudentName.setText(weekViewEvent.getName());
+
+        btnModifyInternship = findViewById(R.id.btnModifyInternship);
+        btnModifyInternship.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(onClickOkButtonListener != null){
+                    Visit visit = Database.getInstance(getContext()).getVisitById(weekViewEvent.getId());
+                    Internship internship = Database.getInstance(getContext()).queryForInternshipId(visit.getInternshipId());
+
+                    onClickOkButtonListener.onClickModifyIntenship(internship);
+                }
+
+            }
+        });
 
         btnNewStartTime = findViewById(R.id.btnNewStartTime);
         btnNewStartTime.setOnClickListener(new View.OnClickListener() {
@@ -141,7 +162,7 @@ public class ModifyVisitDialog extends Dialog {
 
                 materialTimePicker.show(fragmentManager, "ABC");
             }
-            });
+        });
 
         btnOk = findViewById(R.id.okButton);
 
@@ -150,7 +171,7 @@ public class ModifyVisitDialog extends Dialog {
             public void onClick(View view) {
 
                 if(onClickOkButtonListener != null){
-                    onClickOkButtonListener.onClick(newStartTime, newDuringTime);
+                    onClickOkButtonListener.onClickOk(newStartTime, newDuringTime);
                 }
 
                 hide();
@@ -170,7 +191,8 @@ public class ModifyVisitDialog extends Dialog {
     }
 
     public interface OnClickOkButtonListener{
-        public void onClick(String newStartTime, String newDuringTime);
+        public void onClickOk(String newStartTime, String newDuringTime);
+        public void onClickModifyIntenship(Internship internship);
     }
 
     public void setOnClickOkButtonListener(OnClickOkButtonListener onClickOkButtonListener){

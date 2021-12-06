@@ -917,6 +917,30 @@ public class Database extends SQLiteOpenHelper {
         internshipList = queryForAllInternships();
     }
 
+    public Visit getVisitById(String id){
+        //SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT * FROM " + VisitTable.TABLE_NAME + " WHERE _id = ?";
+        String[] args = new String[]{id};
+
+        Cursor cursor = db.rawQuery(query, args);
+
+        if (cursor.getCount() <= 0) {
+            return null;
+        }
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        Visit visit = new Visit(cursor.getString(0), cursor.getString(1),
+                cursor.getString(2), cursor.getString(3), cursor.getString(4));
+
+
+        cursor.close();
+
+        return visit;
+    }
+
     public void updateAccount(Account account) {
         ContentValues values = new ContentValues();
         //Le id reste le même
